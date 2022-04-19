@@ -1,4 +1,4 @@
-package com.volunteer_platform.volunteer_platform.entity.member;
+package com.volunteer_platform.volunteer_platform.entity.register;
 
 import lombok.*;
 

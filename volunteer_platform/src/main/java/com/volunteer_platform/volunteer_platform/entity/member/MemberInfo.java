@@ -23,7 +23,4 @@ public class MemberInfo {
     private String birthday;
     private String gender;
     private String phoneNumber;
-
-    @Embedded
-    private Address address;
 }

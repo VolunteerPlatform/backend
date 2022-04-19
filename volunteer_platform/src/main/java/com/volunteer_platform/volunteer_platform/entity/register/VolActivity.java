@@ -1,0 +1,59 @@
+package com.volunteer_platform.volunteer_platform.entity.register;
+
+import com.volunteer_platform.volunteer_platform.entity.member.Review;
+import com.volunteer_platform.volunteer_platform.entity.register.enumtype.ActivityMethod;
+import com.volunteer_platform.volunteer_platform.entity.register.enumtype.ActivityType;
+import com.volunteer_platform.volunteer_platform.entity.register.enumtype.AuthorizationType;
+import com.volunteer_platform.volunteer_platform.entity.register.enumtype.Category;
+import lombok.*;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class VolActivity {
+
+    @Id @GeneratedValue
+    @Column(name = "vol_activity_id")
+    private Long id;
+
+    @OneToMany(mappedBy = "volActivity")
+    private List<AppHistory> appHistories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "volActivity")
+    private List<Review> reviews = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vol_organ_id")
+    private VolOrgan volOrgan;
+
+    @OneToMany(mappedBy = "volActivity")
+    private List<VolActivityTime> activityTimes = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private ActivityType activityType;
+
+    @Enumerated(EnumType.STRING)
+    private ActivityMethod activityMethod;
+
+    @Enumerated(EnumType.STRING)
+    private AuthorizationType authorizationType;
+
+    @Embedded
+    private ActivityTerm activityTerm;
+
+    @Embedded
+    private ActivityRecruitTerm activityRecruitTerm;
+
+    private String activityName;
+    private String activitySummary;
+    private String activityContent;
+
+    @Enumerated(EnumType.STRING)
+    private Category category;
+}

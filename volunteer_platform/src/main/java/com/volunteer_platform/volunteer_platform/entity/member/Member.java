@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.entity.member;
 
+import com.volunteer_platform.volunteer_platform.entity.register.AppHistory;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,6 +30,9 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<AppHistory> appHistories = new ArrayList<>();
 
     private String e_mail;
     private String password;
