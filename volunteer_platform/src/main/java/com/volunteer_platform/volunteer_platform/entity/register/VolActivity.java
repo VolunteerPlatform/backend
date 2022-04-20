@@ -45,10 +45,18 @@ public class VolActivity {
     private AuthorizationType authorizationType;
 
     @Embedded
-    private ActivityTerm activityTerm;
+    @AttributeOverrides({
+            @AttributeOverride(name = "begin", column = @Column(name = "ACTIVITY_START")),
+            @AttributeOverride(name = "end", column = @Column(name = "ACTIVITY_END")),
+    })
+    private Period activityPeriod;
 
     @Embedded
-    private ActivityRecruitTerm activityRecruitTerm;
+    @AttributeOverrides({
+            @AttributeOverride(name = "begin", column = @Column(name = "RECRUIT_START")),
+            @AttributeOverride(name = "end", column = @Column(name = "RECRUIT_END")),
+    })
+    private Period activityRecruitPeriod;
 
     private String activityName;
     private String activitySummary;

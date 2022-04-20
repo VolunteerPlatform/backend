@@ -5,7 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -34,9 +33,9 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<AppHistory> appHistories = new ArrayList<>();
 
-    private String e_mail;
+    private String email;
     private String password;
-    private String kakao_id;
-    private String google_id;
+    private String kakaoId;
+    private String googleId;
 
 }

@@ -20,6 +20,6 @@ public class Member1365Info {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String id_1365;
+    private String idOf1365;
     private String centerName;
 }

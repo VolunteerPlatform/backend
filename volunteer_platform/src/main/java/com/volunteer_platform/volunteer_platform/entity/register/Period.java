@@ -3,14 +3,15 @@ package com.volunteer_platform.volunteer_platform.entity.register;
 import lombok.*;
 
 import javax.persistence.Embeddable;
+import java.time.LocalDateTime;
 
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class ActivityRecruitTerm {
+public class Period {
 
-    private String activityRecruitBegin;
-    private String activityRecruitEnd;
+    private LocalDateTime begin;
+    private LocalDateTime end;
 }
