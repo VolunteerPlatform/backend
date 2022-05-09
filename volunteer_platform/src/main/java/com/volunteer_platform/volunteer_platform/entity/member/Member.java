@@ -38,4 +38,7 @@ public class Member {
     private String kakaoId;
     private String googleId;
 
+    public Member(String email) {
+        this.email = email;
+    }
 }

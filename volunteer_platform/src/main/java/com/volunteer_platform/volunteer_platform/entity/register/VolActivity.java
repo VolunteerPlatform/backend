@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.entity.register;
 
+import com.volunteer_platform.volunteer_platform.entity.BaseEntity;
 import com.volunteer_platform.volunteer_platform.entity.member.Review;
 import com.volunteer_platform.volunteer_platform.entity.register.enumtype.ActivityMethod;
 import com.volunteer_platform.volunteer_platform.entity.register.enumtype.ActivityType;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class VolActivity {
+public class VolActivity extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "vol_activity_id")
@@ -28,7 +29,7 @@ public class VolActivity {
     @OneToMany(mappedBy = "volActivity")
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "vol_organ_id")
     private VolOrgan volOrgan;
 
