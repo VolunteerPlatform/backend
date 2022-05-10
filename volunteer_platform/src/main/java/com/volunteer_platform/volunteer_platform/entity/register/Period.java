@@ -3,7 +3,7 @@ package com.volunteer_platform.volunteer_platform.entity.register;
 import lombok.*;
 
 import javax.persistence.Embeddable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Embeddable
 @Getter
@@ -12,6 +12,6 @@ import java.time.LocalDateTime;
 @Builder
 public class Period {
 
-    private LocalDateTime begin;
-    private LocalDateTime end;
+    private LocalDate begin;
+    private LocalDate end;
 }

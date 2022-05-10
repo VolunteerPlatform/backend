@@ -1,6 +1,7 @@
 package com.volunteer_platform.volunteer_platform.controller;
 
 import com.volunteer_platform.volunteer_platform.controller.form.Form;
+import com.volunteer_platform.volunteer_platform.entity.register.Period;
 import com.volunteer_platform.volunteer_platform.entity.register.VolActivity;
 import com.volunteer_platform.volunteer_platform.entity.register.VolActivityTime;
 import com.volunteer_platform.volunteer_platform.entity.register.VolOrgan;
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +50,11 @@ public class VOlController {
     }
 
     private VolActivity saveVolActivity(Form form, VolOrgan volOrgan) {
+        int[] activityBegin = Arrays.stream(form.getVolActivityForm().getActivityBegin().split("/")).mapToInt(Integer::parseInt).toArray();
+        int[] activityEnd = Arrays.stream(form.getVolActivityForm().getActivityEnd().split("/")).mapToInt(Integer::parseInt).toArray();
+        int[] recruitBegin = Arrays.stream(form.getVolActivityForm().getRecruitBegin().split("/")).mapToInt(Integer::parseInt).toArray();
+        int[] recruitEnd = Arrays.stream(form.getVolActivityForm().getRecruitEnd().split("/")).mapToInt(Integer::parseInt).toArray();
+
         VolActivity volActivity = VolActivity.builder()
                 .activityName(form.getVolActivityForm().getActivityName())
                 .activitySummary(form.getVolActivityForm().getActivitySummary())
@@ -56,9 +63,18 @@ public class VOlController {
                 .activityType(form.getVolActivityForm().getActivityType())
                 .authorizationType(form.getVolActivityForm().getAuthorizationType())
                 .category(form.getVolActivityForm().getCategory())
-                //todo LocalDateTime 으로 받기
-                //.activityPeriod(form.getVolActivityForm().)
-                //.activityRecruitPeriod()
+                .activityPeriod(
+                        Period.builder()
+                                .begin(LocalDate.of(activityBegin[0], activityBegin[1], activityBegin[2]))
+                                .end(LocalDate.of(activityEnd[0], activityEnd[1], activityEnd[2]))
+                                .build()
+                )
+                .activityRecruitPeriod(
+                        Period.builder()
+                                .begin(LocalDate.of(recruitBegin[0], recruitBegin[1], recruitBegin[2]))
+                                .end(LocalDate.of(recruitEnd[0], recruitEnd[1], recruitEnd[2]))
+                                .build()
+                )
                 .volOrgan(volOrgan)
                 .build();
 
