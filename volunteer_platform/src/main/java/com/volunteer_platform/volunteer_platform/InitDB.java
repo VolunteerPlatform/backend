@@ -1,7 +1,7 @@
 package com.volunteer_platform.volunteer_platform;
 
-import com.volunteer_platform.volunteer_platform.entity.member.Member;
-import com.volunteer_platform.volunteer_platform.repository.MemberRepository;
+import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
