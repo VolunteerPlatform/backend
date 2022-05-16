@@ -22,9 +22,9 @@ public class VOlController {
     @PostMapping("/create/vol")
     public String createVol(@RequestBody Form form) {
 
-        VolOrgan volOrgan = volOrganService.createVolOrgan(form);
-        VolActivity volActivity = volActivityService.createVolActivity(form, volOrgan);
-        volActivityTimeService.createVolActivityTime(form, volActivity);
+        VolOrgan volOrgan = volOrganService.createVolOrgan(form.getVolOrganForm());
+        VolActivity volActivity = volActivityService.createVolActivity(form.getVolActivityForm(), volOrgan);
+        volActivityTimeService.createVolActivityTime(form.getVolActivityTimeForm(), volActivity);
 
         return "redirect:/";
     }

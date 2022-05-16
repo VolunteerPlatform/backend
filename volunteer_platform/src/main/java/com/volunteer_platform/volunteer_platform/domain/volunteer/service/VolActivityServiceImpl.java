@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.Form;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
@@ -30,25 +30,25 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     @Override
     @Transactional
-    public VolActivity createVolActivity(Form form, VolOrgan volOrgan) {
+    public VolActivity createVolActivity(VolActivityForm form, VolOrgan volOrgan) {
         VolActivity volActivity = VolActivity.builder()
-                .activityName(form.getVolActivityForm().getActivityName())
-                .activitySummary(form.getVolActivityForm().getActivitySummary())
-                .activityContent(form.getVolActivityForm().getActivityContent())
-                .activityMethod(form.getVolActivityForm().getActivityMethod())
-                .activityType(form.getVolActivityForm().getActivityType())
-                .authorizationType(form.getVolActivityForm().getAuthorizationType())
-                .category(form.getVolActivityForm().getCategory())
+                .activityName(form.getActivityName())
+                .activitySummary(form.getActivitySummary())
+                .activityContent(form.getActivityContent())
+                .activityMethod(form.getActivityMethod())
+                .activityType(form.getActivityType())
+                .authorizationType(form.getAuthorizationType())
+                .category(form.getCategory())
                 .activityPeriod(
                         Period.builder()
-                                .begin(toLocalDate(form.getVolActivityForm().getActivityBegin()))
-                                .end(toLocalDate(form.getVolActivityForm().getActivityEnd()))
+                                .begin(toLocalDate(form.getActivityBegin()))
+                                .end(toLocalDate(form.getActivityEnd()))
                                 .build()
                 )
                 .activityRecruitPeriod(
                         Period.builder()
-                                .begin(toLocalDate(form.getVolActivityForm().getRecruitBegin()))
-                                .end(toLocalDate(form.getVolActivityForm().getRecruitEnd()))
+                                .begin(toLocalDate(form.getRecruitBegin()))
+                                .end(toLocalDate(form.getRecruitEnd()))
                                 .build()
                 )
                 .volOrgan(volOrgan)

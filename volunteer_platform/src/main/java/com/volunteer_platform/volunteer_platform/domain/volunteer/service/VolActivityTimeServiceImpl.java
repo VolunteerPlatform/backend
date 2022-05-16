@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.Form;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityTimeRepository;
@@ -28,13 +28,13 @@ public class VolActivityTimeServiceImpl implements VolActivityTimeService {
 
     @Override
     @Transactional
-    public void createVolActivityTime(Form form, VolActivity volActivity) {
-        for (int i = 0; i < form.getVolActivityTimeForm().getActivityWeek().size(); i++) {
+    public void createVolActivityTime(VolActivityTimeForm form, VolActivity volActivity) {
+        for (int i = 0; i < form.getActivityWeek().size(); i++) {
             VolActivityTime volActivityTime = VolActivityTime.builder()
                     .volActivity(volActivity)
-                    .activityWeek(form.getVolActivityTimeForm().getActivityWeek().get(i))
-                    .startTime(form.getVolActivityTimeForm().getStartTime())
-                    .endTime(form.getVolActivityTimeForm().getEndTime())
+                    .activityWeek(form.getActivityWeek().get(i))
+                    .startTime(form.getStartTime())
+                    .endTime(form.getEndTime())
                     .build();
 
             saveVolActivityTime(volActivityTime);
