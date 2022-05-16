@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 public class VolOrganForm {
 
+    private String name;
     private String manager;
     private String organPhoneNumber;
     private Address address;

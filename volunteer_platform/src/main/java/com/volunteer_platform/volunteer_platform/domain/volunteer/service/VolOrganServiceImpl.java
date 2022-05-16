@@ -29,6 +29,7 @@ public class VolOrganServiceImpl implements VolOrganService {
     @Transactional
     public VolOrgan createVolOrgan(Form form) {
         VolOrgan volOrgan = VolOrgan.builder()
+                .name(form.getVolOrganForm().getName())
                 .manager(form.getVolOrganForm().getManager())
                 .organPhoneNumber(form.getVolOrganForm().getOrganPhoneNumber())
                 .address(form.getVolOrganForm().getAddress())

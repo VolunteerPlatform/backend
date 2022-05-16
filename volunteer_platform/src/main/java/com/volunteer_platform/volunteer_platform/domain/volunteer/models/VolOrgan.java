@@ -14,9 +14,12 @@ import java.util.List;
 @Builder
 public class VolOrgan extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "vol_organ_id")
     private Long id;
+
+    private String name;
 
     @OneToMany(mappedBy = "volOrgan", cascade = CascadeType.ALL)
     private List<VolActivity> volActivities = new ArrayList<>();
