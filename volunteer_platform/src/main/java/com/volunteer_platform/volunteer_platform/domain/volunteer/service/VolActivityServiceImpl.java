@@ -24,7 +24,6 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     @Transactional
     public void saveVolActivity(VolActivity volActivity) {
-
         volActivityRepository.save(volActivity);
     }
 
@@ -54,6 +53,7 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .volOrgan(volOrgan)
                 .build();
 
+        isValidDate(volActivity.getActivityPeriod(), volActivity.getActivityRecruitPeriod());
         saveVolActivity(volActivity);
         return volActivity;
     }
@@ -72,5 +72,15 @@ public class VolActivityServiceImpl implements VolActivityService {
         }
 
         return result;
+    }
+
+    private void isValidDate(Period activityPeriod, Period recruitPeriod) {
+        if (activityPeriod.getBegin().compareTo(activityPeriod.getEnd()) > 0) {
+            throw new IllegalArgumentException("활동 시작일은 활동 종료일 이후일 수 없습니다.");
+        }
+
+        if (recruitPeriod.getBegin().compareTo(recruitPeriod.getEnd()) > 0) {
+            throw new IllegalArgumentException("모집 시작일은 모집 종료일 이후일 수 없습니다.");
+        }
     }
 }
