@@ -28,6 +28,13 @@ public class VolOrganServiceImpl implements VolOrganService {
     @Override
     @Transactional
     public VolOrgan createVolOrgan(VolOrganForm form) {
+        if (form.getId() != null) {
+            VolOrgan findOrgan = volOrganRepository.findById(form.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID입니다. 기관을 생성해주세요."));
+
+            return findOrgan;
+        }
+
         VolOrgan volOrgan = VolOrgan.builder()
                 .name(form.getName())
                 .manager(form.getManager())
