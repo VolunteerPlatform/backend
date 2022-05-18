@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Getter
 @Builder
 @AllArgsConstructor
@@ -16,5 +14,5 @@ public class VolActivityTimeForm {
 
     private int startTime;
     private int endTime;
-    private List<Week> activityWeek;
+    private Week activityWeek;
 }

@@ -2,10 +2,12 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.fo
 
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class Form {
 
     private VolActivityForm volActivityForm;
     private VolOrganForm volOrganForm;
-    private VolActivityTimeForm volActivityTimeForm;
+    private List<VolActivityTimeForm> volActivityTimeForms;
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,16 +29,16 @@ public class VolActivityTimeServiceImpl implements VolActivityTimeService {
 
     @Override
     @Transactional
-    public void createVolActivityTime(VolActivityTimeForm form, VolActivity volActivity) {
-        for (int i = 0; i < form.getActivityWeek().size(); i++) {
+    public void createVolActivityTime(List<VolActivityTimeForm> volActivityTimeForms, VolActivity volActivity) {
+        volActivityTimeForms.forEach(form -> {
             VolActivityTime volActivityTime = VolActivityTime.builder()
                     .volActivity(volActivity)
-                    .activityWeek(form.getActivityWeek().get(i))
+                    .activityWeek(form.getActivityWeek())
                     .startTime(form.getStartTime())
                     .endTime(form.getEndTime())
                     .build();
 
             saveVolActivityTime(volActivityTime);
-        }
+        });
     }
 }
