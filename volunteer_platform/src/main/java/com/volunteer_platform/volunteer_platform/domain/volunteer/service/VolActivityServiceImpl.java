@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +57,10 @@ public class VolActivityServiceImpl implements VolActivityService {
         isValidDate(volActivity.getActivityPeriod(), volActivity.getActivityRecruitPeriod());
         saveVolActivity(volActivity);
         return volActivity;
+    }
+
+    public List<VolActivity> findActivitiesByOrgan(Long organId) {
+        return volActivityRepository.findByVolOrgan(organId);
     }
 
     private LocalDate toLocalDate(String date) {

@@ -4,9 +4,13 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.for
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 
+import java.util.List;
+
 public interface VolActivityService {
 
     void saveVolActivity(VolActivity volActivity);
 
     VolActivity createVolActivity(VolActivityForm form, VolOrgan volOrgan);
+
+    List<VolActivity> findActivitiesByOrgan(Long organId);
 }
