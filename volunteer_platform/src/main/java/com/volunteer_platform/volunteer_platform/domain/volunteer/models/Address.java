@@ -11,7 +11,6 @@ import javax.persistence.Embeddable;
 @Builder
 public class Address {
 
-    private String city;
-    private String street;
+    private String detailAddress;
     private String zipcode;
 }
