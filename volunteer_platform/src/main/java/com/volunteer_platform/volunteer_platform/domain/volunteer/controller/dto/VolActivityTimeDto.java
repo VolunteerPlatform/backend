@@ -4,18 +4,16 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActi
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Week;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 public class VolActivityTimeDto {
 
-    public Week week;
+    private Week week;
 
-    public Integer startTime;
+    private Integer startTime;
 
-    public Integer endTime;
+    private Integer endTime;
 
     public static VolActivityTimeDto of(VolActivityTime volActivityTime) {
         return VolActivityTimeDto.builder()

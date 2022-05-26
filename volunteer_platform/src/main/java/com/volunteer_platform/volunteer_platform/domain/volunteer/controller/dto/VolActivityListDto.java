@@ -3,32 +3,30 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dt
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
 @Builder
 public class VolActivityListDto {
-    public Long id;
+    private Long id;
 
-    public String activityName;
+    private String activityName;
 
-    public String organization;
+    private String organization;
 
-    public List<VolActivityTimeDto> activityTimes;
+    private List<VolActivityTimeDto> activityTimes;
 
-    public String activitySummary;
+    private String activitySummary;
 
-    public Long score;
+    private Long score;
 
-    public Integer numOfRecruit;
+    private Integer numOfRecruit;
 
-    public Integer numOfApplicant;
+    private Integer numOfApplicant;
 
-    public Integer numOfAccepted;
+    private Integer numOfAccepted;
 
     public static VolActivityListDto of(VolActivity volActivity) {
         return VolActivityListDto.builder()
