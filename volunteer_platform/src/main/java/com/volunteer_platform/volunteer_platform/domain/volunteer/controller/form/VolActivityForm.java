@@ -25,5 +25,6 @@ public class VolActivityForm {
     private String activityEnd;
     private String recruitBegin;
     private String recruitEnd;
+    private Integer numOfRecruit;
     private Category category;
 }

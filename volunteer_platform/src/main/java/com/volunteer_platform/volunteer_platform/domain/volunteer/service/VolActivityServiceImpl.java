@@ -52,6 +52,7 @@ public class VolActivityServiceImpl implements VolActivityService {
                                 .build()
                 )
                 .volOrgan(volOrgan)
+                .numOfRecruit(form.getNumOfRecruit())
                 .build();
 
         isValidDate(volActivity.getActivityPeriod(), volActivity.getActivityRecruitPeriod());

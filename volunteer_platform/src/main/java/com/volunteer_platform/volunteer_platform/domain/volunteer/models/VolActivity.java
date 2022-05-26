@@ -62,6 +62,8 @@ public class VolActivity extends BaseEntity {
     private String activitySummary;
     private String activityContent;
 
+    private Integer numOfRecruit;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 }
