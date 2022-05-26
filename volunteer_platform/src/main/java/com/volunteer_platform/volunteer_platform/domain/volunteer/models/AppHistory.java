@@ -34,4 +34,16 @@ public class AppHistory {
 
     @Enumerated(EnumType.STRING)
     private IsAuthorized isAuthorized;
+
+    public void approve() {
+        isAuthorized = IsAuthorized.APPROVAL;
+    }
+
+    public void deny() {
+        isAuthorized = IsAuthorized.DISAPPROVAL;
+    }
+
+    public void pend() {
+        isAuthorized = IsAuthorized.WAITING;
+    }
 }
