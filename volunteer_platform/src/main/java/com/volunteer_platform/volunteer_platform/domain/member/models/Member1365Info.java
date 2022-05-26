@@ -22,4 +22,9 @@ public class Member1365Info {
 
     private String idOf1365;
     private String centerName;
+
+    public Member1365Info(String idOf1365, String centerName) {
+        this.idOf1365 = idOf1365;
+        this.centerName = centerName;
+    }
 }

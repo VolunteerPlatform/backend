@@ -19,8 +19,15 @@ public class MemberInfo {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String username;
+    private String userRealName;
     private String birthday;
     private String gender;
     private String phoneNumber;
+
+    public MemberInfo(String userRealName, String birthday, String gender, String phoneNumber) {
+        this.userRealName = userRealName;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+    }
 }

@@ -42,9 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 boolean isRefreshToken = jwtTokenProvider.existsRefreshToken(refreshToken);
 
                 if (validRefreshToken && isRefreshToken) {
-                    String userEmail = jwtTokenProvider.getUserEmail(refreshToken);
-                    List<String> roles = jwtTokenProvider.getRoles(userEmail);
-                    String newAccessToken = jwtTokenProvider.createAccessToken(userEmail, roles);
+                    String userName = jwtTokenProvider.getUserName(refreshToken);
+                    List<String> roles = jwtTokenProvider.getRoles(userName);
+                    String newAccessToken = jwtTokenProvider.createAccessToken(userName, roles);
                     jwtTokenProvider.setHeaderAccessToken(response, newAccessToken);
                     this.setAuthentication(newAccessToken);
                 }

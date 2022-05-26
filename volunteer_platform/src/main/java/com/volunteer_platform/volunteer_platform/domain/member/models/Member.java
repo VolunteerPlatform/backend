@@ -42,14 +42,10 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "member")
     private List<AppHistory> appHistories = new ArrayList<>();
 
-    private String email;
+    private String userName;
     private String password;
     private String kakaoId;
     private String googleId;
-
-    public Member(String email) {
-        this.email = email;
-    }
 
     @ElementCollection(fetch = EAGER)
     @Builder.Default
