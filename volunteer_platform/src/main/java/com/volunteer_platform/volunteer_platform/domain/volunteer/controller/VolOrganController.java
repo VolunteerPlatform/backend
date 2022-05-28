@@ -1,18 +1,24 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityListDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolOrganForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/vol/organ")
 public class VolOrganController {
     private final VolOrganService volOrganService;
+    private final VolActivityService volActivityService;
     private final VolOrganRepository volOrganRepository;
 
     // 기관 등록
@@ -38,5 +44,12 @@ public class VolOrganController {
         volOrganService.deleteOrgan(organId);
 
         return "redirect:/";
+    }
+
+    // 기관 담당 활동 찾기
+    @GetMapping("/{id}/activities")
+    public List<VolActivityListDto> findActivityByOrgan(@PathVariable("id") Long organId) {
+        return volActivityService.findActivitiesByOrgan(organId).stream()
+                .map(VolActivityListDto::of).collect(Collectors.toList());
     }
 }
