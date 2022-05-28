@@ -45,4 +45,18 @@ public class VolOrganServiceImpl implements VolOrganService {
         saveVolOrgan(volOrgan);
         return volOrgan;
     }
+
+    @Override
+    @Transactional
+    public void deleteOrgan(Long organId) {
+        VolOrgan volOrgan = volOrganRepository.findById(organId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+
+        if (volOrgan.getVolActivities().size() != 0) {
+            throw new IllegalArgumentException("담당중인 활동이 있으면 기관 삭제가 불가능합니다.");
+        }
+
+        volOrganRepository.deleteById(organId);
+    }
+
 }

@@ -8,4 +8,6 @@ public interface VolOrganService {
     void saveVolOrgan(VolOrgan volOrgan);
 
     VolOrgan createVolOrgan(VolOrganForm form);
+
+    void deleteOrgan(Long organId);
 }
