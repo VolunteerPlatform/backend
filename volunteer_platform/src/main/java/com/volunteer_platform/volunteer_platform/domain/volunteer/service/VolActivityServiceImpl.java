@@ -9,11 +9,8 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volint
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -41,14 +38,14 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .category(form.getCategory())
                 .activityPeriod(
                         Period.builder()
-                                .begin(toLocalDate(form.getActivityBegin()))
-                                .end(toLocalDate(form.getActivityEnd()))
+                                .begin(LocalDate.parse(form.getActivityBegin()))
+                                .end(LocalDate.parse(form.getActivityEnd()))
                                 .build()
                 )
                 .activityRecruitPeriod(
                         Period.builder()
-                                .begin(toLocalDate(form.getRecruitBegin()))
-                                .end(toLocalDate(form.getRecruitEnd()))
+                                .begin(LocalDate.parse(form.getRecruitBegin()))
+                                .end(LocalDate.parse(form.getRecruitEnd()))
                                 .build()
                 )
                 .volOrgan(volOrgan)
@@ -62,22 +59,6 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     public List<VolActivity> findActivitiesByOrgan(Long organId) {
         return volActivityRepository.findByVolOrgan(organId);
-    }
-
-    private LocalDate toLocalDate(String date) {
-        if (!StringUtils.hasText(date) || date.split("/").length != 3) {
-            throw new IllegalArgumentException("날짜 형식에 맞지 않습니다. ex) 2022/02/22 와 같은 형식으로 입력해주세요.");
-        }
-
-        int[] dateArray = Arrays.stream(date.split("/")).mapToInt(Integer::parseInt).toArray();
-        LocalDate result;
-        try {
-            result = LocalDate.of(dateArray[0], dateArray[1], dateArray[2]);
-        } catch (DateTimeException e) {
-            throw new IllegalArgumentException("올바른 날짜를 입력해주세요.");
-        }
-
-        return result;
     }
 
     private void isValidDate(Period activityPeriod, Period recruitPeriod) {
