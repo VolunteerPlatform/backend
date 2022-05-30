@@ -1,15 +1,16 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Week;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.DayOfWeek;
 
 @Getter
 @Builder
 public class VolActivityTimeDto {
 
-    private Week week;
+    private DayOfWeek week;
 
     private Integer startTime;
 

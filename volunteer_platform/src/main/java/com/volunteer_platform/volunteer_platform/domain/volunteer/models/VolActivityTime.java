@@ -1,10 +1,10 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.models;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Week;
 import com.volunteer_platform.volunteer_platform.global.entity.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.DayOfWeek;
 
 @Entity
 @Getter
@@ -23,7 +23,7 @@ public class VolActivityTime extends BaseEntity {
     private VolActivity volActivity;
 
     @Enumerated(EnumType.STRING)
-    private Week activityWeek;
+    private DayOfWeek activityWeek;
 
     private int startTime;
     private int endTime;
