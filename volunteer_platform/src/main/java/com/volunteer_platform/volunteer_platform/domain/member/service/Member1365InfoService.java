@@ -8,14 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class Member1365InfoService {
 
     private final Member1365InfoRepository member1365InfoRepository;
-    private final MemberService memberService;
 
 
     @Transactional
@@ -24,17 +23,15 @@ public class Member1365InfoService {
     }
 
     @Transactional
-    public Long createMember1365Info(MemberForm memberForm, HttpServletRequest request) {
-        Member memberId = memberService.findMemberId(request);
+    public void createMember1365Info(MemberForm memberForm, Optional<Member> member) {
 
         Member1365Info member1365Info = Member1365Info.builder()
                 .centerName(memberForm.getCenterName())
                 .idOf1365(memberForm.getIdOf1365())
-                .member(memberId)
+                .member(member.get())
                 .build();
 
         member1365InfoRepository.save(member1365Info);
 
-        return memberId.getId();
     }
 }

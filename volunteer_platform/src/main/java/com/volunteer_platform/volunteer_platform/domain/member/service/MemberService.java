@@ -10,7 +10,6 @@ import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenR
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,17 +24,26 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRepository tokenRepository;
+    private final MemberInfoService memberInfoService;
+    private final Member1365InfoService member1365InfoService;
 
     public Long MemberSignUp(MemberForm memberForm) {
         boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
 
         if (pass) {
-            return  memberRepository.save(Member.builder()
+            Long memberId = memberRepository.save(Member.builder()
                     .userName(memberForm.getUserName())
                     .password(passwordEncoder.encode(memberForm.getPassword()))
                     .googleId(null)
                     .kakaoId(null)
                     .build()).getId();
+
+            Optional<Member> findMemberIdForMember = memberRepository.findMemberId(memberId);
+
+            memberInfoService.createMemberInfo(memberForm, findMemberIdForMember);
+            member1365InfoService.createMember1365Info(memberForm, findMemberIdForMember);
+
+            return memberId;
         } else throw new IllegalStateException("아이디가 중복되었습니다.");
     }
 
@@ -45,7 +53,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
         if (!passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
-            throw new IllegalStateException("잘못된 비밀버호입니다.");
+            throw new IllegalStateException("잘못된 비밀번호입니다.");
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername(), member.getRoles());
