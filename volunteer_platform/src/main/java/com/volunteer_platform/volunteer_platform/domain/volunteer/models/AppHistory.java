@@ -22,11 +22,6 @@ public class AppHistory {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vol_activity_id")
-    private VolActivity volActivity;
-
-    private int activityTime;
     private String comment;
 
     @Enumerated(EnumType.STRING)
@@ -34,6 +29,10 @@ public class AppHistory {
 
     @Enumerated(EnumType.STRING)
     private IsAuthorized isAuthorized;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vol_activity_time_id")
+    private VolActivityTime volActivityTime;
 
     public void approve() {
         isAuthorized = IsAuthorized.APPROVAL;
@@ -45,5 +44,9 @@ public class AppHistory {
 
     public void pend() {
         isAuthorized = IsAuthorized.WAITING;
+    }
+
+    public void finish() {
+        isAuthorized = IsAuthorized.COMPLETE;
     }
 }

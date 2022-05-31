@@ -23,9 +23,6 @@ public class VolActivity extends BaseEntity {
     private Long id;
 
     @OneToMany(mappedBy = "volActivity")
-    private List<AppHistory> appHistories = new ArrayList<>();
-
-    @OneToMany(mappedBy = "volActivity")
     private List<Review> reviews = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
