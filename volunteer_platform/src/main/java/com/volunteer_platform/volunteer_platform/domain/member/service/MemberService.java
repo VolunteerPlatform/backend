@@ -13,8 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +33,7 @@ public class MemberService {
             Long memberId = memberRepository.save(Member.builder()
                     .userName(memberForm.getUserName())
                     .password(passwordEncoder.encode(memberForm.getPassword()))
+                    .roles(Collections.singletonList("ROLE_USER")) // 일반 유저
                     .googleId(null)
                     .kakaoId(null)
                     .build()).getId();
@@ -50,10 +50,10 @@ public class MemberService {
 
     public String MemberLogin(LoginForm loginForm, HttpServletResponse response) {
         Member member = memberRepository.findByUserName(loginForm.getUserName())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
         if (!passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
-            throw new IllegalStateException("잘못된 비밀번호입니다.");
+            throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername(), member.getRoles());
@@ -63,7 +63,7 @@ public class MemberService {
 
         tokenRepository.save(new RefreshToken(refreshToken));
 
-        return member.getMemberInfo().getUserRealName();
+        return member.getUsername();
     }
 
     public boolean memberValidation(String userName) {
@@ -86,6 +86,5 @@ public class MemberService {
         } else {
             throw new NoSuchElementException();
         }
-
     }
 }

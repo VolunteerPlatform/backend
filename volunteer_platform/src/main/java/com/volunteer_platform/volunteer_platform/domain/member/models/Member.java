@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static javax.persistence.FetchType.*;
 import static javax.persistence.FetchType.EAGER;
 
 @Entity
@@ -27,10 +28,10 @@ public class Member implements UserDetails {
     @Column(name = "member_id")
     private Long id;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", fetch = LAZY)
     private MemberInfo memberInfo;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", fetch = LAZY)
     private Member1365Info member1365Info;
 
     @OneToMany(mappedBy = "member")
@@ -60,7 +61,7 @@ public class Member implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return userName;
     }
 
     @Override
