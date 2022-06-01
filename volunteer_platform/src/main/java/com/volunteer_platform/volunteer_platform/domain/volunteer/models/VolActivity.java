@@ -32,6 +32,10 @@ public class VolActivity extends BaseEntity {
     @OneToMany(mappedBy = "volActivity")
     private List<VolActivityTime> activityTimes = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "volActivity", cascade = CascadeType.ALL)
+    private List<VolActivityDayOfWeek> dayOfWeeks = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
     private ActivityType activityType;
 

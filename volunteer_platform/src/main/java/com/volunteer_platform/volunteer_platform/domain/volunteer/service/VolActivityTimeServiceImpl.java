@@ -2,6 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityDayOfWeek;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityTimeStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityTimeRepository;
@@ -42,6 +43,15 @@ public class VolActivityTimeServiceImpl implements VolActivityTimeService {
             }
 
             activityTimeMap.put(form.getActivityWeek(), form);
+        });
+
+        activityTimeMap.forEach((key, value) -> {
+            volActivity.getDayOfWeeks().add(VolActivityDayOfWeek.builder()
+                    .activityWeek(key)
+                    .startTime(value.getStartTime())
+                    .endTime(value.getEndTime())
+                    .volActivity(volActivity)
+                    .build());
         });
 
         for (LocalDate date = volActivity.getActivityPeriod().getBegin();
