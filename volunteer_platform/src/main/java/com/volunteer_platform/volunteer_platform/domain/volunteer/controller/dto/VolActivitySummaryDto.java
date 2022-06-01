@@ -9,14 +9,14 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
-public class VolActivityListDto {
+public class VolActivitySummaryDto {
     private Long id;
 
     private String activityName;
 
     private String organization;
 
-    private List<VolActivityTimeDto> activityTimes;
+    private List<VolActivityDayOfWeekDto> activityDayOfWeeks;
 
     private String activitySummary;
 
@@ -24,20 +24,15 @@ public class VolActivityListDto {
 
     private Integer numOfRecruit;
 
-    private Integer numOfApplicant;
-
-    private Integer numOfAccepted;
-
-    public static VolActivityListDto of(VolActivity volActivity) {
-        return VolActivityListDto.builder()
+    public static VolActivitySummaryDto of(VolActivity volActivity) {
+        return VolActivitySummaryDto.builder()
                 .id(volActivity.getId())
                 .activityName(volActivity.getActivityName())
                 .organization(volActivity.getVolOrgan().getName())
-                .activityTimes(volActivity.getActivityTimes().stream().map(VolActivityTimeDto::of).collect(Collectors.toList()))
+                .activityDayOfWeeks(volActivity.getDayOfWeeks().stream().map(VolActivityDayOfWeekDto::of).collect(Collectors.toList()))
                 .activitySummary(volActivity.getActivitySummary())
                 .score(0L)
-                .numOfRecruit(20)
-                .numOfAccepted(10)
+                .numOfRecruit(volActivity.getNumOfRecruit())
                 .build();
     }
 }
