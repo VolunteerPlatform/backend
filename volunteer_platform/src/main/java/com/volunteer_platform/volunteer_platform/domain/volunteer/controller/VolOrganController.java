@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityListDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySummaryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolOrganForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
@@ -48,8 +48,8 @@ public class VolOrganController {
 
     // 기관 담당 활동 찾기
     @GetMapping("/{id}/activities")
-    public List<VolActivityListDto> findActivityByOrgan(@PathVariable("id") Long organId) {
+    public List<VolActivitySummaryDto> findActivityByOrgan(@PathVariable("id") Long organId) {
         return volActivityService.findActivitiesByOrgan(organId).stream()
-                .map(VolActivityListDto::of).collect(Collectors.toList());
+                .map(VolActivitySummaryDto::of).collect(Collectors.toList());
     }
 }
