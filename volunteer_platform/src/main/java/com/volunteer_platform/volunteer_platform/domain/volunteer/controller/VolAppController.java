@@ -1,12 +1,17 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolAppForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.VolAppService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +23,7 @@ public class VolAppController {
     private final VolAppService volAppService;
 
     // 유저별 봉사 신청 내역 조회
-    //    @GetMapping
+//    @GetMapping
     public List<AppHistoryDto> applicationsByMember(@RequestParam("member") Long memberId) {
         List<AppHistory> appHistories = volAppService.fetchApplications(memberId);
         return appHistories.stream().map(AppHistoryDto::of).collect(Collectors.toList());
@@ -32,7 +37,21 @@ public class VolAppController {
         return "redirect:/";
     }
 
-    //    신청 봉사자 정보 FORM GET API
+    // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 날짜랑 상태(PEND/ACCEPTED/DENY/FINISH 인지)
+    @GetMapping(params = {"date", "status"})
+    public List<ApplicantDto> fetchApplicant(@PathVariable("actId") Long activityId,
+                                             @RequestParam String date,
+                                             @RequestParam String status,
+                                             @PageableDefault Pageable pageable) {
+
+        List<AppHistory> appHistories = volAppService.fetchApplicationsByCondition(
+                activityId,
+                LocalDate.parse(date),
+                IsAuthorized.valueOf(status),
+                pageable);
+
+        return appHistories.stream().map(ApplicantDto::of).collect(Collectors.toList());
+    }
 
     //    사용자 봉사 승인 POST API
     @PostMapping("/{id}/accept")

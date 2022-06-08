@@ -9,6 +9,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityTimeRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -69,5 +70,9 @@ public class VolAppService {
 
     public List<AppHistory> fetchApplications(Long memberId) {
         return volAppRepository.findByMemberId(memberId);
+    }
+
+    public List<AppHistory> fetchApplicationsByCondition(Long activityId, LocalDate date, IsAuthorized status, Pageable pageable) {
+        return volAppRepository.findApplicantsByCondition(activityId, status, date, pageable);
     }
 }
