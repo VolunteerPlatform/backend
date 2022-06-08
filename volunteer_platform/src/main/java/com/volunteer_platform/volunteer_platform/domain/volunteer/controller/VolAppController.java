@@ -1,9 +1,14 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolAppForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.VolAppService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/vol/apply")
@@ -13,6 +18,11 @@ public class VolAppController {
     private final VolAppService volAppService;
 
     // 유저별 봉사 신청 내역 조회
+    //    @GetMapping
+    public List<AppHistoryDto> applicationsByMember(@RequestParam("member") Long memberId) {
+        List<AppHistory> appHistories = volAppService.fetchApplications(memberId);
+        return appHistories.stream().map(AppHistoryDto::of).collect(Collectors.toList());
+    }
 
     // 봉사 신청 POST API
     @PostMapping()

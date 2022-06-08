@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -64,5 +65,9 @@ public class VolAppService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청 ID 입니다."));
 
         application.pend();
+    }
+
+    public List<AppHistory> fetchApplications(Long memberId) {
+        return volAppRepository.findByMemberId(memberId);
     }
 }
