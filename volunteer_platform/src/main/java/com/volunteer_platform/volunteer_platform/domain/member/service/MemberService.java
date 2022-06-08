@@ -2,6 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.member.service;
 
 import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenProvider;
 import com.volunteer_platform.volunteer_platform.domain.member.auth.RefreshToken;
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
@@ -105,4 +106,22 @@ public class MemberService {
             throw new NoSuchElementException();
         }
     }
+
+//    public void updateMember(MemberUpdateDto memberUpdateDto, HttpServletRequest request) {
+//
+//    }
+
+    public void updateMemberPwd(HttpServletRequest request, MemberPwdUpdateDto memberPwdUpdateDto) {
+        Member memberId = findMemberId(request);
+
+        String originPwd = memberPwdUpdateDto.getOriginPwd();
+
+        if (passwordEncoder.matches(originPwd, memberId.getPassword())) {
+            String newPwd = passwordEncoder.encode(memberPwdUpdateDto.getNewPwd());
+            memberRepository.updateMemberPwd(newPwd, memberId.getUsername());
+        } else {
+            throw new IllegalStateException("try again");
+        }
+    }
 }
+

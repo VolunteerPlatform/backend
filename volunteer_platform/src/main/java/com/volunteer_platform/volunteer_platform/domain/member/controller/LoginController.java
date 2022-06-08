@@ -17,21 +17,25 @@ public class LoginController {
 
     private final MemberService memberService;
 
+    // 회원 자체 회원가입
     @PostMapping("/api/signup")
     public Long signup(@RequestBody MemberForm memberForm) {
         return memberService.MemberSignUp(memberForm);
     }
 
+    // 회원 자체 로그인
     @PostMapping("/api/login")
     public String login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
         return memberService.MemberLogin(loginForm, response);
     }
 
+    // 센터측 회원가입
     @PostMapping("/api/signup/center")
     public Long centerSignup(@RequestBody CenterForm centerForm) {
         return memberService.CenterSignUp(centerForm);
     }
 
+    // 센터측 로그인
     @PostMapping("/api/login/center")
     public String centerLogin(@RequestBody LoginForm loginForm, HttpServletResponse response) {
         return memberService.MemberLogin(loginForm, response);
