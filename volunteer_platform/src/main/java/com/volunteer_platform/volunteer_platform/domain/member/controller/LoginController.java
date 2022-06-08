@@ -32,5 +32,8 @@ public class LoginController {
         return memberService.CenterSignUp(centerForm);
     }
 
-
+    @PostMapping("/api/login/center")
+    public String centerLogin(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+        return memberService.MemberLogin(loginForm, response);
+    }
 }
