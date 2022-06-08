@@ -24,12 +24,12 @@ public class VolAppService {
     private final MemberRepository memberRepository;
     private final VolActivityTimeRepository activityTimeRepository;
 
-    public void volApply(VolAppForm volAppForm) {
+    public void volApply(Long activityId, VolAppForm volAppForm) {
         Member applicant = memberRepository.findById(volAppForm.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID 입니다."));
 
         LocalDate activityDate = LocalDate.parse(volAppForm.getActivityDate());
-        VolActivityTime activityTime = activityTimeRepository.findByActivityDateAndVolActivityId(activityDate, volAppForm.getActivityId())
+        VolActivityTime activityTime = activityTimeRepository.findByActivityDateAndVolActivityId(activityDate, activityId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 봉사활동이 존재하지 않거나, 해당 날짜에 활동하지 않는 봉사입니다."));
 
         AppHistory appHistory = AppHistory.builder()

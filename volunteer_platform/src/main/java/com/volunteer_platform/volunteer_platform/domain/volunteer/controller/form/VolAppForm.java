@@ -8,8 +8,6 @@ public class VolAppForm {
 
     public Long memberId;
 
-    public Long activityId;
-
     public String comment;
 
     public String activityDate;

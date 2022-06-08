@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/vol/apply")
+@RequestMapping("/vol/act/{actId}/apply")
 @RequiredArgsConstructor
 public class VolAppController {
 
@@ -26,8 +26,8 @@ public class VolAppController {
 
     // 봉사 신청 POST API
     @PostMapping()
-    public String volApply(@RequestBody VolAppForm volAppForm) {
-        volAppService.volApply(volAppForm);
+    public String volApply(@PathVariable("actId") Long activityId, @RequestBody VolAppForm volAppForm) {
+        volAppService.volApply(activityId, volAppForm);
 
         return "redirect:/";
     }

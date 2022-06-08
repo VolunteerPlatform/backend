@@ -9,17 +9,19 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volint
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/vol/act")
 @RequiredArgsConstructor
-public class VolController {
+public class VolActController {
 
     private final VolActivityService volActivityService;
     private final VolActivityTimeService volActivityTimeService;
     private final VolOrganService volOrganService;
 
-    @PostMapping("/vol/create")
+    @PostMapping
     public String createVol(@RequestBody Form form) {
         VolOrgan volOrgan = volOrganService.createVolOrgan(form.getVolOrganForm());
         VolActivity volActivity = volActivityService.createVolActivity(form.getVolActivityForm(), volOrgan);
