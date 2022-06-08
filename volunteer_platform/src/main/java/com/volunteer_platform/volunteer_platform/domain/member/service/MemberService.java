@@ -2,6 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.member.service;
 
 import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenProvider;
 import com.volunteer_platform.volunteer_platform.domain.member.auth.RefreshToken;
+import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
@@ -42,6 +43,23 @@ public class MemberService {
 
             memberInfoService.createMemberInfo(memberForm, findMemberIdForMember);
             member1365InfoService.createMember1365Info(memberForm, findMemberIdForMember);
+
+            return memberId;
+        } else throw new IllegalStateException("아이디가 중복되었습니다.");
+    }
+
+    public Long CenterSignUp(CenterForm centerForm) {
+        boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
+
+        if (pass) {
+            Long memberId = memberRepository.save(Member.builder()
+                    .userName(centerForm.getUserName())
+                    .password(passwordEncoder.encode(centerForm.getPassword()))
+                    .roles(Collections.singletonList("ROLE_ADMIN")) // 일반 유저
+                    .googleId("center")
+                    .kakaoId("center")
+                    .build()).getId();
+
 
             return memberId;
         } else throw new IllegalStateException("아이디가 중복되었습니다.");

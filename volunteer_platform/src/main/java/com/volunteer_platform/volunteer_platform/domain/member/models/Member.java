@@ -48,7 +48,7 @@ public class Member implements UserDetails {
     private String kakaoId;
     private String googleId;
 
-    @ElementCollection(fetch = EAGER)
+    @ElementCollection(fetch = LAZY)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 

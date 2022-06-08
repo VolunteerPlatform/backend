@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.controller;
 
+import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.service.MemberService;
@@ -25,4 +26,11 @@ public class LoginController {
     public String login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
         return memberService.MemberLogin(loginForm, response);
     }
+
+    @PostMapping("/api/signup/center")
+    public Long centerSignup(@RequestBody CenterForm centerForm) {
+        return memberService.CenterSignUp(centerForm);
+    }
+
+
 }
