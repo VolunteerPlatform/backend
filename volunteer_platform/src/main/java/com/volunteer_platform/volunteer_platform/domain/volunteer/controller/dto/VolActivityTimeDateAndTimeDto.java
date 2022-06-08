@@ -4,21 +4,21 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActi
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 @Getter
 @Builder
-public class VolActivityTimeDto {
+public class VolActivityTimeDateAndTimeDto {
 
-    private DayOfWeek week;
+    private LocalDate date;
 
     private Integer startTime;
 
     private Integer endTime;
 
-    public static VolActivityTimeDto of(VolActivityTime volActivityTime) {
-        return VolActivityTimeDto.builder()
-                .week(volActivityTime.getActivityWeek())
+    public static VolActivityTimeDateAndTimeDto of(VolActivityTime volActivityTime) {
+        return VolActivityTimeDateAndTimeDto.builder()
+                .date(volActivityTime.getActivityDate())
                 .startTime(volActivityTime.getStartTime())
                 .endTime(volActivityTime.getEndTime())
                 .build();
