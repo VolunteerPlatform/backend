@@ -8,6 +8,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpda
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
+import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
@@ -37,7 +38,7 @@ public class MemberService {
      * @param memberForm
      * @return
      */
-    public Long MemberSignUp(MemberForm memberForm) {
+    public Long memberSignUp(MemberForm memberForm) {
         boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
 
         if (pass) {
@@ -65,7 +66,7 @@ public class MemberService {
      * @param centerForm
      * @return
      */
-    public Long CenterSignUp(CenterForm centerForm) {
+    public Long centerSignUp(CenterForm centerForm) {
         boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
 
         if (pass) {
@@ -84,7 +85,7 @@ public class MemberService {
     }
 
 
-    public String MemberLogin(LoginForm loginForm, HttpServletResponse response) {
+    public String memberLogin(LoginForm loginForm, HttpServletResponse response) {
         Member member = memberRepository.findByUserName(loginForm.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
@@ -156,7 +157,7 @@ public class MemberService {
      * @param certificationDto
      * @return
      */
-    public String MemberCertification(HttpServletRequest request, CertificationDto certificationDto) {
+    public String memberCertification(HttpServletRequest request, CertificationDto certificationDto) {
         Member memberId = findMemberId(request);
 
         if (!passwordEncoder.matches(certificationDto.getPassword(), memberId.getPassword())) {
@@ -164,6 +165,15 @@ public class MemberService {
         }
 
         return memberId.getUsername();
+    }
+
+    /**
+     * 사용자 회원 탙퇴
+     * @param request
+     * @param withdrawalForm
+     */
+    public void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm) {
+
     }
 }
 

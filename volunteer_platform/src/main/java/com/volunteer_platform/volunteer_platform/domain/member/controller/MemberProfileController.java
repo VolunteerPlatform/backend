@@ -3,14 +3,12 @@ package com.volunteer_platform.volunteer_platform.domain.member.controller;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
+import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,9 +34,15 @@ public class MemberProfileController {
         memberService.updateMember(request, memberProfileUpdateDto);
     }
 
-    // 회원  비밀번호 수정
+    // 회원 비밀번호 수정
     @PutMapping("/api/member/profile/edit/pwd")
     public void updateMemberPwd(HttpServletRequest request, @RequestBody MemberPwdUpdateDto memberPwdUpdateDto) {
         memberService.updateMemberPwd(request, memberPwdUpdateDto);
+    }
+
+    //회원 탈퇴
+    @PostMapping("/api/withdrawal")
+    public void withdrawal(HttpServletRequest request, @RequestBody WithdrawalForm withdrawalForm) {
+        memberService.memberWithdrawal(request, withdrawalForm);
     }
 }
