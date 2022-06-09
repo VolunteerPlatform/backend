@@ -1,6 +1,7 @@
 package com.volunteer_platform.volunteer_platform.domain.member.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberDto;
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
@@ -29,12 +30,12 @@ public class MemberProfileController {
         return memberRepository.findMemberProfileCustom(memberId.getId());
     }
 
-//    // 회원 개인정보 수정
-//    @PutMapping("/api/member/profile/edit")
-//    public void editMemberProfile(@RequestBody MemberUpdateDto memberUpdateDto, HttpServletRequest request) {
-//        memberService.updateMember(memberUpdateDto, request);
-//    }
-//
+    // 회원 개인정보 수정
+    @PutMapping("/api/member/profile/edit")
+    public void editMemberProfile(HttpServletRequest request, @RequestBody MemberProfileUpdateDto memberProfileUpdateDto) {
+        memberService.updateMember(request, memberProfileUpdateDto);
+    }
+
     // 회원  비밀번호 수정
     @PutMapping("/api/member/profile/edit/pwd")
     public void updateMemberPwd(HttpServletRequest request, @RequestBody MemberPwdUpdateDto memberPwdUpdateDto) {

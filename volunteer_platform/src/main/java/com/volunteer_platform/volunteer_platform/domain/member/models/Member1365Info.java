@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.models;
 
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -26,5 +27,14 @@ public class Member1365Info {
     public Member1365Info(String idOf1365, String centerName) {
         this.idOf1365 = idOf1365;
         this.centerName = centerName;
+    }
+
+    /**
+     * Member1365Info 수정을 위한 비즈니스 로
+     * @param memberProfileUpdateDto
+     */
+    public void updateMember1365Info(MemberProfileUpdateDto memberProfileUpdateDto) {
+        this.idOf1365 = memberProfileUpdateDto.getIdOf1365();
+        this.centerName = memberProfileUpdateDto.getCenterName();
     }
 }

@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.models;
 
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,5 +30,16 @@ public class MemberInfo {
         this.birthday = birthday;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
+    }
+
+    /**
+     * MemberInfo 수정을 위한 비즈니스 로직
+     * @param memberProfileUpdateDto
+     */
+    public void updateMemberInfo(MemberProfileUpdateDto memberProfileUpdateDto) {
+        this.userRealName = memberProfileUpdateDto.getUserRealName();
+        this.birthday = memberProfileUpdateDto.getBirthday();
+        this.gender = memberProfileUpdateDto.getGender();
+        this.phoneNumber = memberProfileUpdateDto.getPhoneNumber();
     }
 }

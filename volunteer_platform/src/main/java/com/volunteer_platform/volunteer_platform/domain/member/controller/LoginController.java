@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -28,6 +29,12 @@ public class LoginController {
     public String login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
         return memberService.MemberLogin(loginForm, response);
     }
+
+//    // 회원 프로필 - 비밀번호 인증
+//   @PostMapping("/api/login")
+//    public String certification(HttpServletRequest request, @RequestBody LoginForm loginForm) {
+//        return memberService.MemberLogin(loginForm, response);
+//    }
 
     // 센터측 회원가입
     @PostMapping("/api/signup/center")
