@@ -2,6 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.member.service;
 
 import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenProvider;
 import com.volunteer_platform.volunteer_platform.domain.member.auth.RefreshToken;
+import com.volunteer_platform.volunteer_platform.domain.member.dto.CertificationDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
@@ -105,7 +106,7 @@ public class MemberService {
         if (userId.isPresent()) {
             return userId.get();
         } else {
-            throw new NoSuchElementException();
+           throw new NoSuchElementException();
         }
     }
 
@@ -133,6 +134,22 @@ public class MemberService {
         } else {
             throw new IllegalStateException("try again");
         }
+    }
+
+    /**
+     * 사용자 비밀번호 인증
+     * @param request
+     * @param certificationDto
+     * @return
+     */
+    public String MemberCertification(HttpServletRequest request, CertificationDto certificationDto) {
+        Member memberId = findMemberId(request);
+
+        if (!passwordEncoder.matches(certificationDto.getPassword(), memberId.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
+        }
+
+        return memberId.getUsername();
     }
 }
 

@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.controller;
 
+import com.volunteer_platform.volunteer_platform.domain.member.dto.CertificationDto;
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
@@ -30,11 +31,11 @@ public class LoginController {
         return memberService.MemberLogin(loginForm, response);
     }
 
-//    // 회원 프로필 - 비밀번호 인증
-//   @PostMapping("/api/login")
-//    public String certification(HttpServletRequest request, @RequestBody LoginForm loginForm) {
-//        return memberService.MemberLogin(loginForm, response);
-//    }
+    // 회원 프로필 - 비밀번호 인증
+    @PostMapping("/api/certification")
+    public String certification(HttpServletRequest request, @RequestBody CertificationDto certificationDto) {
+        return memberService.MemberCertification(request, certificationDto);
+    }
 
     // 센터측 회원가입
     @PostMapping("/api/signup/center")
