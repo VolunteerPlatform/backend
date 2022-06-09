@@ -43,6 +43,9 @@ public class Member implements UserDetails {
     @OneToMany(mappedBy = "member")
     private List<AppHistory> appHistories = new ArrayList<>();
 
+    @OneToOne(mappedBy = "member", fetch = LAZY)
+    private Membership membership;
+
     private String userName;
     private String password;
     private String kakaoId;
