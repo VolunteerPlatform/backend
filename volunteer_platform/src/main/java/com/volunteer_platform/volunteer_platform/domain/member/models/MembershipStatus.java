@@ -1,5 +1,5 @@
 package com.volunteer_platform.volunteer_platform.domain.member.models;
 
 public enum MembershipStatus {
-    REGISTERED, WITHDRAWAL
+    REGISTERED, WITHDRAWAL, ADMIN
 }
