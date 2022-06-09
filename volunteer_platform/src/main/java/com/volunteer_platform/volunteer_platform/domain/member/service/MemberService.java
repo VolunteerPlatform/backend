@@ -32,6 +32,7 @@ public class MemberService {
     private final TokenRepository tokenRepository;
     private final MemberInfoService memberInfoService;
     private final Member1365InfoService member1365InfoService;
+    private final MembershipService membershipService;
 
     /**
      * 사용자 회원 가입
@@ -172,8 +173,15 @@ public class MemberService {
      * @param request
      * @param withdrawalForm
      */
+    @Transactional
     public void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm) {
+        Member member = findMemberId(request);
 
+        // MembershipStatus REGISTERED -> WITHDRAWAL 으로 update
+        member.updateMembership();
+
+        // comment 저장
+        membershipService.createMembership(withdrawalForm, member);
     }
 }
 

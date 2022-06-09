@@ -90,4 +90,11 @@ public class Member implements UserDetails {
     public boolean isEnabled() {
         return false;
     }
+
+    /**
+     * MembershipStatus REGISTERED -> WITHDRAWAL 으로 update 로직
+     */
+    public void updateMembership() {
+        this.membershipStatus = MembershipStatus.WITHDRAWAL;
+    }
 }
