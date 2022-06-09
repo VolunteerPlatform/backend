@@ -16,21 +16,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/vol/act/{actId}/apply")
 @RequiredArgsConstructor
 public class VolAppController {
 
     private final VolAppService volAppService;
 
     // 유저별 봉사 신청 내역 조회
-//    @GetMapping
+    @GetMapping(value = "/vol/my-application", params = "member")
     public List<AppHistoryDto> applicationsByMember(@RequestParam("member") Long memberId) {
         List<AppHistory> appHistories = volAppService.fetchApplications(memberId);
         return appHistories.stream().map(AppHistoryDto::of).collect(Collectors.toList());
     }
 
     // 봉사 신청 POST API
-    @PostMapping()
+    @PostMapping("/vol/act/{actId}/apply")
     public String volApply(@PathVariable("actId") Long activityId, @RequestBody VolAppForm volAppForm) {
         volAppService.volApply(activityId, volAppForm);
 
@@ -38,7 +37,7 @@ public class VolAppController {
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 날짜랑 상태(PEND/ACCEPTED/DENY/FINISH 인지)
-    @GetMapping(params = {"date", "status"})
+    @GetMapping(path = "/vol/act/{actId}/apply", params = {"date", "status"})
     public List<ApplicantDto> fetchApplicant(@PathVariable("actId") Long activityId,
                                              @RequestParam String date,
                                              @RequestParam String status,
@@ -54,24 +53,24 @@ public class VolAppController {
     }
 
     //    사용자 봉사 승인 POST API
-    @PostMapping("/{id}/accept")
-    public String acceptApplicant(@PathVariable("id") Long applicationId) {
+    @PostMapping("/vol/act/{actId}/apply/{applicationId}/accept")
+    public String acceptApplicant(@PathVariable Long applicationId) {
         volAppService.acceptApplicant(applicationId);
 
         return "redirect:/";
     }
 
     //    사용자 봉사 거부 POST API
-    @PostMapping("/{id}/deny")
-    public String denyApplicant(@PathVariable("id") Long applicationId) {
+    @PostMapping("/vol/act/{actId}/apply/{applicationId}/deny")
+    public String denyApplicant(@PathVariable Long applicationId) {
         volAppService.denyApplicant(applicationId);
 
         return "redirect:/";
     }
 
     //    사용자 봉사 승인취소/거부취소 POST API
-    @PostMapping("/{id}/pend")
-    public String pendApplicant(@PathVariable("id") Long applicationId) {
+    @PostMapping("/vol/act/{actId}/apply/{applicationId}/pend")
+    public String pendApplicant(@PathVariable Long applicationId) {
         volAppService.pendApplicant(applicationId);
 
         return "redirect:/";
