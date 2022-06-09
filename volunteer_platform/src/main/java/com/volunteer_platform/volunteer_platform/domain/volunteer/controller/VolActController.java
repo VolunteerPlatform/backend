@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.Form;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
@@ -7,10 +8,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volint
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityTimeService;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/vol/act")
@@ -28,5 +26,10 @@ public class VolActController {
         volActivityTimeService.createVolActivityTime(form.getVolActivityTimeForms(), volActivity);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/{actId}")
+    public VolActivityDto findVol(@PathVariable Long actId) {
+        return VolActivityDto.of(volActivityService.findActivityById(actId));
     }
 }

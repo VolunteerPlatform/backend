@@ -61,6 +61,11 @@ public class VolActivityServiceImpl implements VolActivityService {
         return volActivityRepository.findByVolOrgan(organId);
     }
 
+    public VolActivity findActivityById(Long activityId) {
+        return volActivityRepository.findByIdWithOrgan(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
+    }
+
     private void isValidDate(Period activityPeriod, Period recruitPeriod) {
         if (activityPeriod.getBegin().compareTo(activityPeriod.getEnd()) > 0) {
             throw new IllegalArgumentException("활동 시작일은 활동 종료일 이후일 수 없습니다.");

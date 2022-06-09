@@ -13,4 +13,6 @@ public interface VolActivityService {
     VolActivity createVolActivity(VolActivityForm form, VolOrgan volOrgan);
 
     List<VolActivity> findActivitiesByOrgan(Long organId);
+
+    VolActivity findActivityById(Long activityId);
 }
