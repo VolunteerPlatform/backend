@@ -9,6 +9,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,11 @@ public class MemberService {
     private final MemberInfoService memberInfoService;
     private final Member1365InfoService member1365InfoService;
 
+    /**
+     * 사용자 회원 가입
+     * @param memberForm
+     * @return
+     */
     public Long MemberSignUp(MemberForm memberForm) {
         boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
 
@@ -41,6 +47,7 @@ public class MemberService {
                     .roles(Collections.singletonList("ROLE_USER")) // 일반 유저
                     .googleId(null)
                     .kakaoId(null)
+                    .membershipStatus(MembershipStatus.REGISTERED)
                     .build()).getId();
 
             Optional<Member> findMemberIdForMember = memberRepository.findMemberId(memberId);
@@ -52,6 +59,12 @@ public class MemberService {
         } else throw new IllegalStateException("아이디가 중복되었습니다.");
     }
 
+
+    /**
+     * 센터 회원 가입
+     * @param centerForm
+     * @return
+     */
     public Long CenterSignUp(CenterForm centerForm) {
         boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
 
@@ -62,6 +75,7 @@ public class MemberService {
                     .roles(Collections.singletonList("ROLE_ADMIN")) // 일반 유저
                     .googleId("center")
                     .kakaoId("center")
+                    .membershipStatus(MembershipStatus.ADMIN)
                     .build()).getId();
 
 
