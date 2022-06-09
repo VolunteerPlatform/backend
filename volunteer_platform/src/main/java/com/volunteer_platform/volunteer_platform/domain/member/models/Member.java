@@ -52,6 +52,10 @@ public class Member implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private MembershipStatus membershipStatus;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
