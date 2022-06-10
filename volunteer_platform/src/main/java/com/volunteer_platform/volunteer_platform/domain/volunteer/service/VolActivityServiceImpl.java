@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.Form;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,42 +22,57 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     @Transactional
     public void saveVolActivity(VolActivity volActivity) {
-
         volActivityRepository.save(volActivity);
     }
 
     @Override
     @Transactional
-    public VolActivity createVolActivity(Form form, VolOrgan volOrgan) {
-        int[] activityBegin = Arrays.stream(form.getVolActivityForm().getActivityBegin().split("/")).mapToInt(Integer::parseInt).toArray();
-        int[] activityEnd = Arrays.stream(form.getVolActivityForm().getActivityEnd().split("/")).mapToInt(Integer::parseInt).toArray();
-        int[] recruitBegin = Arrays.stream(form.getVolActivityForm().getRecruitBegin().split("/")).mapToInt(Integer::parseInt).toArray();
-        int[] recruitEnd = Arrays.stream(form.getVolActivityForm().getRecruitEnd().split("/")).mapToInt(Integer::parseInt).toArray();
-
+    public VolActivity createVolActivity(VolActivityForm form, VolOrgan volOrgan) {
         VolActivity volActivity = VolActivity.builder()
-                .activityName(form.getVolActivityForm().getActivityName())
-                .activitySummary(form.getVolActivityForm().getActivitySummary())
-                .activityContent(form.getVolActivityForm().getActivityContent())
-                .activityMethod(form.getVolActivityForm().getActivityMethod())
-                .activityType(form.getVolActivityForm().getActivityType())
-                .authorizationType(form.getVolActivityForm().getAuthorizationType())
-                .category(form.getVolActivityForm().getCategory())
+                .activityName(form.getActivityName())
+                .activitySummary(form.getActivitySummary())
+                .activityContent(form.getActivityContent())
+                .activityMethod(form.getActivityMethod())
+                .activityType(form.getActivityType())
+                .authorizationType(form.getAuthorizationType())
+                .category(form.getCategory())
                 .activityPeriod(
                         Period.builder()
-                                .begin(LocalDate.of(activityBegin[0], activityBegin[1], activityBegin[2]))
-                                .end(LocalDate.of(activityEnd[0], activityEnd[1], activityEnd[2]))
+                                .begin(LocalDate.parse(form.getActivityBegin()))
+                                .end(LocalDate.parse(form.getActivityEnd()))
                                 .build()
                 )
                 .activityRecruitPeriod(
                         Period.builder()
-                                .begin(LocalDate.of(recruitBegin[0], recruitBegin[1], recruitBegin[2]))
-                                .end(LocalDate.of(recruitEnd[0], recruitEnd[1], recruitEnd[2]))
+                                .begin(LocalDate.parse(form.getRecruitBegin()))
+                                .end(LocalDate.parse(form.getRecruitEnd()))
                                 .build()
                 )
                 .volOrgan(volOrgan)
+                .numOfRecruit(form.getNumOfRecruit())
                 .build();
 
+        isValidDate(volActivity.getActivityPeriod(), volActivity.getActivityRecruitPeriod());
         saveVolActivity(volActivity);
         return volActivity;
+    }
+
+    public List<VolActivity> findActivitiesByOrgan(Long organId) {
+        return volActivityRepository.findByVolOrgan(organId);
+    }
+
+    public VolActivity findActivityById(Long activityId) {
+        return volActivityRepository.findByIdWithOrgan(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
+    }
+
+    private void isValidDate(Period activityPeriod, Period recruitPeriod) {
+        if (activityPeriod.getBegin().compareTo(activityPeriod.getEnd()) > 0) {
+            throw new IllegalArgumentException("활동 시작일은 활동 종료일 이후일 수 없습니다.");
+        }
+
+        if (recruitPeriod.getBegin().compareTo(recruitPeriod.getEnd()) > 0) {
+            throw new IllegalArgumentException("모집 시작일은 모집 종료일 이후일 수 없습니다.");
+        }
     }
 }

@@ -7,11 +7,10 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class Address {
 
-    private String city;
-    private String street;
+    private String detailAddress;
     private String zipcode;
 }

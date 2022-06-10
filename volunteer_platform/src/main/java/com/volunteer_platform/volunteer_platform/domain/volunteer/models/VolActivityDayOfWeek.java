@@ -1,29 +1,30 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.models;
 
-import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.DayOfWeek;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
-public class Review {
+public class VolActivityDayOfWeek {
 
-    @Id @GeneratedValue
-    @Column(name = "review_id")
+    @Id
+    @GeneratedValue
+    @Column(name = "vol_activity_day_of_week_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek activityWeek;
+
+    private Integer startTime;
+
+    private Integer endTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vol_activity_id")
     private VolActivity volActivity;
-
-    private int rating;
-    private String comment;
 }

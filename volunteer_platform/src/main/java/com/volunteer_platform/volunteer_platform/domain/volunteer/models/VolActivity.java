@@ -14,16 +14,13 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class VolActivity extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "vol_activity_id")
     private Long id;
-
-    @OneToMany(mappedBy = "volActivity")
-    private List<AppHistory> appHistories = new ArrayList<>();
 
     @OneToMany(mappedBy = "volActivity")
     private List<Review> reviews = new ArrayList<>();
@@ -34,6 +31,10 @@ public class VolActivity extends BaseEntity {
 
     @OneToMany(mappedBy = "volActivity")
     private List<VolActivityTime> activityTimes = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "volActivity", cascade = CascadeType.ALL)
+    private List<VolActivityDayOfWeek> dayOfWeeks = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private ActivityType activityType;
@@ -61,6 +62,8 @@ public class VolActivity extends BaseEntity {
     private String activityName;
     private String activitySummary;
     private String activityContent;
+
+    private Integer numOfRecruit;
 
     @Enumerated(EnumType.STRING)
     private Category category;
