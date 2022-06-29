@@ -16,33 +16,33 @@ import java.util.stream.Collectors;
 @Builder
 public class VolActivityDto {
 
-    public Long id;
+    private Long id;
 
-    public ActivityType activityType;
+    private ActivityType activityType;
 
-    public ActivityMethod activityMethod;
+    private ActivityMethod activityMethod;
 
-    public AuthorizationType authorizationType;
+    private AuthorizationType authorizationType;
 
-    public String activityName;
+    private String activityName;
 
-    public String organName;
+    private String organName;
 
-    public List<VolActivityDayOfWeekDto> activityDayofWeeks;
+    private List<VolActivityDayOfWeekDto> activityDayofWeeks;
 
-    public String activitySummary;
+    private String activitySummary;
 
-    public String activityContent;
+    private String activityContent;
 
-    public List<Review> reviewList;
+    private List<Review> reviewList;
 
-    public Long rating;
+    private Long rating;
 
-    public Period activityPeriod;
+    private Period activityPeriod;
 
-    public Period activityRecruitPeriod;
+    private Period activityRecruitPeriod;
 
-    public Integer numOfRecruit;
+    private Integer numOfRecruit;
 
     public static VolActivityDto of(VolActivity volActivity) {
         return VolActivityDto.builder()

@@ -3,6 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dt
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,31 +20,32 @@ import java.util.stream.Collectors;
  * 활동 평점
  * 후기 등록여부(등록시 TRUE 아니면 FALSE)
  */
+@Getter
 @Builder
 public class AppHistoryDto {
-    public Long applicationId;
+    private Long applicationId;
 
-    public IsAuthorized isAuthorized;
+    private IsAuthorized isAuthorized;
 
-    public LocalDate activityDate;
+    private LocalDate activityDate;
 
-    public Integer startTime;
+    private Integer startTime;
 
-    public Integer endTime;
+    private Integer endTime;
 
-    public Long activityId;
+    private Long activityId;
 
-    public String activityName;
+    private String activityName;
 
-    public String activitySummary;
+    private String activitySummary;
 
-    public String organization;
+    private String organization;
 
-    public List<VolActivityDayOfWeekDto> activityDayOfWeekAndTimes;
+    private List<VolActivityDayOfWeekDto> activityDayOfWeekAndTimes;
 
-    public Long rating;
+    private Long rating;
 
-    public Boolean isReviewed;
+    private Boolean isReviewed;
 
     public static AppHistoryDto of(AppHistory appHistory) {
         return AppHistoryDto.builder()
