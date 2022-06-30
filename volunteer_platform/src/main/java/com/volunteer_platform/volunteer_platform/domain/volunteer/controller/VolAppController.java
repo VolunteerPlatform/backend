@@ -30,10 +30,10 @@ public class VolAppController {
 
     // 봉사 신청 POST API
     @PostMapping("/vol/act/{actId}/apply")
-    public String volApply(@PathVariable("actId") Long activityId, @RequestBody VolAppForm volAppForm) {
-        volAppService.volApply(activityId, volAppForm);
+    public AppHistoryDto volApply(@PathVariable("actId") Long activityId, @RequestBody VolAppForm volAppForm) {
+        AppHistory appHistory = volAppService.volApply(activityId, volAppForm);
 
-        return "redirect:/";
+        return AppHistoryDto.of(appHistory);
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 날짜랑 상태(PEND/ACCEPTED/DENY/FINISH 인지)

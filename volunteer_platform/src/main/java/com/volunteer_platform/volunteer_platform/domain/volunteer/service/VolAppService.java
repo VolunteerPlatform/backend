@@ -25,7 +25,7 @@ public class VolAppService {
     private final MemberRepository memberRepository;
     private final VolActivityTimeRepository activityTimeRepository;
 
-    public void volApply(Long activityId, VolAppForm volAppForm) {
+    public AppHistory volApply(Long activityId, VolAppForm volAppForm) {
         Member applicant = memberRepository.findById(volAppForm.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID 입니다."));
 
@@ -42,6 +42,7 @@ public class VolAppService {
                 .build();
 
         volAppRepository.save(appHistory);
+        return appHistory;
     }
 
     // 봉사 승인
