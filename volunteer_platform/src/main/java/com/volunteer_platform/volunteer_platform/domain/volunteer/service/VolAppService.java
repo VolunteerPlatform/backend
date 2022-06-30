@@ -46,26 +46,25 @@ public class VolAppService {
 
     // 봉사 승인
     public void acceptApplicant(Long applicationId) {
-        AppHistory application = volAppRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청 ID 입니다."));
-
+        AppHistory application = findApplication(applicationId);
         application.approve();
     }
 
     // 봉사 거절
     public void denyApplicant(Long applicationId) {
-        AppHistory application = volAppRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청 ID 입니다."));
-
+        AppHistory application = findApplication(applicationId);
         application.deny();
     }
 
     // 봉사 승인/거절 취소
     public void pendApplicant(Long applicationId) {
-        AppHistory application = volAppRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청 ID 입니다."));
-
+        AppHistory application = findApplication(applicationId);
         application.pend();
+    }
+
+    private AppHistory findApplication(Long applicationId) {
+        return volAppRepository.findById(applicationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청 ID 입니다."));
     }
 
     public List<AppHistory> fetchApplications(Long memberId) {
