@@ -22,6 +22,7 @@ public class VolActivity extends BaseEntity {
     @Column(name = "vol_activity_id")
     private Long id;
 
+    @Builder.Default
     @OneToMany(mappedBy = "volActivity")
     private List<Review> reviews = new ArrayList<>();
 
