@@ -20,12 +20,12 @@ public class VolActController {
     private final VolOrganService volOrganService;
 
     @PostMapping
-    public String createVol(@RequestBody Form form) {
+    public VolActivityDto createVol(@RequestBody Form form) {
         VolOrgan volOrgan = volOrganService.createVolOrgan(form.getVolOrganForm());
         VolActivity volActivity = volActivityService.createVolActivity(form.getVolActivityForm(), volOrgan);
         volActivityTimeService.createVolActivityTime(form.getVolActivityTimeForms(), volActivity);
 
-        return "redirect:/";
+        return VolActivityDto.of(volActivity);
     }
 
     @GetMapping("/{actId}")
