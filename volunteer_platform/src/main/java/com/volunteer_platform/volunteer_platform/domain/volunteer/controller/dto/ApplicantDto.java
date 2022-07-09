@@ -44,7 +44,7 @@ public class ApplicantDto {
     public static ApplicantDto of(AppHistory appHistory) {
         return ApplicantDto.builder()
                 .applicationId(appHistory.getId())
-                .name(appHistory.getMember().getMemberInfo().getUsername())
+                .name(appHistory.getMember().getMemberInfo().getUserRealName())
                 .birthday(appHistory.getMember().getMemberInfo().getBirthday())
                 .idOf1365(appHistory.getMember().getMember1365Info().getIdOf1365())
                 .centerName(appHistory.getMember().getMember1365Info().getCenterName())

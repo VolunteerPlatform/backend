@@ -10,6 +10,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenRepository;
@@ -182,6 +183,15 @@ public class MemberService {
 
         // comment 저장
         membershipService.createMembership(withdrawalForm, member);
+    }
+
+    /**
+     * member user name 반환
+     * @param memberInfo
+     * @return
+     */
+    public String returnMemberId(MemberInfo memberInfo) {
+        return memberRepository.findUserName(memberInfo);
     }
 }
 

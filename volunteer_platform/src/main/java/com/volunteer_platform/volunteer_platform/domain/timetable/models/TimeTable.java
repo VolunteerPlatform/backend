@@ -1,10 +1,10 @@
 package com.volunteer_platform.volunteer_platform.domain.timetable.models;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Week;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.DayOfWeek;
 
 @Entity
 @Getter
@@ -22,7 +22,7 @@ public class TimeTable {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    private Week week;
+    private DayOfWeek dayOfWeek;
 
     private int startTime;
     private int endTime;

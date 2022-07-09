@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.service;
 
+import com.volunteer_platform.volunteer_platform.domain.member.form.FindForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
@@ -32,5 +33,14 @@ public class MemberInfoService {
                 .build();
 
         memberInfoRepository.save(memberInfo);
+    }
+
+    /**
+     * 회원가입한 유저인지 확인
+     * @param findForm
+     * @return
+     */
+    public Optional<MemberInfo> validMemberInfo(FindForm findForm) {
+        return memberInfoRepository.validInfo(findForm.getPhoneNumber(), findForm.getUserRealName());
     }
 }

@@ -1,6 +1,7 @@
 package com.volunteer_platform.volunteer_platform.domain.member.repository;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     @Transactional
     @Query("update Member as m set m.password = :pwd where m.userName = :userName")
     void updateMemberPwd(@Param("pwd") String newPwd, @Param("userName") String username);
+
+    @Query("select m.userName from Member m where m.memberInfo= :memberInfoId")
+    String findUserName(@Param("memberInfoId") MemberInfo memberInfo);
 }
