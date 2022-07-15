@@ -11,10 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,19 +22,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class VolActivityTimeServiceImpl implements VolActivityTimeService {
 
-    @PersistenceContext
-    EntityManager em;
     private final VolActivityTimeRepository volActivityTimeRepository;
-
-    @Transactional
-    public void saveVolActivityTime(VolActivityTime volActivityTime) {
-        volActivityTimeRepository.save(volActivityTime);
-    }
 
     @Override
     @Transactional
     public void createVolActivityTime(List<VolActivityTimeForm> volActivityTimeForms, VolActivity volActivity) {
         HashMap<DayOfWeek, VolActivityTimeForm> activityTimeMap = new HashMap<>();
+        List<VolActivityTime> volActivityTimes = new ArrayList<>();
 
         volActivityTimeForms.forEach(form -> {
             if (activityTimeMap.get(form.getActivityWeek()) != null) {
@@ -75,7 +68,9 @@ public class VolActivityTimeServiceImpl implements VolActivityTimeService {
                     .timeStatus(ActivityTimeStatus.RECRUITING)
                     .build();
 
-            saveVolActivityTime(activityTime);
+            volActivityTimes.add(activityTime);
         }
+
+        volActivityTimeRepository.saveAll(volActivityTimes);
     }
 }
