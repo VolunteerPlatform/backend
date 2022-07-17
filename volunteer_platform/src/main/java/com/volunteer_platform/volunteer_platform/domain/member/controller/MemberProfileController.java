@@ -6,7 +6,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpda
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
-import com.volunteer_platform.volunteer_platform.domain.member.service.MemberService;
+import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

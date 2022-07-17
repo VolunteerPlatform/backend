@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 @Service
 @RequiredArgsConstructor
 public class TimeTableServiceImpl implements TimeTableService {
@@ -19,9 +21,10 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     @Transactional
     public void createTimeTable(Form form, Member memberId) {
-        for (int i = 0; i < form.getTimeTableForm().getTableForm().size(); i++) {
-            TableForm tableForm = form.getTimeTableForm().getTableForm().get(i);
 
+        ArrayList<TimeTable> timeTableList = new ArrayList<>();
+
+        for (TableForm tableForm : form.getTimeTableForm().getTableForm()) {
             TimeTable timeTable = TimeTable.builder()
                     .endTime(tableForm.getEndTime())
                     .startTime(tableForm.getStartTime())
@@ -29,7 +32,9 @@ public class TimeTableServiceImpl implements TimeTableService {
                     .member(memberId)
                     .build();
 
-            timeTableRepository.save(timeTable);
+            timeTableList.add(timeTable);
         }
+
+        timeTableRepository.saveAll(timeTableList);
     }
 }

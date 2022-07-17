@@ -1,9 +1,8 @@
 package com.volunteer_platform.volunteer_platform.domain.timetable.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
-import com.volunteer_platform.volunteer_platform.domain.member.service.MemberService;
+import com.volunteer_platform.volunteer_platform.domain.member.service.MemberServiceImpl;
 import com.volunteer_platform.volunteer_platform.domain.timetable.form.Form;
-import com.volunteer_platform.volunteer_platform.domain.timetable.form.TimeTableForm;
 import com.volunteer_platform.volunteer_platform.domain.timetable.service.tableinterface.TimeTableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 public class TimeTableController {
 
-    private final MemberService memberService;
+    private final MemberServiceImpl memberService;
     private final TimeTableService timeTableService;
 
     @PostMapping("/member/timetable")
