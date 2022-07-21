@@ -33,5 +33,5 @@ public interface MemberService {
 
     void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm);
 
-    String returnMemberId(MemberInfo memberInfo);
+    String findUsername(MemberInfo memberInfo);
 }
