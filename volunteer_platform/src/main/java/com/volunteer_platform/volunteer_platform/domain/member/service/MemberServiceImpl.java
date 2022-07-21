@@ -10,9 +10,14 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenRepository;
+import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.Member1365InfoService;
+import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberInfoService;
+import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
+import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MembershipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +29,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
@@ -39,6 +44,8 @@ public class MemberService {
      * @param memberForm
      * @return
      */
+    @Override
+    @Transactional
     public Long memberSignUp(MemberForm memberForm) {
         boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
 
@@ -67,6 +74,8 @@ public class MemberService {
      * @param centerForm
      * @return
      */
+    @Override
+    @Transactional
     public Long centerSignUp(CenterForm centerForm) {
         boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
 
@@ -85,7 +94,8 @@ public class MemberService {
         } else throw new IllegalStateException("아이디가 중복되었습니다.");
     }
 
-
+    @Override
+    @Transactional
     public String memberLogin(LoginForm loginForm, HttpServletResponse response) {
         Member member = memberRepository.findByUserName(loginForm.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
@@ -104,6 +114,7 @@ public class MemberService {
         return member.getUsername();
     }
 
+    @Override
     public boolean memberValidation(String userName) {
         Optional<Member> member = memberRepository.findByUserName(userName);
 
@@ -114,6 +125,7 @@ public class MemberService {
         }
     }
 
+    @Override
     public Member findMemberId(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         String userName = jwtTokenProvider.getUserName(token);
@@ -131,6 +143,7 @@ public class MemberService {
      * @param request
      * @param memberProfileUpdateDto
      */
+    @Override
     @Transactional
     public void updateMember(HttpServletRequest request, MemberProfileUpdateDto memberProfileUpdateDto) {
         Member memberId = findMemberId(request);
@@ -139,6 +152,8 @@ public class MemberService {
         memberId.getMember1365Info().updateMember1365Info(memberProfileUpdateDto);
     }
 
+    @Override
+    @Transactional
     public void updateMemberPwd(HttpServletRequest request, MemberPwdUpdateDto memberPwdUpdateDto) {
         Member memberId = findMemberId(request);
 
@@ -158,6 +173,7 @@ public class MemberService {
      * @param certificationDto
      * @return
      */
+    @Override
     public String memberCertification(HttpServletRequest request, CertificationDto certificationDto) {
         Member memberId = findMemberId(request);
 
@@ -173,6 +189,7 @@ public class MemberService {
      * @param request
      * @param withdrawalForm
      */
+    @Override
     @Transactional
     public void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm) {
         Member member = findMemberId(request);
@@ -182,6 +199,16 @@ public class MemberService {
 
         // comment 저장
         membershipService.createMembership(withdrawalForm, member);
+    }
+
+    /**
+     * member user name 반환
+     * @param memberInfo
+     * @return
+     */
+    @Override
+    public String returnMemberId(MemberInfo memberInfo) {
+        return memberRepository.findUserName(memberInfo);
     }
 }
 
