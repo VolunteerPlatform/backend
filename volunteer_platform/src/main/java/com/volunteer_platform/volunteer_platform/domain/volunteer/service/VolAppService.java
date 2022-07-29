@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,13 +24,12 @@ public class VolAppService {
     private final MemberRepository memberRepository;
     private final VolActivityTimeRepository activityTimeRepository;
 
-    public AppHistory volApply(Long activityId, VolAppForm volAppForm) {
+    public AppHistory volApply(Long activityTimeId, VolAppForm volAppForm) {
         Member applicant = memberRepository.findById(volAppForm.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID 입니다."));
 
-        LocalDate activityDate = LocalDate.parse(volAppForm.getActivityDate());
-        VolActivityTime activityTime = activityTimeRepository.findByActivityDateAndVolActivityId(activityDate, activityId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 봉사활동이 존재하지 않거나, 해당 날짜에 활동하지 않는 봉사입니다."));
+        VolActivityTime activityTime = activityTimeRepository.findById(activityTimeId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 봉사활동 타임 정보가 존재하지 않습니다."));
 
         AppHistory appHistory = AppHistory.builder()
                 .member(applicant)
@@ -46,21 +44,27 @@ public class VolAppService {
     }
 
     // 봉사 승인
-    public void acceptApplicant(Long applicationId) {
+    public AppHistory acceptApplicant(Long applicationId) {
         AppHistory application = findApplication(applicationId);
         application.approve();
+
+        return application;
     }
 
     // 봉사 거절
-    public void denyApplicant(Long applicationId) {
+    public AppHistory denyApplicant(Long applicationId) {
         AppHistory application = findApplication(applicationId);
         application.deny();
+
+        return application;
     }
 
     // 봉사 승인/거절 취소
-    public void pendApplicant(Long applicationId) {
+    public AppHistory pendApplicant(Long applicationId) {
         AppHistory application = findApplication(applicationId);
         application.pend();
+
+        return application;
     }
 
     private AppHistory findApplication(Long applicationId) {
@@ -72,7 +76,7 @@ public class VolAppService {
         return volAppRepository.findByMemberId(memberId);
     }
 
-    public List<AppHistory> fetchApplicationsByCondition(Long activityId, LocalDate date, IsAuthorized status, Pageable pageable) {
-        return volAppRepository.findApplicantsByCondition(activityId, status, date, pageable);
+    public List<AppHistory> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
+        return volAppRepository.findApplicantsByCondition(activityTimeId, status, pageable);
     }
 }
