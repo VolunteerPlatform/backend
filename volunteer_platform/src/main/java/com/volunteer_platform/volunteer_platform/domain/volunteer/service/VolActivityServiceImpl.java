@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -36,23 +35,12 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .activityType(form.getActivityType())
                 .authorizationType(form.getAuthorizationType())
                 .category(form.getCategory())
-                .activityPeriod(
-                        Period.builder()
-                                .begin(LocalDate.parse(form.getActivityBegin()))
-                                .end(LocalDate.parse(form.getActivityEnd()))
-                                .build()
-                )
-                .activityRecruitPeriod(
-                        Period.builder()
-                                .begin(LocalDate.parse(form.getRecruitBegin()))
-                                .end(LocalDate.parse(form.getRecruitEnd()))
-                                .build()
-                )
+                .activityPeriod(new Period(form.getActivityBegin(), form.getActivityEnd()))
+                .activityRecruitPeriod(new Period(form.getRecruitBegin(), form.getRecruitEnd()))
                 .volOrgan(volOrgan)
                 .numOfRecruit(form.getNumOfRecruit())
                 .build();
 
-        isValidDate(volActivity.getActivityPeriod(), volActivity.getActivityRecruitPeriod());
         saveVolActivity(volActivity);
         return volActivity;
     }
@@ -64,15 +52,5 @@ public class VolActivityServiceImpl implements VolActivityService {
     public VolActivity findActivityById(Long activityId) {
         return volActivityRepository.findByIdWithOrgan(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
-    }
-
-    private void isValidDate(Period activityPeriod, Period recruitPeriod) {
-        if (activityPeriod.getBegin().compareTo(activityPeriod.getEnd()) > 0) {
-            throw new IllegalArgumentException("활동 시작일은 활동 종료일 이후일 수 없습니다.");
-        }
-
-        if (recruitPeriod.getBegin().compareTo(recruitPeriod.getEnd()) > 0) {
-            throw new IllegalArgumentException("모집 시작일은 모집 종료일 이후일 수 없습니다.");
-        }
     }
 }
