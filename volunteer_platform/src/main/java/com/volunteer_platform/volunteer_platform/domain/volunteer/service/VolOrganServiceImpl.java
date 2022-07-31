@@ -8,31 +8,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class VolOrganServiceImpl implements VolOrganService {
-
-    @PersistenceContext
-    EntityManager em;
     private final VolOrganRepository volOrganRepository;
 
-    @Transactional
     public void saveVolOrgan(VolOrgan volOrgan) {
         volOrganRepository.save(volOrgan);
     }
 
     @Override
-    @Transactional
     public VolOrgan createVolOrgan(VolOrganForm form) {
         if (form.getId() != null) {
-            VolOrgan findOrgan = volOrganRepository.findById(form.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID입니다. 기관을 생성해주세요."));
-
-            return findOrgan;
+            return findOrgan(form.getId());
         }
 
         VolOrgan volOrgan = VolOrgan.builder()
@@ -47,16 +36,20 @@ public class VolOrganServiceImpl implements VolOrganService {
     }
 
     @Override
-    @Transactional
     public void deleteOrgan(Long organId) {
-        VolOrgan volOrgan = volOrganRepository.findById(organId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+        VolOrgan volOrgan = findOrgan(organId);
 
-        if (volOrgan.getVolActivities().size() != 0) {
+        if (!volOrgan.getVolActivities().isEmpty()) {
             throw new IllegalArgumentException("담당중인 활동이 있으면 기관 삭제가 불가능합니다.");
         }
 
         volOrganRepository.deleteById(organId);
     }
+
+    private VolOrgan findOrgan(Long organId) {
+        return volOrganRepository.findById(organId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+    }
+
 
 }

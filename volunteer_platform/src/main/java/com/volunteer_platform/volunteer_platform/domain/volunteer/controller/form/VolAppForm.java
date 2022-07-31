@@ -6,11 +6,9 @@ import lombok.Getter;
 @Getter
 public class VolAppForm {
 
-    public Long memberId;
+    private Long memberId;
 
-    public String comment;
+    private String comment;
 
-    public String activityDate;
-
-    public PrivacyApproval privacyApproval;
+    private PrivacyApproval privacyApproval;
 }

@@ -21,25 +21,25 @@ import lombok.Getter;
 @Builder
 public class ApplicantDto {
 
-    Long applicationId;
+    private Long applicationId;
 
-    String name;
+    private String name;
 
-    String birthday;
+    private String birthday;
 
-    String idOf1365;
+    private String idOf1365;
 
-    String centerName;
+    private String centerName;
 
-    VolActivityTimeDateAndTimeDto activityTime;
+    private VolActivityTimeDateAndTimeDto activityTime;
 
-    Integer totalActivityTime;
+    private Integer totalActivityTime;
 
-    String phoneNumber;
+    private String phoneNumber;
 
-    PrivacyApproval privacyApproval;
+    private PrivacyApproval privacyApproval;
 
-    IsAuthorized isAuthorized;
+    private IsAuthorized isAuthorized;
 
     public static ApplicantDto of(AppHistory appHistory) {
         return ApplicantDto.builder()

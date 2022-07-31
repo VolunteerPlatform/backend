@@ -11,71 +11,82 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class VolActivityTimeServiceImpl implements VolActivityTimeService {
 
-    @PersistenceContext
-    EntityManager em;
     private final VolActivityTimeRepository volActivityTimeRepository;
 
-    @Transactional
-    public void saveVolActivityTime(VolActivityTime volActivityTime) {
-        volActivityTimeRepository.save(volActivityTime);
+    @Override
+    public void createVolActivityTime(List<VolActivityTimeForm> volActivityTimeForms, VolActivity volActivity) {
+        EnumMap<DayOfWeek, List<VolActivityTimeForm>> mapOfActivityTimes = getMapOfActivityTimes(volActivityTimeForms);
+        addDayOfWeek(volActivityTimeForms, volActivity);
+
+        List<VolActivityTime> volActivityTimes = new ArrayList<>();
+        LocalDate startDate = volActivity.getActivityPeriod().getBegin();
+        LocalDate oneDayAfterEndDate = volActivity.getActivityPeriod().getEnd().plusDays(1);
+
+        startDate.datesUntil(oneDayAfterEndDate).forEach(
+                date -> {
+                    List<VolActivityTimeForm> timeForms = mapOfActivityTimes.get(date.getDayOfWeek());
+
+                    if (!timeForms.isEmpty()) {
+                        for (VolActivityTimeForm timeForm : timeForms) {
+                            VolActivityTime activityTime = VolActivityTime.builder()
+                                    .volActivity(volActivity)
+                                    .activityWeek(date.getDayOfWeek())
+                                    .startTime(timeForm.getStartTime())
+                                    .endTime(timeForm.getEndTime())
+                                    .activityDate(date)
+                                    .numOfRecruit(volActivity.getNumOfRecruit())
+                                    .numOfApplicant(0)
+                                    .timeStatus(ActivityTimeStatus.RECRUITING)
+                                    .build();
+
+                            volActivityTimes.add(activityTime);
+                        }
+                    }
+                });
+
+        volActivityTimeRepository.saveAll(volActivityTimes);
     }
 
-    @Override
-    @Transactional
-    public void createVolActivityTime(List<VolActivityTimeForm> volActivityTimeForms, VolActivity volActivity) {
-        HashMap<DayOfWeek, VolActivityTimeForm> activityTimeMap = new HashMap<>();
-
-        volActivityTimeForms.forEach(form -> {
-            if (activityTimeMap.get(form.getActivityWeek()) != null) {
-                throw new IllegalArgumentException("요일 당 하나의 시간만 추가 가능합니다.");
-            }
-
-            activityTimeMap.put(form.getActivityWeek(), form);
-        });
-
-        activityTimeMap.forEach((key, value) -> {
-            volActivity.getDayOfWeeks().add(VolActivityDayOfWeek.builder()
-                    .activityWeek(key)
-                    .startTime(value.getStartTime())
-                    .endTime(value.getEndTime())
-                    .volActivity(volActivity)
-                    .build());
-        });
-
-        for (LocalDate date = volActivity.getActivityPeriod().getBegin();
-             date.isBefore(volActivity.getActivityPeriod().getEnd().plusDays(1));
-             date = date.plusDays(1)) {
-
-            VolActivityTimeForm timeForm = activityTimeMap.get(date.getDayOfWeek());
-
-            if (timeForm == null) {
-                continue;
-            }
-
-            VolActivityTime activityTime = VolActivityTime.builder()
-                    .volActivity(volActivity)
-                    .activityWeek(date.getDayOfWeek())
-                    .startTime(timeForm.getStartTime())
-                    .endTime(timeForm.getEndTime())
-                    .activityDate(date)
-                    .numOfRecruit(volActivity.getNumOfRecruit())
-                    .numOfApplicant(0)
-                    .timeStatus(ActivityTimeStatus.RECRUITING)
-                    .build();
-
-            saveVolActivityTime(activityTime);
+    private EnumMap<DayOfWeek, List<VolActivityTimeForm>> getMapOfActivityTimes(List<VolActivityTimeForm> volActivityTimeForms) {
+        EnumMap<DayOfWeek, List<VolActivityTimeForm>> dayOfWeekMap = new EnumMap<>(DayOfWeek.class);
+        for (DayOfWeek value : DayOfWeek.values()) {
+            dayOfWeekMap.put(value, new ArrayList<>());
         }
+
+        for (VolActivityTimeForm timeForm : volActivityTimeForms) {
+            dayOfWeekMap.get(timeForm.getActivityWeek())
+                    .add(VolActivityTimeForm
+                            .builder()
+                            .activityWeek(timeForm.getActivityWeek())
+                            .startTime(timeForm.getStartTime())
+                            .endTime(timeForm.getEndTime())
+                            .build());
+        }
+
+        return dayOfWeekMap;
+    }
+
+    private void addDayOfWeek(List<VolActivityTimeForm> volActivityTimeForms, VolActivity volActivity) {
+        volActivityTimeForms.forEach(element -> volActivity.getDayOfWeeks()
+                .add(VolActivityDayOfWeek.builder()
+                        .activityWeek(element.getActivityWeek())
+                        .startTime(element.getStartTime())
+                        .endTime(element.getEndTime())
+                        .volActivity(volActivity)
+                        .build()));
+
+        volActivity.getDayOfWeeks().sort(Comparator.comparing(VolActivityDayOfWeek::getActivityWeek));
     }
 }

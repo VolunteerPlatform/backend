@@ -13,9 +13,9 @@ import java.time.DayOfWeek;
 @AllArgsConstructor
 @Builder
 public class VolActivityDayOfWeekDto {
-    public DayOfWeek week;
-    public Integer startTime;
-    public Integer endTime;
+    private DayOfWeek week;
+    private Integer startTime;
+    private Integer endTime;
 
     public static VolActivityDayOfWeekDto of(VolActivityDayOfWeek volActivityDayOfWeek) {
         return VolActivityDayOfWeekDto.builder()
