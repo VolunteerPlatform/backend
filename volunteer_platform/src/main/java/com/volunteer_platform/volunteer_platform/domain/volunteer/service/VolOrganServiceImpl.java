@@ -20,10 +20,6 @@ public class VolOrganServiceImpl implements VolOrganService {
 
     @Override
     public VolOrgan createVolOrgan(VolOrganForm form) {
-        if (form.getId() != null) {
-            return findOrgan(form.getId());
-        }
-
         VolOrgan volOrgan = VolOrgan.builder()
                 .name(form.getName())
                 .manager(form.getManager())
