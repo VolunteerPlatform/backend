@@ -32,8 +32,7 @@ public class VolOrganController {
     // 기관 찾기
     @GetMapping("/{id}")
     public VolOrganDto findOrgan(@PathVariable Long id) {
-        VolOrgan volOrgan = volOrganRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+        VolOrgan volOrgan = volOrganService.findOrgan(id);
 
         return VolOrganDto.of(volOrgan);
     }

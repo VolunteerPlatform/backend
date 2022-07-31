@@ -10,4 +10,6 @@ public interface VolOrganService {
     VolOrgan createVolOrgan(VolOrganForm form);
 
     void deleteOrgan(Long organId);
+
+    VolOrgan findOrgan(Long organId);
 }

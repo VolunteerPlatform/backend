@@ -46,10 +46,9 @@ public class VolOrganServiceImpl implements VolOrganService {
         volOrganRepository.deleteById(organId);
     }
 
-    private VolOrgan findOrgan(Long organId) {
+    @Override
+    public VolOrgan findOrgan(Long organId) {
         return volOrganRepository.findById(organId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
     }
-
-
 }
