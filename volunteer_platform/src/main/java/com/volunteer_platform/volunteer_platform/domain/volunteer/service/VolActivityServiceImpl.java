@@ -3,9 +3,9 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.*;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityTimeStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityRepository;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityTimeRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ import java.util.List;
 public class VolActivityServiceImpl implements VolActivityService {
 
     private final VolActivityRepository volActivityRepository;
-    private final VolActivityTimeRepository volActivityTimeRepository;
+    private final VolActivitySessionRepository volActivitySessionRepository;
 
     @Override
     @Transactional
@@ -47,8 +47,8 @@ public class VolActivityServiceImpl implements VolActivityService {
         createActivityDayOfWeek(activityTimeForms, volActivity);
         volActivityRepository.save(volActivity);
 
-        List<VolActivityTime> activitySessions = createVolActivitySessions(activityTimeForms, volActivity);
-        volActivityTimeRepository.saveAll(activitySessions);
+        List<VolActivitySession> activitySessions = createVolActivitySessions(activityTimeForms, volActivity);
+        volActivitySessionRepository.saveAll(activitySessions);
 
         return volActivity;
     }
@@ -67,10 +67,10 @@ public class VolActivityServiceImpl implements VolActivityService {
     }
 
     // 봉사활동 세션 만들기
-    private List<VolActivityTime> createVolActivitySessions(List<ActivityTimeForm> activityTimeForms, VolActivity volActivity) {
+    private List<VolActivitySession> createVolActivitySessions(List<ActivityTimeForm> activityTimeForms, VolActivity volActivity) {
         EnumMap<DayOfWeek, List<ActivityTimeForm>> mapOfActivityTimes = getMapOfActivityTimes(activityTimeForms);
 
-        List<VolActivityTime> volActivityTimes = new ArrayList<>();
+        List<VolActivitySession> activitySessions = new ArrayList<>();
         LocalDate startDate = volActivity.getActivityPeriod().getBegin();
         LocalDate oneDayAfterEndDate = volActivity.getActivityPeriod().getEnd().plusDays(1);
 
@@ -80,7 +80,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
                     if (!timeForms.isEmpty()) {
                         for (ActivityTimeForm timeForm : timeForms) {
-                            VolActivityTime activityTime = VolActivityTime.builder()
+                            VolActivitySession activitySession = VolActivitySession.builder()
                                     .volActivity(volActivity)
                                     .activityWeek(date.getDayOfWeek())
                                     .startTime(timeForm.getStartTime())
@@ -88,15 +88,15 @@ public class VolActivityServiceImpl implements VolActivityService {
                                     .activityDate(date)
                                     .numOfRecruit(volActivity.getNumOfRecruit())
                                     .numOfApplicant(0)
-                                    .timeStatus(ActivityTimeStatus.RECRUITING)
+                                    .sessionStatus(SessionStatus.RECRUITING)
                                     .build();
 
-                            volActivityTimes.add(activityTime);
+                            activitySessions.add(activitySession);
                         }
                     }
                 });
 
-        return volActivityTimes;
+        return activitySessions;
     }
 
     // 세션 제작을 위한 각 요일별 활동 시간들을 Map 형태로 변환

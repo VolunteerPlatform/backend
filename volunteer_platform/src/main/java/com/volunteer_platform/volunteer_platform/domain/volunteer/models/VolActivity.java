@@ -27,7 +27,7 @@ public class VolActivity extends BaseEntity {
     private VolOrgan volOrgan;
 
     @OneToMany(mappedBy = "volActivity")
-    private List<VolActivityTime> activityTimes = new ArrayList<>();
+    private List<VolActivitySession> activitySessions = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "volActivity", cascade = CascadeType.ALL)

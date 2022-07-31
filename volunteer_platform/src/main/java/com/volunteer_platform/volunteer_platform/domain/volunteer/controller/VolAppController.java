@@ -22,21 +22,21 @@ public class VolAppController {
     private final VolAppService volAppService;
 
     // 봉사 신청 POST API
-    @PostMapping("/vol/sessions/{activityTimeId}")
-    public AppHistoryDto volApply(@PathVariable Long activityTimeId, @RequestBody ApplicationForm applicationForm) {
-        AppHistory appHistory = volAppService.volApply(activityTimeId, applicationForm);
+    @PostMapping("/vol/sessions/{activitySessionId}")
+    public AppHistoryDto volApply(@PathVariable Long activitySessionId, @RequestBody ApplicationForm applicationForm) {
+        AppHistory appHistory = volAppService.volApply(activitySessionId, applicationForm);
 
         return AppHistoryDto.of(appHistory);
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 상태(PEND/ACCEPTED/DENY/FINISH 인지)
-    @GetMapping(path = "/vol/sessions/{activityTimeId}/applicants", params = "status")
-    public List<ApplicantDto> fetchApplicant(@PathVariable Long activityTimeId,
+    @GetMapping(path = "/vol/sessions/{activitySessionId}/applicants", params = "status")
+    public List<ApplicantDto> fetchApplicant(@PathVariable Long activitySessionId,
                                              @RequestParam("status") IsAuthorized isAuthorized,
                                              @PageableDefault Pageable pageable) {
 
         List<AppHistory> appHistories = volAppService.fetchApplicationsByCondition(
-                activityTimeId,
+                activitySessionId,
                 isAuthorized,
                 pageable);
 

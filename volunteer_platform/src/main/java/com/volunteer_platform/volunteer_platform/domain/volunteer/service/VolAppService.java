@@ -4,9 +4,9 @@ import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityTimeRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -22,20 +22,20 @@ public class VolAppService {
 
     private final VolAppRepository volAppRepository;
     private final MemberRepository memberRepository;
-    private final VolActivityTimeRepository activityTimeRepository;
+    private final VolActivitySessionRepository volActivitySessionRepository;
 
     public AppHistory volApply(Long activityTimeId, ApplicationForm applicationForm) {
         Member applicant = memberRepository.findById(applicationForm.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID 입니다."));
 
-        VolActivityTime activityTime = activityTimeRepository.findById(activityTimeId)
+        VolActivitySession activitySession = volActivitySessionRepository.findById(activityTimeId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 봉사활동 타임 정보가 존재하지 않습니다."));
 
         AppHistory appHistory = AppHistory.builder()
                 .member(applicant)
                 .comment(applicationForm.getComment())
                 .privacyApproval(applicationForm.getPrivacyApproval())
-                .volActivityTime(activityTime)
+                .volActivitySession(activitySession)
                 .isAuthorized(IsAuthorized.WAITING)
                 .build();
 

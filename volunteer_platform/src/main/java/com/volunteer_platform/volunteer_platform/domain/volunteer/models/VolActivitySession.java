@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.models;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityTimeStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.global.entity.BaseEntity;
 import lombok.*;
 
@@ -15,11 +15,11 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class VolActivityTime extends BaseEntity {
+public class VolActivitySession extends BaseEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "vol_activity_time_id")
+    @Column(name = "vol_activity_session_id")
     private Long id;
 
     private LocalDate activityDate;
@@ -36,7 +36,7 @@ public class VolActivityTime extends BaseEntity {
     private Integer numOfRecruit;
 
     @Builder.Default
-    @OneToMany(mappedBy = "volActivityTime")
+    @OneToMany(mappedBy = "volActivitySession")
     private List<AppHistory> appHistories = new ArrayList<>();
 
     private int startTime;
@@ -44,6 +44,6 @@ public class VolActivityTime extends BaseEntity {
     private int endTime;
 
     @Enumerated(EnumType.STRING)
-    private ActivityTimeStatus timeStatus;
+    private SessionStatus sessionStatus;
 }
 
