@@ -15,7 +15,7 @@ class AppHistoryTest {
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.WAITING)
                 .build();
 
@@ -35,7 +35,7 @@ class AppHistoryTest {
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.WAITING)
                 .build();
 
@@ -55,7 +55,7 @@ class AppHistoryTest {
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.APPROVAL)
                 .build();
 
@@ -75,7 +75,7 @@ class AppHistoryTest {
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.APPROVAL)
                 .build();
 

@@ -5,10 +5,10 @@ import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityTimeStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityTimeRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 class VolAppServiceTest {
 
     @Mock
-    VolActivityTimeRepository volActivityTimeRepository;
+    VolActivitySessionRepository volActivitySessionRepository;
     @Mock
     private MemberRepository memberRepository;
     @Mock
@@ -41,7 +41,7 @@ class VolAppServiceTest {
         String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
         ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
-        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
+        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivitySessionRepository);
 
         Member member = Member.builder()
                 .id(100L)
@@ -52,18 +52,18 @@ class VolAppServiceTest {
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
 
-        VolActivityTime volActivityTime = VolActivityTime.builder()
+        VolActivitySession volActivitySession = VolActivitySession.builder()
                 .id(101L)
                 .volActivity(null)
                 .activityDate(LocalDate.of(2022, 05, 15))
                 .startTime(13)
                 .endTime(15)
                 .activityWeek(DayOfWeek.SUNDAY)
-                .timeStatus(ActivityTimeStatus.RECRUITING)
+                .sessionStatus(SessionStatus.RECRUITING)
                 .build();
 
-        when(volActivityTimeRepository.findById(anyLong()))
-                .thenReturn(Optional.of(volActivityTime));
+        when(volActivitySessionRepository.findById(anyLong()))
+                .thenReturn(Optional.of(volActivitySession));
 
         when(volAppRepository.save(any(AppHistory.class)))
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
@@ -75,7 +75,7 @@ class VolAppServiceTest {
         assertThat(appHistory.getMember().getId()).isEqualTo(applicationForm.getMemberId());
         assertThat(appHistory.getComment()).isEqualTo(applicationForm.getComment());
         assertThat(appHistory.getPrivacyApproval()).isEqualTo(applicationForm.getPrivacyApproval());
-        assertThat(appHistory.getVolActivityTime().getId()).isEqualTo(volActivityTime.getId());
+        assertThat(appHistory.getVolActivitySession().getId()).isEqualTo(volActivitySession.getId());
         assertThat(appHistory.getIsAuthorized()).isEqualTo(IsAuthorized.WAITING);
     }
 
@@ -85,7 +85,7 @@ class VolAppServiceTest {
         String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
         ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
-        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
+        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivitySessionRepository);
 
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
@@ -103,7 +103,7 @@ class VolAppServiceTest {
         String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
         ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
-        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
+        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivitySessionRepository);
 
         Member member = Member.builder()
                 .id(100L)
@@ -114,7 +114,7 @@ class VolAppServiceTest {
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
 
-        when(volActivityTimeRepository.findById(anyLong()))
+        when(volActivitySessionRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
         // then
@@ -127,14 +127,14 @@ class VolAppServiceTest {
     @Test
     void 봉사_승인() throws Exception {
         // given
-        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
+        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivitySessionRepository);
 
         AppHistory appHistory = AppHistory.builder()
                 .id(1L)
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.WAITING)
                 .build();
 
@@ -151,14 +151,14 @@ class VolAppServiceTest {
     @Test
     void 봉사_거절() throws Exception {
         // given
-        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
+        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivitySessionRepository);
 
         AppHistory appHistory = AppHistory.builder()
                 .id(1L)
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.WAITING)
                 .build();
 
@@ -175,14 +175,14 @@ class VolAppServiceTest {
     @Test
     void 봉사_승인_혹은_거절_취소() throws Exception {
         // given
-        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
+        VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivitySessionRepository);
 
         AppHistory appHistory = AppHistory.builder()
                 .id(1L)
                 .member(null)
                 .comment(null)
                 .privacyApproval(null)
-                .volActivityTime(null)
+                .volActivitySession(null)
                 .isAuthorized(IsAuthorized.APPROVAL)
                 .build();
 
