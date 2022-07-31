@@ -2,7 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySummaryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolOrganForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
@@ -23,8 +23,8 @@ public class VolOrganController {
 
     // 기관 등록
     @PostMapping
-    public VolOrganDto createOrgan(@RequestBody VolOrganForm form) {
-        VolOrgan volOrgan = volOrganService.createVolOrgan(form);
+    public VolOrganDto createOrgan(@RequestBody OrganizationForm organizationForm) {
+        VolOrgan volOrgan = volOrganService.createVolOrgan(organizationForm);
 
         return VolOrganDto.of(volOrgan);
     }

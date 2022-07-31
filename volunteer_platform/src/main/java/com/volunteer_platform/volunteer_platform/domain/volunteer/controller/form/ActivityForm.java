@@ -29,5 +29,5 @@ public class ActivityForm {
     private Integer numOfRecruit;
     private Category category;
     private Long organizationId;
-    private List<VolActivityTimeForm> timeList;
+    private List<ActivityTimeForm> timeList;
 }

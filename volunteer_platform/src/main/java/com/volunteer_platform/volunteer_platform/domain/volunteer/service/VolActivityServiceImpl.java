@@ -1,7 +1,7 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolActivityTimeForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.*;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityTimeStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityRepository;
@@ -43,18 +43,18 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .numOfRecruit(activityForm.getNumOfRecruit())
                 .build();
 
-        List<VolActivityTimeForm> volActivityTimeForms = activityForm.getTimeList();
-        createActivityDayOfWeek(volActivityTimeForms, volActivity);
+        List<ActivityTimeForm> activityTimeForms = activityForm.getTimeList();
+        createActivityDayOfWeek(activityTimeForms, volActivity);
         volActivityRepository.save(volActivity);
 
-        List<VolActivityTime> activitySessions = createVolActivitySessions(volActivityTimeForms, volActivity);
+        List<VolActivityTime> activitySessions = createVolActivitySessions(activityTimeForms, volActivity);
         volActivityTimeRepository.saveAll(activitySessions);
 
         return volActivity;
     }
 
     // 활동의 요일과 시작, 종료시간 별도 저장
-    private void createActivityDayOfWeek(List<VolActivityTimeForm> activityTimeForms, VolActivity volActivity) {
+    private void createActivityDayOfWeek(List<ActivityTimeForm> activityTimeForms, VolActivity volActivity) {
         activityTimeForms.forEach(element -> volActivity.getDayOfWeeks()
                 .add(VolActivityDayOfWeek.builder()
                         .activityWeek(element.getActivityWeek())
@@ -67,8 +67,8 @@ public class VolActivityServiceImpl implements VolActivityService {
     }
 
     // 봉사활동 세션 만들기
-    private List<VolActivityTime> createVolActivitySessions(List<VolActivityTimeForm> activityTimeForms, VolActivity volActivity) {
-        EnumMap<DayOfWeek, List<VolActivityTimeForm>> mapOfActivityTimes = getMapOfActivityTimes(activityTimeForms);
+    private List<VolActivityTime> createVolActivitySessions(List<ActivityTimeForm> activityTimeForms, VolActivity volActivity) {
+        EnumMap<DayOfWeek, List<ActivityTimeForm>> mapOfActivityTimes = getMapOfActivityTimes(activityTimeForms);
 
         List<VolActivityTime> volActivityTimes = new ArrayList<>();
         LocalDate startDate = volActivity.getActivityPeriod().getBegin();
@@ -76,10 +76,10 @@ public class VolActivityServiceImpl implements VolActivityService {
 
         startDate.datesUntil(oneDayAfterEndDate).forEach(
                 date -> {
-                    List<VolActivityTimeForm> timeForms = mapOfActivityTimes.get(date.getDayOfWeek());
+                    List<ActivityTimeForm> timeForms = mapOfActivityTimes.get(date.getDayOfWeek());
 
                     if (!timeForms.isEmpty()) {
-                        for (VolActivityTimeForm timeForm : timeForms) {
+                        for (ActivityTimeForm timeForm : timeForms) {
                             VolActivityTime activityTime = VolActivityTime.builder()
                                     .volActivity(volActivity)
                                     .activityWeek(date.getDayOfWeek())
@@ -100,15 +100,15 @@ public class VolActivityServiceImpl implements VolActivityService {
     }
 
     // 세션 제작을 위한 각 요일별 활동 시간들을 Map 형태로 변환
-    private EnumMap<DayOfWeek, List<VolActivityTimeForm>> getMapOfActivityTimes(List<VolActivityTimeForm> volActivityTimeForms) {
-        EnumMap<DayOfWeek, List<VolActivityTimeForm>> dayOfWeekMap = new EnumMap<>(DayOfWeek.class);
+    private EnumMap<DayOfWeek, List<ActivityTimeForm>> getMapOfActivityTimes(List<ActivityTimeForm> activityTimeForms) {
+        EnumMap<DayOfWeek, List<ActivityTimeForm>> dayOfWeekMap = new EnumMap<>(DayOfWeek.class);
         for (DayOfWeek value : DayOfWeek.values()) {
             dayOfWeekMap.put(value, new ArrayList<>());
         }
 
-        for (VolActivityTimeForm timeForm : volActivityTimeForms) {
+        for (ActivityTimeForm timeForm : activityTimeForms) {
             dayOfWeekMap.get(timeForm.getActivityWeek())
-                    .add(VolActivityTimeForm
+                    .add(ActivityTimeForm
                             .builder()
                             .activityWeek(timeForm.getActivityWeek())
                             .startTime(timeForm.getStartTime())

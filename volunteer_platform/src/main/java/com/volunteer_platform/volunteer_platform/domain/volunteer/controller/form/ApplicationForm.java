@@ -4,7 +4,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import lombok.Getter;
 
 @Getter
-public class VolAppForm {
+public class ApplicationForm {
 
     private Long memberId;
 

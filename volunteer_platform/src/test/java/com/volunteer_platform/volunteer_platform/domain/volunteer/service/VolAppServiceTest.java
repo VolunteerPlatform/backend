@@ -3,7 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolAppForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityTimeStatus;
@@ -39,7 +39,7 @@ class VolAppServiceTest {
     void 봉사지원_정상처리() throws Exception {
         // given
         String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
-        VolAppForm volAppForm = objectMapper.readValue(volAppFormString, VolAppForm.class);
+        ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
         VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
 
@@ -69,12 +69,12 @@ class VolAppServiceTest {
                 .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
         // when
-        AppHistory appHistory = volAppService.volApply(101L, volAppForm);
+        AppHistory appHistory = volAppService.volApply(101L, applicationForm);
 
         // then
-        assertThat(appHistory.getMember().getId()).isEqualTo(volAppForm.getMemberId());
-        assertThat(appHistory.getComment()).isEqualTo(volAppForm.getComment());
-        assertThat(appHistory.getPrivacyApproval()).isEqualTo(volAppForm.getPrivacyApproval());
+        assertThat(appHistory.getMember().getId()).isEqualTo(applicationForm.getMemberId());
+        assertThat(appHistory.getComment()).isEqualTo(applicationForm.getComment());
+        assertThat(appHistory.getPrivacyApproval()).isEqualTo(applicationForm.getPrivacyApproval());
         assertThat(appHistory.getVolActivityTime().getId()).isEqualTo(volActivityTime.getId());
         assertThat(appHistory.getIsAuthorized()).isEqualTo(IsAuthorized.WAITING);
     }
@@ -83,7 +83,7 @@ class VolAppServiceTest {
     void 봉사지원시_존재하지_않는_회원은_예외처리() throws Exception {
         // given
         String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
-        VolAppForm volAppForm = objectMapper.readValue(volAppFormString, VolAppForm.class);
+        ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
         VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
 
@@ -93,7 +93,7 @@ class VolAppServiceTest {
         // then
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> {
-                    volAppService.volApply(1L, volAppForm);
+                    volAppService.volApply(1L, applicationForm);
                 }).withMessage("존재하지 않는 사용자 ID 입니다.");
     }
 
@@ -101,7 +101,7 @@ class VolAppServiceTest {
     void 봉사지원시_존재하지_않는_시간은_예외처리() throws Exception {
         // given
         String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
-        VolAppForm volAppForm = objectMapper.readValue(volAppFormString, VolAppForm.class);
+        ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
         VolAppService volAppService = new VolAppService(volAppRepository, memberRepository, volActivityTimeRepository);
 
@@ -120,7 +120,7 @@ class VolAppServiceTest {
         // then
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> {
-                    volAppService.volApply(1L, volAppForm);
+                    volAppService.volApply(1L, applicationForm);
                 }).withMessage("해당 봉사활동 타임 정보가 존재하지 않습니다.");
     }
 

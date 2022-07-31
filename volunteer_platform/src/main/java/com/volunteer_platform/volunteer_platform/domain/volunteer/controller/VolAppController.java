@@ -2,8 +2,8 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.AuthorizeForm;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolAppForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.VolAppService;
@@ -23,8 +23,8 @@ public class VolAppController {
 
     // 봉사 신청 POST API
     @PostMapping("/vol/sessions/{activityTimeId}")
-    public AppHistoryDto volApply(@PathVariable Long activityTimeId, @RequestBody VolAppForm volAppForm) {
-        AppHistory appHistory = volAppService.volApply(activityTimeId, volAppForm);
+    public AppHistoryDto volApply(@PathVariable Long activityTimeId, @RequestBody ApplicationForm applicationForm) {
+        AppHistory appHistory = volAppService.volApply(activityTimeId, applicationForm);
 
         return AppHistoryDto.of(appHistory);
     }

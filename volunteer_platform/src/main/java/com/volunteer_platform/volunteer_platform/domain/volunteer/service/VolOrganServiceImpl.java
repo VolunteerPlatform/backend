@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolOrganForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
@@ -19,12 +19,12 @@ public class VolOrganServiceImpl implements VolOrganService {
     }
 
     @Override
-    public VolOrgan createVolOrgan(VolOrganForm form) {
+    public VolOrgan createVolOrgan(OrganizationForm organizationForm) {
         VolOrgan volOrgan = VolOrgan.builder()
-                .name(form.getName())
-                .manager(form.getManager())
-                .organPhoneNumber(form.getOrganPhoneNumber())
-                .address(form.getAddress())
+                .name(organizationForm.getName())
+                .manager(organizationForm.getManager())
+                .contact(organizationForm.getContact())
+                .address(organizationForm.getAddress())
                 .build();
 
         saveVolOrgan(volOrgan);

@@ -2,7 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolAppForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityTime;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
@@ -24,8 +24,8 @@ public class VolAppService {
     private final MemberRepository memberRepository;
     private final VolActivityTimeRepository activityTimeRepository;
 
-    public AppHistory volApply(Long activityTimeId, VolAppForm volAppForm) {
-        Member applicant = memberRepository.findById(volAppForm.getMemberId())
+    public AppHistory volApply(Long activityTimeId, ApplicationForm applicationForm) {
+        Member applicant = memberRepository.findById(applicationForm.getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 ID 입니다."));
 
         VolActivityTime activityTime = activityTimeRepository.findById(activityTimeId)
@@ -33,8 +33,8 @@ public class VolAppService {
 
         AppHistory appHistory = AppHistory.builder()
                 .member(applicant)
-                .comment(volAppForm.getComment())
-                .privacyApproval(volAppForm.getPrivacyApproval())
+                .comment(applicationForm.getComment())
+                .privacyApproval(applicationForm.getPrivacyApproval())
                 .volActivityTime(activityTime)
                 .isAuthorized(IsAuthorized.WAITING)
                 .build();
