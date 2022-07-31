@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vol/act")
+@RequestMapping("/vol/activities")
 @RequiredArgsConstructor
 public class VolActController {
 
@@ -20,7 +20,7 @@ public class VolActController {
     private final VolOrganService volOrganService;
 
     @PostMapping
-    public VolActivityDto createVol(@RequestBody Form form) {
+    public VolActivityDto createActivity(@RequestBody Form form) {
         VolOrgan volOrgan = volOrganService.createVolOrgan(form.getVolOrganForm());
         VolActivity volActivity = volActivityService.createVolActivity(form.getVolActivityForm(), volOrgan);
         volActivityTimeService.createVolActivityTime(form.getVolActivityTimeForms(), volActivity);
@@ -28,8 +28,8 @@ public class VolActController {
         return VolActivityDto.of(volActivity);
     }
 
-    @GetMapping("/{actId}")
-    public VolActivityDto findVol(@PathVariable Long actId) {
-        return VolActivityDto.of(volActivityService.findActivityById(actId));
+    @GetMapping("/{activityId}")
+    public VolActivityDto findActivity(@PathVariable Long activityId) {
+        return VolActivityDto.of(volActivityService.findActivityById(activityId));
     }
 }

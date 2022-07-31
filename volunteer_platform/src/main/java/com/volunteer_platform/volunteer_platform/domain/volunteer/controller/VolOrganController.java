@@ -15,14 +15,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vol/organ")
+@RequestMapping("/vol/organizations")
 public class VolOrganController {
     private final VolOrganService volOrganService;
     private final VolActivityService volActivityService;
     private final VolOrganRepository volOrganRepository;
 
     // 기관 등록
-    @PostMapping()
+    @PostMapping
     public VolOrganDto createOrgan(@RequestBody VolOrganForm form) {
         VolOrgan volOrgan = volOrganService.createVolOrgan(form);
 
