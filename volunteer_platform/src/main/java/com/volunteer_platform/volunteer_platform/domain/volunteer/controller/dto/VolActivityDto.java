@@ -1,19 +1,23 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Review;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Category;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VolActivityDto {
 
     private Long id;
@@ -34,15 +38,13 @@ public class VolActivityDto {
 
     private String activityContent;
 
-    private List<Review> reviewList;
-
-    private Long rating;
-
     private Period activityPeriod;
 
     private Period activityRecruitPeriod;
 
     private Integer numOfRecruit;
+
+    private Category category;
 
     public static VolActivityDto of(VolActivity volActivity) {
         return VolActivityDto.builder()
@@ -55,11 +57,10 @@ public class VolActivityDto {
                 .activityDayofWeeks(volActivity.getDayOfWeeks().stream().map(VolActivityDayOfWeekDto::of).collect(Collectors.toList()))
                 .activitySummary(volActivity.getActivitySummary())
                 .activityContent(volActivity.getActivityContent())
-                .reviewList(volActivity.getReviews())
-                .rating(0L)
                 .activityPeriod(volActivity.getActivityPeriod())
                 .activityRecruitPeriod(volActivity.getActivityRecruitPeriod())
                 .numOfRecruit(volActivity.getNumOfRecruit())
+                .category(volActivity.getCategory())
                 .build();
     }
 }
