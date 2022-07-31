@@ -62,7 +62,7 @@ public class LoginController {
         if (memberInfo.isEmpty()) {
             return "redirect:/find/memberInfo";
         } else {
-            return memberService.returnMemberId(memberInfo.get());
+            return memberService.findUsername(memberInfo.get());
         }
     }
 }

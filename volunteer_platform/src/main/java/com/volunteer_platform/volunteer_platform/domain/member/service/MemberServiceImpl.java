@@ -207,7 +207,7 @@ public class MemberServiceImpl implements MemberService {
      * @return
      */
     @Override
-    public String returnMemberId(MemberInfo memberInfo) {
+    public String findUsername(MemberInfo memberInfo) {
         return memberRepository.findUserName(memberInfo);
     }
 }

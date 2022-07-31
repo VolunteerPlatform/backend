@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +37,16 @@ public class TimeTableServiceImpl implements TimeTableService {
         }
 
         timeTableRepository.saveAll(timeTableList);
+    }
+
+
+    /**
+     * memberId를 통해 시간표 불러오기
+     * @param memberId
+     * @return
+     */
+    @Override
+    public List<TimeTable> findMemberTimeTable(Long memberId) {
+        return timeTableRepository.findTimetableByMemberId(memberId);
     }
 }
