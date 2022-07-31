@@ -34,19 +34,7 @@ public class AppHistory {
     @JoinColumn(name = "vol_activity_time_id")
     private VolActivityTime volActivityTime;
 
-    public void approve() {
-        isAuthorized = IsAuthorized.APPROVAL;
-    }
-
-    public void deny() {
-        isAuthorized = IsAuthorized.DISAPPROVAL;
-    }
-
-    public void pend() {
-        isAuthorized = IsAuthorized.WAITING;
-    }
-
-    public void finish() {
-        isAuthorized = IsAuthorized.COMPLETE;
+    public void setIsAuthorized(IsAuthorized status) {
+        this.isAuthorized = status;
     }
 }

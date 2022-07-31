@@ -2,6 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.AuthorizeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolAppForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
@@ -20,15 +21,8 @@ public class VolAppController {
 
     private final VolAppService volAppService;
 
-    // 유저별 봉사 신청 내역 조회
-    @GetMapping(value = "/vol/my-application", params = "member")
-    public List<AppHistoryDto> applicationsByMember(@RequestParam("member") Long memberId) {
-        List<AppHistory> appHistories = volAppService.fetchApplications(memberId);
-        return appHistories.stream().map(AppHistoryDto::of).collect(Collectors.toList());
-    }
-
     // 봉사 신청 POST API
-    @PostMapping("/vol/apply/{activityTimeId}")
+    @PostMapping("/vol/sessions/{activityTimeId}")
     public AppHistoryDto volApply(@PathVariable Long activityTimeId, @RequestBody VolAppForm volAppForm) {
         AppHistory appHistory = volAppService.volApply(activityTimeId, volAppForm);
 
@@ -36,7 +30,7 @@ public class VolAppController {
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 상태(PEND/ACCEPTED/DENY/FINISH 인지)
-    @GetMapping(path = "/vol/apply/{activityTimeId}", params = "status")
+    @GetMapping(path = "/vol/sessions/{activityTimeId}/applicants", params = "status")
     public List<ApplicantDto> fetchApplicant(@PathVariable Long activityTimeId,
                                              @RequestParam("status") IsAuthorized isAuthorized,
                                              @PageableDefault Pageable pageable) {
@@ -49,26 +43,17 @@ public class VolAppController {
         return appHistories.stream().map(ApplicantDto::of).collect(Collectors.toList());
     }
 
-    //    사용자 봉사 승인 POST API
-    @PostMapping("/vol/apply/{activityTimeId}/{applicationId}/accept")
-    public AppHistoryDto acceptApplicant(@PathVariable Long applicationId) {
-        AppHistory appHistory = volAppService.acceptApplicant(applicationId);
-
-        return AppHistoryDto.of(appHistory);
+    // 유저별 봉사 신청 내역 조회
+    @GetMapping(value = "/member/application", params = "id")
+    public List<AppHistoryDto> applicationsByMember(@RequestParam("id") Long memberId) {
+        List<AppHistory> appHistories = volAppService.fetchApplications(memberId);
+        return appHistories.stream().map(AppHistoryDto::of).collect(Collectors.toList());
     }
 
-    //    사용자 봉사 거부 POST API
-    @PostMapping("/vol/apply/{activityTimeId}/{applicationId}/deny")
-    public AppHistoryDto denyApplicant(@PathVariable Long applicationId) {
-        AppHistory appHistory = volAppService.denyApplicant(applicationId);
-
-        return AppHistoryDto.of(appHistory);
-    }
-
-    //    사용자 봉사 승인취소/거부취소 POST API
-    @PostMapping("/vol/apply/{activityTimeId}/{applicationId}/pend")
-    public AppHistoryDto pendApplicant(@PathVariable Long applicationId) {
-        AppHistory appHistory = volAppService.pendApplicant(applicationId);
+    // 사용자 승인 여부 변경
+    @PutMapping("/member/application/{applicationId}/authorization")
+    public AppHistoryDto authorizeApplicant(@PathVariable Long applicationId, @RequestBody AuthorizeForm authorizeForm) {
+        AppHistory appHistory = volAppService.authorizeApplicant(applicationId, authorizeForm.getIsAuthorized());
 
         return AppHistoryDto.of(appHistory);
     }

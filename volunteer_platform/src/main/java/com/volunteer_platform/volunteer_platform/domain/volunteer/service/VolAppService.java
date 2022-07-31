@@ -43,26 +43,10 @@ public class VolAppService {
         return appHistory;
     }
 
-    // 봉사 승인
-    public AppHistory acceptApplicant(Long applicationId) {
+    // 지원자 승인/거절/대기 상태 변경
+    public AppHistory authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
-        application.approve();
-
-        return application;
-    }
-
-    // 봉사 거절
-    public AppHistory denyApplicant(Long applicationId) {
-        AppHistory application = findApplication(applicationId);
-        application.deny();
-
-        return application;
-    }
-
-    // 봉사 승인/거절 취소
-    public AppHistory pendApplicant(Long applicationId) {
-        AppHistory application = findApplication(applicationId);
-        application.pend();
+        application.setIsAuthorized(status);
 
         return application;
     }
