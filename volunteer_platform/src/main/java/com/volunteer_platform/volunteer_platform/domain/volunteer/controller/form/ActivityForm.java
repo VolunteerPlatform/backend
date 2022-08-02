@@ -9,12 +9,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class VolActivityForm {
-
+public class ActivityForm {
     private String activityName;
     private String activitySummary;
     private String activityContent;
@@ -27,4 +28,6 @@ public class VolActivityForm {
     private String recruitEnd;
     private Integer numOfRecruit;
     private Category category;
+    private Long organizationId;
+    private List<ActivityTimeForm> timeList;
 }

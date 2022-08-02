@@ -31,7 +31,7 @@ public class ApplicantDto {
 
     private String centerName;
 
-    private VolActivityTimeDateAndTimeDto activityTime;
+    private VolActivitySessionDateAndTimeDto activitySession;
 
     private Integer totalActivityTime;
 
@@ -48,8 +48,8 @@ public class ApplicantDto {
                 .birthday(appHistory.getMember().getMemberInfo().getBirthday())
                 .idOf1365(appHistory.getMember().getMember1365Info().getIdOf1365())
                 .centerName(appHistory.getMember().getMember1365Info().getCenterName())
-                .activityTime(VolActivityTimeDateAndTimeDto.of(appHistory.getVolActivityTime()))
-                .totalActivityTime(appHistory.getVolActivityTime().getEndTime() - appHistory.getVolActivityTime().getStartTime())
+                .activitySession(VolActivitySessionDateAndTimeDto.of(appHistory.getVolActivitySession()))
+                .totalActivityTime(appHistory.getVolActivitySession().getEndTime() - appHistory.getVolActivitySession().getStartTime())
                 .phoneNumber(appHistory.getMember().getMemberInfo().getPhoneNumber())
                 .privacyApproval(appHistory.getPrivacyApproval())
                 .isAuthorized(appHistory.getIsAuthorized())

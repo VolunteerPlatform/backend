@@ -2,7 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySummaryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolOrganForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/vol/organ")
+@RequestMapping("/vol/organizations")
 public class VolOrganController {
     private final VolOrganService volOrganService;
     private final VolActivityService volActivityService;
     private final VolOrganRepository volOrganRepository;
 
     // 기관 등록
-    @PostMapping()
-    public VolOrganDto createOrgan(@RequestBody VolOrganForm form) {
-        VolOrgan volOrgan = volOrganService.createVolOrgan(form);
+    @PostMapping
+    public VolOrganDto createOrgan(@RequestBody OrganizationForm organizationForm) {
+        VolOrgan volOrgan = volOrganService.createVolOrgan(organizationForm);
 
         return VolOrganDto.of(volOrgan);
     }
@@ -32,8 +32,7 @@ public class VolOrganController {
     // 기관 찾기
     @GetMapping("/{id}")
     public VolOrganDto findOrgan(@PathVariable Long id) {
-        VolOrgan volOrgan = volOrganRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+        VolOrgan volOrgan = volOrganService.findOrgan(id);
 
         return VolOrganDto.of(volOrgan);
     }

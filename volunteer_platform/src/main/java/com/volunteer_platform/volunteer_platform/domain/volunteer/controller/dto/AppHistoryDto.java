@@ -31,13 +31,13 @@ public class AppHistoryDto {
         return AppHistoryDto.builder()
                 .applicationId(appHistory.getId())
                 .isAuthorized(appHistory.getIsAuthorized())
-                .activityDate(appHistory.getVolActivityTime().getActivityDate())
-                .startTime(appHistory.getVolActivityTime().getStartTime())
-                .endTime(appHistory.getVolActivityTime().getEndTime())
-                .activityId(appHistory.getVolActivityTime().getVolActivity().getId())
-                .activityName(appHistory.getVolActivityTime().getVolActivity().getActivityName())
-                .activitySummary(appHistory.getVolActivityTime().getVolActivity().getActivitySummary())
-                .organization(appHistory.getVolActivityTime().getVolActivity().getVolOrgan().getName())
+                .activityDate(appHistory.getVolActivitySession().getActivityDate())
+                .startTime(appHistory.getVolActivitySession().getStartTime())
+                .endTime(appHistory.getVolActivitySession().getEndTime())
+                .activityId(appHistory.getVolActivitySession().getVolActivity().getId())
+                .activityName(appHistory.getVolActivitySession().getVolActivity().getActivityName())
+                .activitySummary(appHistory.getVolActivitySession().getVolActivity().getActivitySummary())
+                .organization(appHistory.getVolActivitySession().getVolActivity().getVolOrgan().getName())
                 .build();
     }
 }

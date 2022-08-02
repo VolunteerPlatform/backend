@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.VolOrganForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
@@ -19,16 +19,12 @@ public class VolOrganServiceImpl implements VolOrganService {
     }
 
     @Override
-    public VolOrgan createVolOrgan(VolOrganForm form) {
-        if (form.getId() != null) {
-            return findOrgan(form.getId());
-        }
-
+    public VolOrgan createVolOrgan(OrganizationForm organizationForm) {
         VolOrgan volOrgan = VolOrgan.builder()
-                .name(form.getName())
-                .manager(form.getManager())
-                .organPhoneNumber(form.getOrganPhoneNumber())
-                .address(form.getAddress())
+                .name(organizationForm.getName())
+                .manager(organizationForm.getManager())
+                .contact(organizationForm.getContact())
+                .address(organizationForm.getAddress())
                 .build();
 
         saveVolOrgan(volOrgan);
@@ -46,10 +42,9 @@ public class VolOrganServiceImpl implements VolOrganService {
         volOrganRepository.deleteById(organId);
     }
 
-    private VolOrgan findOrgan(Long organId) {
+    @Override
+    public VolOrgan findOrgan(Long organId) {
         return volOrganRepository.findById(organId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
     }
-
-
 }
