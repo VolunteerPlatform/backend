@@ -5,6 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -14,9 +15,13 @@ public interface VolAppRepository extends JpaRepository<AppHistory, Long> {
             "join fetch m.volActivitySession v " +
             "join fetch v.volActivity vo " +
             "join fetch vo.volOrgan " +
-            "where m.member.id = ?1")
-    List<AppHistory> findByMemberId(Long memberId);
+            "where m.member.id = :memberId")
+    List<AppHistory> findByMemberId(@Param("memberId") Long memberId);
 
-    @Query("select m from AppHistory m join fetch m.volActivitySession v join fetch m.member mm join fetch mm.memberInfo join fetch mm.member1365Info where m.volActivitySession.id = ?1 and m.isAuthorized = ?2")
-    List<AppHistory> findApplicantsByCondition(Long activityTimeId, IsAuthorized isAuthorized, Pageable pageable);
+    @Query("select m from AppHistory m " +
+            "join fetch m.volActivitySession v join fetch m.member mm join fetch mm.memberInfo join fetch mm.member1365Info " +
+            "where m.volActivitySession.id = :sessionId and m.isAuthorized = :isAuthorized")
+    List<AppHistory> findApplicantsByCondition(@Param("sessionId") Long activityTimeId,
+                                               @Param("isAuthorized") IsAuthorized isAuthorized,
+                                               Pageable pageable);
 }
