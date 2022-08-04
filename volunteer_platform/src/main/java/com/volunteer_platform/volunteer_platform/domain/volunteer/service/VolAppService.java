@@ -5,6 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.repository.Member
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
@@ -37,12 +38,15 @@ public class VolAppService {
             throw new IllegalStateException("해당 세션은 신청 가능한 상태가 아닙니다.");
         }
 
+        AuthorizationType authorizationType = activitySession.getVolActivity().getAuthorizationType();
+        boolean isImmediateApprovalActivity = authorizationType == AuthorizationType.UNNECESSARY;
+
         AppHistory appHistory = AppHistory.builder()
                 .member(applicant)
                 .comment(applicationForm.getComment())
                 .privacyApproval(applicationForm.getPrivacyApproval())
                 .volActivitySession(activitySession)
-                .isAuthorized(IsAuthorized.WAITING)
+                .isAuthorized(isImmediateApprovalActivity ? IsAuthorized.APPROVAL : IsAuthorized.WAITING)
                 .build();
 
         volAppRepository.save(appHistory);
