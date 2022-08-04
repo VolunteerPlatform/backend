@@ -6,7 +6,9 @@ import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
@@ -54,9 +56,13 @@ class VolAppServiceTest {
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
 
+        VolActivity volActivity = VolActivity.builder()
+                .authorizationType(AuthorizationType.NECESSARY)
+                .build();
+
         VolActivitySession volActivitySession = VolActivitySession.builder()
                 .id(101L)
-                .volActivity(null)
+                .volActivity(volActivity)
                 .activityDate(LocalDate.of(2022, 05, 15))
                 .startTime(13)
                 .endTime(15)
@@ -191,6 +197,46 @@ class VolAppServiceTest {
                 .isThrownBy(() -> {
                     volAppService.volApply(101L, applicationForm);
                 }).withMessage("이미 해당 세션에 지원하였습니다.");
+    }
+
+    @Test
+    void 자동승인_봉사는_신청즉시_승인처리() throws Exception {
+        // given
+        ApplicationForm applicationForm = getApplicationForm();
+
+        Member member = Member.builder()
+                .id(100L)
+                .userName("HAN")
+                .password("1234")
+                .build();
+
+        VolActivity volActivity = VolActivity.builder()
+                .authorizationType(AuthorizationType.UNNECESSARY)
+                .build();
+
+        VolActivitySession volActivitySession = VolActivitySession.builder()
+                .id(101L)
+                .volActivity(volActivity)
+                .activityDate(LocalDate.of(2022, 05, 15))
+                .startTime(13)
+                .endTime(15)
+                .numOfRecruit(30)
+                .numOfApplicant(15)
+                .activityWeek(DayOfWeek.SUNDAY)
+                .sessionStatus(SessionStatus.RECRUITING)
+                .build();
+
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(member));
+
+        when(volActivitySessionRepository.findById(any()))
+                .thenReturn(Optional.of(volActivitySession));
+
+        // when
+        AppHistory appHistory = volAppService.volApply(101L, applicationForm);
+
+        // then
+        assertThat(appHistory.getIsAuthorized()).isEqualTo(IsAuthorized.APPROVAL);
     }
 
     @Test
