@@ -24,4 +24,6 @@ public interface VolAppRepository extends JpaRepository<AppHistory, Long> {
     List<AppHistory> findApplicantsByCondition(@Param("sessionId") Long activityTimeId,
                                                @Param("isAuthorized") IsAuthorized isAuthorized,
                                                Pageable pageable);
+
+    boolean existsByMemberIdAndVolActivitySessionId(Long memberId, Long sessionId);
 }
