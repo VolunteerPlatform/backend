@@ -7,6 +7,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHist
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.PrivacyApproval;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
@@ -36,6 +37,10 @@ public class VolAppService {
 
         if (!isApplicableSession(activitySession)) {
             throw new IllegalStateException("해당 세션은 신청 가능한 상태가 아닙니다.");
+        }
+
+        if (applicationForm.getPrivacyApproval() != PrivacyApproval.AGREE) {
+            throw new IllegalArgumentException("개인정보 제공 미동의시 봉사활동을 신청할 수 없습니다.");
         }
 
         AuthorizationType authorizationType = activitySession.getVolActivity().getAuthorizationType();
