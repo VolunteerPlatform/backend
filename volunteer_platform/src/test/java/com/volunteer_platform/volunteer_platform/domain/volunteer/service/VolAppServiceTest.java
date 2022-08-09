@@ -240,6 +240,48 @@ class VolAppServiceTest {
     }
 
     @Test
+    void 개인정보_미동의시_신청불가() throws Exception {
+        // given
+        String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"DISAGREE\" }";
+        ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
+
+        Member member = Member.builder()
+                .id(100L)
+                .userName("HAN")
+                .password("1234")
+                .build();
+
+        VolActivity volActivity = VolActivity.builder()
+                .authorizationType(AuthorizationType.UNNECESSARY)
+                .build();
+
+        VolActivitySession volActivitySession = VolActivitySession.builder()
+                .id(101L)
+                .volActivity(volActivity)
+                .activityDate(LocalDate.of(2022, 05, 15))
+                .startTime(13)
+                .endTime(15)
+                .numOfRecruit(30)
+                .numOfApplicant(15)
+                .activityWeek(DayOfWeek.SUNDAY)
+                .sessionStatus(SessionStatus.RECRUITING)
+                .build();
+
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(member));
+
+        when(volActivitySessionRepository.findById(any()))
+                .thenReturn(Optional.of(volActivitySession));
+
+        // then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> {
+                    volAppService.volApply(101L, applicationForm);
+                })
+                .withMessage("개인정보 제공 미동의시 봉사활동을 신청할 수 없습니다.");
+    }
+
+    @Test
     void 봉사_승인() throws Exception {
         // given
         AppHistory appHistory = AppHistory.builder()
