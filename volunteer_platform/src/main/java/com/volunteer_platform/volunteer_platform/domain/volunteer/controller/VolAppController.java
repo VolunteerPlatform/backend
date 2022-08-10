@@ -4,6 +4,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.AuthorizeForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.VolAppService;
@@ -56,6 +57,14 @@ public class VolAppController {
         AppHistory appHistory = volAppService.authorizeApplicant(applicationId, authorizeForm.getIsAuthorized());
 
         return AppHistoryDto.of(appHistory);
+    }
+
+    // 사용자 신청 취소
+    @DeleteMapping("/member/application/{applicationId}")
+    public CustomResponse.MessageResponse cancelApplication(@PathVariable Long applicationId) {
+        volAppService.cancelApplication(applicationId);
+
+        return CustomResponse.MessageResponse.defaultOkayResponse();
     }
 
     //    봉사자 정보 출력 API(PDF)

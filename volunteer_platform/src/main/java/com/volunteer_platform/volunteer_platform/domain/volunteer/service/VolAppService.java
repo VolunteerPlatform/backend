@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,6 +27,8 @@ public class VolAppService {
     private final VolAppRepository volAppRepository;
     private final MemberRepository memberRepository;
     private final VolActivitySessionRepository volActivitySessionRepository;
+
+    private static final int CANCELABLE_BEFORE_DAYS = 3;
 
     public AppHistory volApply(Long sessionId, ApplicationForm applicationForm) {
         Member applicant = findMemberById(applicationForm.getMemberId());
@@ -64,6 +67,46 @@ public class VolAppService {
         application.setIsAuthorized(status);
 
         return application;
+    }
+
+    public void cancelApplication(Long applicationId) {
+        AppHistory application = findApplication(applicationId);
+
+        if (application.getIsAuthorized() == IsAuthorized.COMPLETE) {
+            throw new IllegalStateException("활동이 완료된 활동은 취소가 불가능합니다.");
+        }
+
+        // 활동일 기준 CANCELABLE_BEFORE_DAYS 일 이전이어야 취소 가능
+        LocalDate activityDate = application.getVolActivitySession().getActivityDate();
+        if (!isBeforeCancelableDays(activityDate)) {
+            throw new IllegalStateException("봉사활동은 활동 시작일 기준 " + CANCELABLE_BEFORE_DAYS + "일전이어야 취소가 가능합니다.");
+        }
+
+        AuthorizationType authorizationType = application.getVolActivitySession().getVolActivity().getAuthorizationType();
+        boolean isImmediateApprovalActivity = authorizationType == AuthorizationType.UNNECESSARY;
+
+        if (!isCancelableAuthorizationStatus(application.getIsAuthorized(), isImmediateApprovalActivity)) {
+            throw new IllegalStateException("신청 취소가 가능한 승인 상태가 아닙니다.");
+        }
+
+        volAppRepository.deleteById(applicationId);
+    }
+
+    private boolean isBeforeCancelableDays(LocalDate activityDate) {
+        LocalDate today = LocalDate.now();
+        return today.plusDays(CANCELABLE_BEFORE_DAYS).compareTo(activityDate) < 0;
+    }
+
+    private boolean isCancelableAuthorizationStatus(IsAuthorized isAuthorized, boolean isImmediateApprovalActivity) {
+        if (isAuthorized == IsAuthorized.DISAPPROVAL || isAuthorized == IsAuthorized.WAITING) {
+            return true;
+        }
+
+        if (isImmediateApprovalActivity) {
+            return isAuthorized == IsAuthorized.APPROVAL;
+        }
+
+        return false;
     }
 
     public List<AppHistory> fetchApplications(Long memberId) {
