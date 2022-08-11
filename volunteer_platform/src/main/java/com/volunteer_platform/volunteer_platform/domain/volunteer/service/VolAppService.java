@@ -49,6 +49,8 @@ public class VolAppService {
         AuthorizationType authorizationType = activitySession.getVolActivity().getAuthorizationType();
         boolean isImmediateApprovalActivity = authorizationType == AuthorizationType.UNNECESSARY;
 
+        volActivitySessionRepository.increaseNumOfApplicant(sessionId);
+
         AppHistory appHistory = AppHistory.builder()
                 .member(applicant)
                 .comment(applicationForm.getComment())
@@ -65,6 +67,11 @@ public class VolAppService {
     public AppHistory authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
         application.setIsAuthorized(status);
+
+        // 거절 상태로 변경 시 신청자수 감소
+        if (status == IsAuthorized.DISAPPROVAL) {
+            volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
+        }
 
         return application;
     }
@@ -90,6 +97,7 @@ public class VolAppService {
         }
 
         volAppRepository.deleteById(applicationId);
+        volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
     }
 
     private boolean isBeforeCancelableDays(LocalDate activityDate) {
