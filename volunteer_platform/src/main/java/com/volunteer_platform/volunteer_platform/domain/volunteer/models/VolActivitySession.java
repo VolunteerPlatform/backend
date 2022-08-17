@@ -27,7 +27,7 @@ public class VolActivitySession extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DayOfWeek activityWeek;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vol_activity_id")
     private VolActivity volActivity;
 

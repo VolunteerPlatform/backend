@@ -22,7 +22,7 @@ public class VolActivity extends BaseEntity {
     @Column(name = "vol_activity_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vol_organ_id")
     private VolOrgan volOrgan;
 

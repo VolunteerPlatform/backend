@@ -21,7 +21,7 @@ public class VolOrgan extends BaseEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "volOrgan", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "volOrgan")
     private List<VolActivity> volActivities = new ArrayList<>();
 
     private String manager;
