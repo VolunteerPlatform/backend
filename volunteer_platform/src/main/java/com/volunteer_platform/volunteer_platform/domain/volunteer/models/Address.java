@@ -12,5 +12,8 @@ import javax.persistence.Embeddable;
 public class Address {
 
     private String detailAddress;
+
     private String zipcode;
+
+    private Coordinate coordinate;
 }

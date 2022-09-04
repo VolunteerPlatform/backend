@@ -1,22 +1,29 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.SearchCondition;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.*;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.CustomSearchRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.volunteer_platform.volunteer_platform.domain.timetable.models.QTimeTable.timeTable;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +32,10 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     private final VolActivityRepository volActivityRepository;
     private final VolActivitySessionRepository volActivitySessionRepository;
+
+    private final CustomSearchRepository customSearchRepository;
+
+    private final JPAQueryFactory queryFactory;
 
     @Override
     @Transactional
@@ -123,8 +134,59 @@ public class VolActivityServiceImpl implements VolActivityService {
         return volActivityRepository.findByVolOrgan(organId);
     }
 
+    @Override
+    public List<SearchResultDto> searchActivity(SearchCondition searchCondition) {
+        isCoordinatePresent(searchCondition);
+        List<SearchResultDto> searchResult = customSearchRepository.searchActivity(searchCondition);
+
+//        return filterByTimeTable(searchResult);
+        return searchResult;
+    }
+
     public VolActivity findActivityById(Long activityId) {
         return volActivityRepository.findByIdWithOrgan(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
+    }
+
+    private List<SearchResultDto> filterByTimeTable(List<SearchResultDto> searchResultList) {
+        Map<DayOfWeek, List<TimeTable>> timeTableOfMember = getTimeTableOfMember();
+        return searchResultList.stream()
+                .filter(session -> isAttendable(timeTableOfMember, session))
+                .collect(Collectors.toList());
+    }
+
+    private Map<DayOfWeek, List<TimeTable>> getTimeTableOfMember() {
+        Member currentMember = ((Member) SecurityContextHolder.getContext().getAuthentication().getDetails());
+        if (currentMember == null) {
+            throw new IllegalStateException("로그인 정보가 없는 사용자입니다.");
+        }
+
+        List<TimeTable> timeTables = queryFactory
+                .selectFrom(timeTable)
+                .where(timeTable.member.id.eq(currentMember.getId()))
+                .fetch();
+
+        return timeTables.stream()
+                .collect(Collectors.groupingBy(TimeTable::getDayOfWeek, Collectors.toList()));
+    }
+
+    private boolean isAttendable(Map<DayOfWeek, List<TimeTable>> timeTables, SearchResultDto searchResultDto) {
+        DayOfWeek dayOfWeek = searchResultDto.getActivityDate().getDayOfWeek();
+        List<TimeTable> attendableTimeList = timeTables.get(dayOfWeek);
+
+        for (TimeTable timeTable : attendableTimeList) {
+            if (timeTable.getStartTime() <= searchResultDto.getStartTime()
+                    && timeTable.getEndTime() >= searchResultDto.getEndTime()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void isCoordinatePresent(SearchCondition searchCondition) {
+        if (searchCondition.getLongitude() == null || searchCondition.getLatitude() == null) {
+            throw new IllegalArgumentException("봉사활동 검색시 위도와 경도값은 필수입니다.");
+        }
     }
 }
