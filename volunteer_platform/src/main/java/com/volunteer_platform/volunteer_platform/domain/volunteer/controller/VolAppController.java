@@ -7,7 +7,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.for
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.service.VolAppService;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolAppService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
