@@ -1,5 +1,8 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
@@ -30,4 +33,20 @@ public class ActivityForm {
     private Category category;
     private Long organizationId;
     private List<ActivityTimeForm> timeList;
+
+    public VolActivity toEntity(VolOrgan volOrgan) {
+        return VolActivity.builder()
+                .activityName(this.getActivityName())
+                .activitySummary(this.getActivitySummary())
+                .activityContent(this.getActivityContent())
+                .activityType(this.getActivityType())
+                .activityMethod(this.getActivityMethod())
+                .authorizationType(this.getAuthorizationType())
+                .category(this.getCategory())
+                .activityPeriod(new Period(this.getActivityBegin(), this.getActivityEnd()))
+                .activityRecruitPeriod(new Period(this.getRecruitBegin(), this.getRecruitEnd()))
+                .volOrgan(volOrgan)
+                .numOfRecruit(this.getNumOfRecruit())
+                .build();
+    }
 }

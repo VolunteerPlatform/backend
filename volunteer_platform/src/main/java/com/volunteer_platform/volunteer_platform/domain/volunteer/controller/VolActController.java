@@ -4,7 +4,6 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
@@ -24,14 +23,13 @@ public class VolActController {
     @PostMapping
     public VolActivityDto createActivity(@RequestBody ActivityForm activityForm) {
         VolOrgan volOrgan = volOrganService.findOrgan(activityForm.getOrganizationId());
-        VolActivity volActivity = volActivityService.createVolActivity(activityForm, volOrgan);
 
-        return VolActivityDto.of(volActivity);
+        return volActivityService.createVolActivity(activityForm, volOrgan);
     }
 
     @GetMapping("/{activityId}")
     public VolActivityDto findActivity(@PathVariable Long activityId) {
-        return VolActivityDto.of(volActivityService.findActivityById(activityId));
+        return volActivityService.findActivityById(activityId);
     }
 
     @GetMapping

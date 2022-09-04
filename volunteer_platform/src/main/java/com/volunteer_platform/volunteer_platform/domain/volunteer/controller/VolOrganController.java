@@ -1,6 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySummaryDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,8 +46,7 @@ public class VolOrganController {
 
     // 기관 담당 활동 찾기
     @GetMapping("/{id}/activities")
-    public List<VolActivitySummaryDto> findActivityByOrgan(@PathVariable("id") Long organId) {
-        return volActivityService.findActivitiesByOrgan(organId).stream()
-                .map(VolActivitySummaryDto::of).collect(Collectors.toList());
+    public List<VolActivityDto> findActivityByOrgan(@PathVariable("id") Long organId) {
+        return volActivityService.findActivitiesByOrgan(organId);
     }
 }
