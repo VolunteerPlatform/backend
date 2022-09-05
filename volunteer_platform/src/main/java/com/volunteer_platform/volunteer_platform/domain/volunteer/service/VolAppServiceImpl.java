@@ -15,8 +15,8 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volint
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -122,11 +122,13 @@ public class VolAppServiceImpl implements VolAppService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AppHistory> fetchApplications(Long memberId) {
         return volAppRepository.findByMemberId(memberId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<AppHistory> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
         return volAppRepository.findApplicantsByCondition(activityTimeId, status, pageable);
     }
