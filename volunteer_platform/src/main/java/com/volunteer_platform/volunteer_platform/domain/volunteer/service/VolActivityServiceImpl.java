@@ -1,8 +1,8 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
+import com.volunteer_platform.volunteer_platform.domain.timetable.repository.TimeTableRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.SearchCondition;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
@@ -27,8 +27,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.volunteer_platform.volunteer_platform.domain.timetable.models.QTimeTable.timeTable;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -39,7 +37,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     private final CustomSearchRepository customSearchRepository;
 
-    private final JPAQueryFactory queryFactory;
+    private final TimeTableRepository timeTableRepository;
 
     @Override
     @Transactional
@@ -65,10 +63,9 @@ public class VolActivityServiceImpl implements VolActivityService {
     @Override
     public List<SearchResultDto> searchActivity(SearchCondition searchCondition) {
         isCoordinatePresent(searchCondition);
-        List<SearchResultDto> searchResult = customSearchRepository.searchActivity(searchCondition);
 
-//        return filterByTimeTable(searchResult);
-        return searchResult;
+//        return filterByTimeTable(customSearchRepository.searchActivity(searchCondition));
+        return customSearchRepository.searchActivity(searchCondition);
     }
 
     @Override
@@ -149,10 +146,7 @@ public class VolActivityServiceImpl implements VolActivityService {
             throw new IllegalStateException("로그인 정보가 없는 사용자입니다.");
         }
 
-        List<TimeTable> timeTables = queryFactory
-                .selectFrom(timeTable)
-                .where(timeTable.member.id.eq(currentMember.getId()))
-                .fetch();
+        List<TimeTable> timeTables = timeTableRepository.findTimetableByMemberId(currentMember.getId());
 
         return timeTables.stream()
                 .collect(Collectors.groupingBy(TimeTable::getDayOfWeek, Collectors.toList()));
