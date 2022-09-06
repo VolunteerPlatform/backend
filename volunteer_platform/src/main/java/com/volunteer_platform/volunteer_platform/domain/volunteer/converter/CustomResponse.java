@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CustomResponse {
+
+    private static final String SUCCESS_MESSAGE = "정상 처리되었습니다.";
+
     @Getter
     @AllArgsConstructor
     public static class MessageResponse {
@@ -15,7 +18,7 @@ public class CustomResponse {
         String message;
 
         public static MessageResponse defaultOkayResponse() {
-            return new MessageResponse(HttpStatus.OK.value(), "정상 처리 되었습니다.");
+            return new MessageResponse(HttpStatus.OK.value(), SUCCESS_MESSAGE);
         }
     }
 
@@ -25,6 +28,12 @@ public class CustomResponse {
         int statusCode;
         String message;
         T result;
+
+        public DTOResponse(T result) {
+            this.statusCode = HttpStatus.OK.value();
+            this.message = SUCCESS_MESSAGE;
+            this.result = result;
+        }
     }
 
     @Getter

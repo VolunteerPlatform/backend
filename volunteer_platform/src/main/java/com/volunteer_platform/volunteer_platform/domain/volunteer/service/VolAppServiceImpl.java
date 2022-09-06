@@ -11,18 +11,19 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolAppService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class VolAppService {
+public class VolAppServiceImpl implements VolAppService {
 
     private final VolAppRepository volAppRepository;
     private final MemberRepository memberRepository;
@@ -30,6 +31,7 @@ public class VolAppService {
 
     private static final int CANCELABLE_BEFORE_DAYS = 3;
 
+    @Override
     public AppHistory volApply(Long sessionId, ApplicationForm applicationForm) {
         Member applicant = findMemberById(applicationForm.getMemberId());
         VolActivitySession activitySession = findActivitySessionById(sessionId);
@@ -64,6 +66,7 @@ public class VolAppService {
     }
 
     // 지원자 승인/거절/대기 상태 변경
+    @Override
     public AppHistory authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
         application.setIsAuthorized(status);
@@ -76,6 +79,7 @@ public class VolAppService {
         return application;
     }
 
+    @Override
     public void cancelApplication(Long applicationId) {
         AppHistory application = findApplication(applicationId);
 
@@ -117,10 +121,14 @@ public class VolAppService {
         return false;
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<AppHistory> fetchApplications(Long memberId) {
         return volAppRepository.findByMemberId(memberId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<AppHistory> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
         return volAppRepository.findApplicantsByCondition(activityTimeId, status, pageable);
     }
