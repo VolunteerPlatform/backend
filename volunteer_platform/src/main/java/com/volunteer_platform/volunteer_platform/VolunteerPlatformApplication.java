@@ -5,11 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @EnableJpaAuditing
+@EnableRedisHttpSession
 @SpringBootApplication
 public class VolunteerPlatformApplication {
 

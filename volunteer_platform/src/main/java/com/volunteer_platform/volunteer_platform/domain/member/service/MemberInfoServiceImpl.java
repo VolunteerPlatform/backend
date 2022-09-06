@@ -1,7 +1,7 @@
 package com.volunteer_platform.volunteer_platform.domain.member.service;
 
-import com.volunteer_platform.volunteer_platform.domain.member.form.FindForm;
-import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
+import com.volunteer_platform.volunteer_platform.domain.member.controller.form.FindForm;
+import com.volunteer_platform.volunteer_platform.domain.member.controller.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberInfoRepository;
@@ -20,25 +20,9 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 
     @Override
     @Transactional
-    public void createMemberInfo(MemberForm memberForm, Optional<Member> member) {
-        MemberInfo memberInfo = MemberInfo.builder()
-                .birthday(memberForm.getBirthday())
-                .gender(memberForm.getGender())
-                .phoneNumber(memberForm.getPhoneNumber())
-                .userRealName(memberForm.getUserRealName())
-                .member(member.get())
-                .build();
+    public void createMemberInfo(MemberForm memberForm, Optional<Member> member, MemberInfo memberInfo) {
+        MemberInfo memberInfoData = memberForm.toEntity(memberInfo, member.orElseThrow());
 
-        memberInfoRepository.save(memberInfo);
-    }
-
-    /**
-     * 회원가입한 유저인지 확인
-     * @param findForm
-     * @return
-     */
-    @Override
-    public Optional<MemberInfo> validMemberInfo(FindForm findForm) {
-        return memberInfoRepository.validInfo(findForm.getPhoneNumber(), findForm.getUserRealName());
+        memberInfoRepository.save(memberInfoData);
     }
 }

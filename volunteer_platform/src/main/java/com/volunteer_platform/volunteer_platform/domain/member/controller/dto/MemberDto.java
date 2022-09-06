@@ -1,4 +1,4 @@
-package com.volunteer_platform.volunteer_platform.domain.member.dto;
+package com.volunteer_platform.volunteer_platform.domain.member.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,10 +7,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class MemberDto {
 
-    private String userName;
+    private String loginId;
     private String kakaoId;
-    private String googleId;
-    private String userRealName;
+    private String memberName;
     private String birthday;
     private String gender;
     private String phoneNumber;

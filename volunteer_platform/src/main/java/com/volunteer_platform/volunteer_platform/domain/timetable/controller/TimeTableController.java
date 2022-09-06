@@ -23,28 +23,28 @@ public class TimeTableController {
     private final TimeTableService timeTableService;
 
     // 시간표 등록
-    @PostMapping("/member/timetable")
-    public void createTimeTable(@RequestBody Form form, HttpServletRequest request) {
-
-        Member member = memberService.findMemberId(request);
-
-        timeTableService.createTimeTable(form, member);
-    }
-
-    // 시간표 GET
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/member/timetable")
-    public Converter.TimeTable getMemberTimeTable(HttpServletRequest request) {
-
-        Member member = memberService.findMemberId(request);
-
-        List<TimeTable> timeTable = timeTableService.findMemberTimeTable(member.getId());
-
-        List<TimeTableDto> collect = timeTable.stream()
-                .map(t -> new TimeTableDto(t.getDayOfWeek(), t.getStartTime(), t.getEndTime()))
-                .collect(Collectors.toList());
-
-        return new Converter.TimeTable(collect);
-    }
+//    @PostMapping("/member/timetable")
+//    public void createTimeTable(@RequestBody Form form, HttpServletRequest request) {
+//
+//        Member member = memberService.findMemberId(request);
+//
+//        timeTableService.createTimeTable(form, member);
+//    }
+//
+//    // 시간표 GET
+//    @ResponseStatus(HttpStatus.OK)
+//    @GetMapping("/member/timetable")
+//    public Converter.TimeTable getMemberTimeTable(HttpServletRequest request) {
+//
+//        Member member = memberService.findMemberId(request);
+//
+//        List<TimeTable> timeTable = timeTableService.findMemberTimeTable(member.getId());
+//
+//        List<TimeTableDto> collect = timeTable.stream()
+//                .map(t -> new TimeTableDto(t.getDayOfWeek(), t.getStartTime(), t.getEndTime()))
+//                .collect(Collectors.toList());
+//
+//        return new Converter.TimeTable(collect);
+//    }
 
 }

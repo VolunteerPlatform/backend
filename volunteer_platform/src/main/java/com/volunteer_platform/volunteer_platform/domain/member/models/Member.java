@@ -2,7 +2,6 @@ package com.volunteer_platform.volunteer_platform.domain.member.models;
 
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Review;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +21,7 @@ import static javax.persistence.FetchType.EAGER;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Member implements UserDetails {
+public class Member {
 
     @Id @GeneratedValue
     @Column(name = "member_id")
@@ -38,58 +37,22 @@ public class Member implements UserDetails {
     private List<TimeTable> timeTables = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
     private List<AppHistory> appHistories = new ArrayList<>();
 
     @OneToOne(mappedBy = "member", fetch = LAZY)
     private Membership membership;
 
-    private String userName;
+    private String loginId;
     private String password;
     private String kakaoId;
-    private String googleId;
 
-    @ElementCollection(fetch = EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private MembershipStatus membershipStatus;
 
+    @Enumerated(EnumType.STRING)
+    private MemberRole memberRole;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
 
     /**
      * MembershipStatus REGISTERED -> WITHDRAWAL 으로 update 로직

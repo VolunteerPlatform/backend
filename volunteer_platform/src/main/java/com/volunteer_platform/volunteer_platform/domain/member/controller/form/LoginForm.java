@@ -1,4 +1,4 @@
-package com.volunteer_platform.volunteer_platform.domain.member.form;
+package com.volunteer_platform.volunteer_platform.domain.member.controller.form;
 
 import lombok.Data;
 

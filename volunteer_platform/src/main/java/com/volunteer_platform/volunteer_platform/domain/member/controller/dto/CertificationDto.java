@@ -1,4 +1,4 @@
-package com.volunteer_platform.volunteer_platform.domain.member.dto;
+package com.volunteer_platform.volunteer_platform.domain.member.controller.dto;
 
 import lombok.Data;
 

@@ -1,53 +1,60 @@
 package com.volunteer_platform.volunteer_platform.config;
 
-import com.volunteer_platform.volunteer_platform.config.jwt.JwtAuthenticationFilter;
-import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.SecurityFilterChain;
 
-@Slf4j
-@EnableWebSecurity
 @Configuration
-@RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
-    //비밀번호 암호화 Encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 인증을 위해 상위 설정 해제
-                .and()
-                .authorizeRequests()
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf().disable();
+        httpSecurity.sessionManagement()
+                .maximumSessions(1)
+                .expiredUrl("/")
+                .sessionRegistry(sessionRegistry());
+
+        return httpSecurity.authorizeRequests()
+                .antMatchers("/center/**").hasRole("ADMIN")
+                .antMatchers("/members").hasAnyRole("MEMBER", "ADMIN")
+                .antMatchers("/members/deny").hasRole("MEMBER")
+                .antMatchers("/members/login").anonymous()
+                .antMatchers("/members/password").authenticated()
+                .antMatchers("/members/logout").authenticated()
                 .antMatchers("/**").permitAll()
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/user/**").hasRole("USER")
-                .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+                .formLogin()
+                .loginPage("/members/login")
+                .loginProcessingUrl("/members/login")
+                .defaultSuccessUrl("/members")
+                .failureUrl("/members/login-fail")
+                .and()
+                .logout()
+                .logoutUrl("/members/logout")
+                .logoutSuccessUrl("/members/login")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .and()
+                .exceptionHandling()
+                .and()
+                .build();
     }
 }
