@@ -6,6 +6,7 @@ import com.volunteer_platform.volunteer_platform.domain.timetable.repository.Tim
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.SearchCondition;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
@@ -41,7 +42,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     @Override
     @Transactional
-    public VolActivityDto createVolActivity(ActivityForm activityForm, VolOrgan volOrgan) {
+    public VolActivityIdDto createVolActivity(ActivityForm activityForm, VolOrgan volOrgan) {
         VolActivity volActivity = activityForm.toEntity(volOrgan);
 
         createDayOfWeek(activityForm.getTimeList(), volActivity);
@@ -49,7 +50,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
         createSessions(activityForm.getTimeList(), volActivity);
 
-        return VolActivityDto.of(volActivity);
+        return new VolActivityIdDto(volActivity.getId());
     }
 
     @Override
