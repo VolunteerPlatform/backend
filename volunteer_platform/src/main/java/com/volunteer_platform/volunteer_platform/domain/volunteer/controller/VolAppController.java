@@ -38,7 +38,7 @@ public class VolAppController {
     }
 
     // 유저별 봉사 신청 내역 조회
-    @GetMapping(value = "/member/application", params = "id")
+    @GetMapping(value = "/members/application", params = "id")
     public DTOResponse<List<AppHistoryDto>> applicationsByMember(@RequestParam("id") Long memberId) {
         List<AppHistoryDto> appHistoryDtoList = volAppService.fetchApplications(memberId);
 
@@ -46,14 +46,14 @@ public class VolAppController {
     }
 
     // 사용자 승인 여부 변경
-    @PutMapping("/member/application/{applicationId}/authorization")
+    @PutMapping("/members/application/{applicationId}/authorization")
     public DTOResponse<AppHistoryDto> authorizeApplicant(@PathVariable Long applicationId, @RequestBody AuthorizeForm authorizeForm) {
 
         return new DTOResponse<>(volAppService.authorizeApplicant(applicationId, authorizeForm.getIsAuthorized()));
     }
 
     // 사용자 신청 취소
-    @DeleteMapping("/member/application/{applicationId}")
+    @DeleteMapping("/members/application/{applicationId}")
     public MessageResponse cancelApplication(@PathVariable Long applicationId) {
         volAppService.cancelApplication(applicationId);
 
