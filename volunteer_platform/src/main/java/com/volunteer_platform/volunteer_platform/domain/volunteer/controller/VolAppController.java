@@ -29,9 +29,9 @@ public class VolAppController {
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 상태(PEND/ACCEPTED/DENY/FINISH 인지)
-    @GetMapping(path = "/vol/sessions/{activitySessionId}/applicants", params = "status")
+    @GetMapping(path = "/vol/sessions/{activitySessionId}/applicants")
     public DTOResponse<List<ApplicantDto>> fetchApplicant(@PathVariable Long activitySessionId,
-                                                          @RequestParam("status") IsAuthorized isAuthorized,
+                                                          @RequestParam(value = "status", required = false) IsAuthorized isAuthorized,
                                                           @PageableDefault Pageable pageable) {
 
         return new DTOResponse<>(volAppService.fetchApplicationsByCondition(activitySessionId, isAuthorized, pageable));

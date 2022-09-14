@@ -11,6 +11,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.PrivacyApproval;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.CustomVolAppRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolAppService;
@@ -31,6 +32,7 @@ public class VolAppServiceImpl implements VolAppService {
     private final VolAppRepository volAppRepository;
     private final MemberRepository memberRepository;
     private final VolActivitySessionRepository volActivitySessionRepository;
+    private final CustomVolAppRepository customVolAppRepository;
     private static final int CANCELABLE_BEFORE_DAYS = 3;
 
     @Override
@@ -119,7 +121,7 @@ public class VolAppServiceImpl implements VolAppService {
     @Override
     @Transactional(readOnly = true)
     public List<ApplicantDto> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
-        return volAppRepository
+        return customVolAppRepository
                 .findApplicantsByCondition(activityTimeId, status, pageable)
                 .stream()
                 .map(ApplicantDto::of)
