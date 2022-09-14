@@ -5,9 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +17,11 @@ import java.util.List;
 public class VolActController {
 
     private final VolActivityService volActivityService;
-    private final VolOrganService volOrganService;
 
     @PostMapping
     public DTOResponse<VolActivityIdDto> createActivity(@RequestBody ActivityForm activityForm) {
-        VolOrgan volOrgan = volOrganService.findOrgan(activityForm.getOrganizationId());
 
-        return new DTOResponse<>(volActivityService.createVolActivity(activityForm, volOrgan));
+        return new DTOResponse<>(volActivityService.createVolActivity(activityForm));
     }
 
     @GetMapping("/{activityId}")

@@ -17,6 +17,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.CustomSearchRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,9 +41,12 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     private final TimeTableRepository timeTableRepository;
 
+    private final VolOrganRepository volOrganRepository;
+
     @Override
     @Transactional
-    public VolActivityIdDto createVolActivity(ActivityForm activityForm, VolOrgan volOrgan) {
+    public VolActivityIdDto createVolActivity(ActivityForm activityForm) {
+        VolOrgan volOrgan = findOrgan(activityForm.getOrganizationId());
         VolActivity volActivity = activityForm.toEntity(volOrgan);
 
         createDayOfWeek(activityForm.getTimeList(), volActivity);
@@ -75,6 +79,11 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
 
         return VolActivityDto.of(volActivity);
+    }
+
+    private VolOrgan findOrgan(Long organizationId) {
+        return volOrganRepository.findById(organizationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
     }
 
     // 활동의 요일과 시작, 종료시간 별도 저장
