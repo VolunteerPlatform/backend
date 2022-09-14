@@ -2,6 +2,8 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +31,10 @@ public class VolAppServiceImpl implements VolAppService {
     private final VolAppRepository volAppRepository;
     private final MemberRepository memberRepository;
     private final VolActivitySessionRepository volActivitySessionRepository;
-
     private static final int CANCELABLE_BEFORE_DAYS = 3;
 
     @Override
-    public AppHistory volApply(Long sessionId, ApplicationForm applicationForm) {
+    public AppHistoryDto volApply(Long sessionId, ApplicationForm applicationForm) {
         Member applicant = findMemberById(applicationForm.getMemberId());
         VolActivitySession activitySession = findActivitySessionById(sessionId);
 
@@ -62,12 +64,12 @@ public class VolAppServiceImpl implements VolAppService {
                 .build();
 
         volAppRepository.save(appHistory);
-        return appHistory;
+        return AppHistoryDto.of(appHistory);
     }
 
     // 지원자 승인/거절/대기 상태 변경
     @Override
-    public AppHistory authorizeApplicant(Long applicationId, IsAuthorized status) {
+    public AppHistoryDto authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
         application.setIsAuthorized(status);
 
@@ -76,7 +78,7 @@ public class VolAppServiceImpl implements VolAppService {
             volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
         }
 
-        return application;
+        return AppHistoryDto.of(application);
     }
 
     @Override
@@ -104,6 +106,34 @@ public class VolAppServiceImpl implements VolAppService {
         volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppHistoryDto> fetchApplications(Long memberId) {
+        return volAppRepository
+                .findByMemberId(memberId)
+                .stream()
+                .map(AppHistoryDto::of)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ApplicantDto> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
+        return volAppRepository
+                .findApplicantsByCondition(activityTimeId, status, pageable)
+                .stream()
+                .map(ApplicantDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isMemberAlreadyApplied(Long memberId, Long sessionId) {
+        return volAppRepository.existsByMemberIdAndVolActivitySessionId(memberId, sessionId);
+    }
+
+    private boolean isApplicableSession(VolActivitySession session) {
+        return session.getSessionStatus() == SessionStatus.RECRUITING && session.getNumOfApplicant() < session.getNumOfRecruit();
+    }
+
     private boolean isBeforeCancelableDays(LocalDate activityDate) {
         LocalDate today = LocalDate.now();
         return today.plusDays(CANCELABLE_BEFORE_DAYS).compareTo(activityDate) < 0;
@@ -121,18 +151,6 @@ public class VolAppServiceImpl implements VolAppService {
         return false;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<AppHistory> fetchApplications(Long memberId) {
-        return volAppRepository.findByMemberId(memberId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<AppHistory> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
-        return volAppRepository.findApplicantsByCondition(activityTimeId, status, pageable);
-    }
-
     private AppHistory findApplication(Long applicationId) {
         return volAppRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 신청 ID 입니다."));
@@ -146,21 +164,5 @@ public class VolAppServiceImpl implements VolAppService {
     private VolActivitySession findActivitySessionById(Long sessionId) {
         return volActivitySessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 봉사활동 타임 정보가 존재하지 않습니다."));
-    }
-
-    private boolean isMemberAlreadyApplied(Long memberId, Long sessionId) {
-        return volAppRepository.existsByMemberIdAndVolActivitySessionId(memberId, sessionId);
-    }
-
-    private boolean isApplicableSession(VolActivitySession volActivitySession) {
-        if (volActivitySession.getSessionStatus() != SessionStatus.RECRUITING) {
-            return false;
-        }
-
-        if (volActivitySession.getNumOfApplicant() >= volActivitySession.getNumOfRecruit()) {
-            return false;
-        }
-
-        return true;
     }
 }
