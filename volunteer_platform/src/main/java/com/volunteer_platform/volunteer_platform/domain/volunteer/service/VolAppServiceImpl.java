@@ -73,9 +73,12 @@ public class VolAppServiceImpl implements VolAppService {
     @Override
     public AppHistoryDto authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
+        if (application.getIsAuthorized() == IsAuthorized.DISAPPROVAL) {
+            throw new IllegalArgumentException("미승인된 지원자의 상태는 변경할 수 없습니다.");
+        }
+
         application.setIsAuthorized(status);
 
-        // 거절 상태로 변경 시 신청자수 감소
         if (status == IsAuthorized.DISAPPROVAL) {
             volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
         }
