@@ -42,6 +42,7 @@ public class VolOrganServiceImpl implements VolOrganService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public VolOrganDto findOrgan(Long organId) {
         return VolOrganDto.of(volOrganRepository.findById(organId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다.")));
