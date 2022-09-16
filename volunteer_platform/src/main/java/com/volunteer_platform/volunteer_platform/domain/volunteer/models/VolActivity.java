@@ -64,4 +64,11 @@ public class VolActivity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Category category;
+
+    @Builder.Default
+    private boolean isDeleted = false;
+
+    public void delete() {
+        isDeleted = true;
+    }
 }

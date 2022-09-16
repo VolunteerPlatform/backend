@@ -45,5 +45,9 @@ public class VolActivitySession extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private SessionStatus sessionStatus;
+
+    public void changeStatus(SessionStatus sessionStatus) {
+        this.sessionStatus = sessionStatus;
+    }
 }
 

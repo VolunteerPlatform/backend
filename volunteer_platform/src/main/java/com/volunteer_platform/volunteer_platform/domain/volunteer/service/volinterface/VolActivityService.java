@@ -16,4 +16,6 @@ public interface VolActivityService {
     VolActivityDto findActivityById(Long activityId);
 
     List<SearchResultDto> searchActivity(SearchCondition searchCondition);
+
+    void deleteActivity(Long activityId);
 }

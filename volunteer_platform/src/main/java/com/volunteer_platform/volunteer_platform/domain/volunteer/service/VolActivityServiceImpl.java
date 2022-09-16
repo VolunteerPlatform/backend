@@ -13,6 +13,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActi
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityDayOfWeek;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.CustomSearchRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityRepository;
@@ -71,6 +72,28 @@ public class VolActivityServiceImpl implements VolActivityService {
 
 //        return filterByTimeTable(customSearchRepository.searchActivity(searchCondition));
         return customSearchRepository.searchActivity(searchCondition);
+    }
+
+    @Override
+    @Transactional
+    public void deleteActivity(Long activityId) {
+        VolActivity volActivity = volActivityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
+
+        volActivity.delete();
+
+        List<VolActivitySession> activitySessionList = volActivitySessionRepository.findAllByVolActivityId(activityId);
+        activitySessionList
+                .stream()
+                .filter(session -> session.getSessionStatus() != SessionStatus.COMPLETE)
+                .forEach(session -> {
+                    session.changeStatus(SessionStatus.DELETED);
+
+                    if (session.getNumOfApplicant() > 0) {
+                        session.getAppHistories()
+                                .forEach(application -> application.setIsAuthorized(IsAuthorized.DISAPPROVAL));
+                    }
+                });
     }
 
     @Override
