@@ -2,6 +2,7 @@ package com.volunteer_platform.volunteer_platform.domain.member.controller.form;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
 @AllArgsConstructor
@@ -28,7 +29,7 @@ public class MemberForm {
                 .password(this.getPassword())
                 .kakaoId("")
                 .membershipStatus(MembershipStatus.REGISTERED)
-                .memberRole(MemberRole.MEMBER)
+                .memberRole(MemberRole.ROLE_MEMBER)
                 .build();
     }
 
@@ -48,5 +49,9 @@ public class MemberForm {
                 .idOf1365(this.getIdOf1365())
                 .centerName(this.getCenterName())
                 .build();
+    }
+
+    public void encoding(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
     }
 }

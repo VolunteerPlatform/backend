@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.config;
 
+import com.volunteer_platform.volunteer_platform.domain.member.handler.CustomAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,19 +34,19 @@ public class SecurityConfig {
                 .sessionRegistry(sessionRegistry());
 
         return httpSecurity.authorizeRequests()
-//                .antMatchers("/center/**").hasRole("ADMIN")
-//                .antMatchers("/members").hasAnyRole("MEMBER", "ADMIN")
-//                .antMatchers("/members/deny").hasRole("MEMBER")
-//                .antMatchers("/members/login").anonymous()
-//                .antMatchers("/members/password").authenticated()
-//                .antMatchers("/members/logout").authenticated()
+                .antMatchers("/center/**").hasRole("ADMIN")
+                .antMatchers("/members").hasAnyRole("MEMBER", "ADMIN")
+                .antMatchers("/members/deny").hasRole("MEMBER")
+                .antMatchers("/members/login").anonymous()
+                .antMatchers("/members/password").authenticated()
+                .antMatchers("/members/logout").authenticated()
                 .antMatchers("/**").permitAll()
                 .and()
                 .formLogin()
-//                .loginPage("/members/login")
+                .loginPage("/members/login")
                 .loginProcessingUrl("/members/login")
-                .defaultSuccessUrl("/")
-                .failureUrl("/")
+//                .defaultSuccessUrl("/")
+//                .failureUrl("/")
                 .and()
                 .logout()
                 .logoutUrl("/members/logout")
@@ -54,6 +55,7 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .and()
                 .exceptionHandling()
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
                 .and()
                 .build();
     }

@@ -38,10 +38,10 @@ public class LoginController {
     }
 
     // 회원 자체 로그인
-    @PostMapping("/api/login")
-    public String login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
-        return memberService.memberLogin(loginForm, response);
-    }
+//    @PostMapping("/members/login")
+//    public String login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+//        return memberService.memberLogin(loginForm, response) + "tlqkf tjdrhd";
+//    }
 
 //    // 회원 프로필 - 비밀번호 인증
 //    @PostMapping("/api/certification")

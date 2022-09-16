@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.service;
 
+//import com.volunteer_platform.volunteer_platform.domain.member.controller.dto.AuthMemberDto;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberRole;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
@@ -29,7 +30,7 @@ public class MemberDetailsService implements UserDetailsService {
         return User.builder()
                 .username(member.getLoginId())
                 .password(member.getPassword())
-                .roles(MemberRole.MEMBER.name())
+                .roles(MemberRole.ROLE_MEMBER.name())
                 .build();
 
 //        return AuthMemberDto.of(member);

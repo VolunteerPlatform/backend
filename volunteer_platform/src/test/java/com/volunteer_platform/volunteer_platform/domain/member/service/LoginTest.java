@@ -45,7 +45,7 @@ public class LoginTest {
                 .password(passwordEncoder.encode("test"))
                 .kakaoId("")
                 .membershipStatus(MembershipStatus.REGISTERED)
-                .memberRole(MemberRole.MEMBER)
+                .memberRole(MemberRole.ROLE_MEMBER)
                 .build();
 
         memberRepository.save(member);

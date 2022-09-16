@@ -49,6 +49,8 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalStateException("아이디가 중복되었습니다.");
         }
 
+        memberForm.encoding(passwordEncoder);
+
         Member memberData = memberForm.toEntity(member);
 
         memberRepository.save(memberData);
@@ -90,7 +92,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public String memberLogin(LoginForm loginForm, HttpServletResponse response) {
-        Member member = memberRepository.findByMemberId(loginForm.getUserName())
+        Member member = memberRepository.findByMemberId(loginForm.getLoginId() )
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
         if (!passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {

@@ -2,30 +2,33 @@ package com.volunteer_platform.volunteer_platform.domain.member.handler;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 
 @RequiredArgsConstructor
-public class CustomAccessDeniedHandler {
+public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
 
+    @Override
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         if (request != null) {
-            if (request.isUserInRole("ROLE_" + MemberRole.MEMBER.name())) {
+            if (request.isUserInRole("ROLE_" + MemberRole.ROLE_MEMBER.name())) {
                 this.redirectStrategy.sendRedirect(request, response, "/members/deny");
                 return;
             }
         }
 
         if (request != null) {
-            if (request.isUserInRole("ROLE_" + MemberRole.PREMEMBER.name())) {
+            if (request.isUserInRole("ROLE_" + MemberRole.ROLE_PREMEMBER.name())) {
                 this.redirectStrategy.sendRedirect(request, response, "pre-members/deny");
             }
         }
