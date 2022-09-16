@@ -4,8 +4,8 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.AuthorizeForm;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolAppService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,47 +23,41 @@ public class VolAppController {
 
     // 봉사 신청 POST API
     @PostMapping("/vol/sessions/{activitySessionId}")
-    public AppHistoryDto volApply(@PathVariable Long activitySessionId, @RequestBody ApplicationForm applicationForm) {
-        AppHistory appHistory = volAppService.volApply(activitySessionId, applicationForm);
+    public DTOResponse<AppHistoryDto> volApply(@PathVariable Long activitySessionId, @RequestBody ApplicationForm applicationForm) {
 
-        return AppHistoryDto.of(appHistory);
+        return new DTOResponse<>(volAppService.volApply(activitySessionId, applicationForm));
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 상태(PEND/ACCEPTED/DENY/FINISH 인지)
-    @GetMapping(path = "/vol/sessions/{activitySessionId}/applicants", params = "status")
-    public List<ApplicantDto> fetchApplicant(@PathVariable Long activitySessionId,
-                                             @RequestParam("status") IsAuthorized isAuthorized,
-                                             @PageableDefault Pageable pageable) {
+    @GetMapping(path = "/vol/sessions/{activitySessionId}/applicants")
+    public DTOResponse<List<ApplicantDto>> fetchApplicant(@PathVariable Long activitySessionId,
+                                                          @RequestParam(value = "status", required = false) IsAuthorized isAuthorized,
+                                                          @PageableDefault Pageable pageable) {
 
-        List<AppHistory> appHistories = volAppService.fetchApplicationsByCondition(
-                activitySessionId,
-                isAuthorized,
-                pageable);
-
-        return appHistories.stream().map(ApplicantDto::of).collect(Collectors.toList());
+        return new DTOResponse<>(volAppService.fetchApplicationsByCondition(activitySessionId, isAuthorized, pageable));
     }
 
     // 유저별 봉사 신청 내역 조회
-    @GetMapping(value = "/member/application", params = "id")
-    public List<AppHistoryDto> applicationsByMember(@RequestParam("id") Long memberId) {
-        List<AppHistory> appHistories = volAppService.fetchApplications(memberId);
-        return appHistories.stream().map(AppHistoryDto::of).collect(Collectors.toList());
+    @GetMapping(value = "/members/application", params = "id")
+    public DTOResponse<List<AppHistoryDto>> applicationsByMember(@RequestParam("id") Long memberId) {
+        List<AppHistoryDto> appHistoryDtoList = volAppService.fetchApplications(memberId);
+
+        return new DTOResponse<>(appHistoryDtoList);
     }
 
     // 사용자 승인 여부 변경
-    @PutMapping("/member/application/{applicationId}/authorization")
-    public AppHistoryDto authorizeApplicant(@PathVariable Long applicationId, @RequestBody AuthorizeForm authorizeForm) {
-        AppHistory appHistory = volAppService.authorizeApplicant(applicationId, authorizeForm.getIsAuthorized());
+    @PutMapping("/members/application/{applicationId}/authorization")
+    public DTOResponse<AppHistoryDto> authorizeApplicant(@PathVariable Long applicationId, @RequestBody AuthorizeForm authorizeForm) {
 
-        return AppHistoryDto.of(appHistory);
+        return new DTOResponse<>(volAppService.authorizeApplicant(applicationId, authorizeForm.getIsAuthorized()));
     }
 
     // 사용자 신청 취소
-    @DeleteMapping("/member/application/{applicationId}")
-    public CustomResponse.MessageResponse cancelApplication(@PathVariable Long applicationId) {
+    @DeleteMapping("/members/application/{applicationId}")
+    public MessageResponse cancelApplication(@PathVariable Long applicationId) {
         volAppService.cancelApplication(applicationId);
 
-        return CustomResponse.MessageResponse.defaultOkayResponse();
+        return MessageResponse.defaultOkayResponse();
     }
 
     //    봉사자 정보 출력 API(PDF)
