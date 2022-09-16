@@ -3,6 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySessionDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
@@ -42,5 +43,10 @@ public class VolActController {
         volActivityService.deleteActivity(activityId);
 
         return MessageResponse.defaultOkayResponse();
+    }
+
+    @GetMapping("/{activityId}/sessions")
+    public DTOResponse<List<VolActivitySessionDto>> findSessionsOfActivity(@PathVariable Long activityId) {
+        return new DTOResponse<>(volActivityService.findSessionsOfActivity(activityId));
     }
 }

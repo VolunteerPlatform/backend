@@ -7,6 +7,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.Sea
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySessionDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
@@ -102,6 +103,14 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
 
         return VolActivityDto.of(volActivity);
+    }
+
+    @Override
+    public List<VolActivitySessionDto> findSessionsOfActivity(Long activityId) {
+        return volActivitySessionRepository.findAllByVolActivityId(activityId)
+                .stream()
+                .map(VolActivitySessionDto::of)
+                .collect(Collectors.toList());
     }
 
     private VolOrgan findOrgan(Long organizationId) {
