@@ -24,17 +24,13 @@ public interface MemberService {
 
     DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response);
 
-    boolean memberValidation(String userName);
+    void updateMember(Long memberId, MemberProfileUpdateDto memberProfileUpdateDto);
 
-    Member findMemberId(HttpServletRequest request);
+    void updateMemberPwd(Long memberId, MemberPwdUpdateDto memberPwdUpdateDto);
 
-    void updateMember(HttpServletRequest request, MemberProfileUpdateDto memberProfileUpdateDto);
+    String memberCertification(Long memberId, CertificationDto certificationDto);
 
-    void updateMemberPwd(HttpServletRequest request, MemberPwdUpdateDto memberPwdUpdateDto);
-
-    String memberCertification(HttpServletRequest request, CertificationDto certificationDto);
-
-    void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm);
+    void memberWithdrawal(Long memberId, WithdrawalForm withdrawalForm);
 
     String findUsername(MemberInfo memberInfo);
 }

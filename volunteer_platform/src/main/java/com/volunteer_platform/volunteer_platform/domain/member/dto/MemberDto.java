@@ -9,7 +9,6 @@ public class MemberDto {
 
     private String userName;
     private String kakaoId;
-    private String googleId;
     private String userRealName;
     private String birthday;
     private String gender;

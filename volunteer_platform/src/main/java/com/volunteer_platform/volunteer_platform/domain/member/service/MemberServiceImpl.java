@@ -118,54 +118,30 @@ public class MemberServiceImpl implements MemberService {
         return new DTOResponse(HttpStatus.OK.value(), message, member.getId());
     }
 
-    @Override
-    public boolean memberValidation(String userName) {
-        Optional<Member> member = memberRepository.findByUserName(userName);
-
-        if (member.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public Member findMemberId(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        String userName = jwtTokenProvider.getUserName(token);
-        Optional<Member> userId = memberRepository.findByUserName(userName);
-
-        if (userId.isPresent()) {
-            return userId.get();
-        } else {
-           throw new NoSuchElementException();
-        }
-    }
-
     /**
      * Member Profile 수정
-     * @param request
+     * @param memberId
      * @param memberProfileUpdateDto
      */
     @Override
     @Transactional
-    public void updateMember(HttpServletRequest request, MemberProfileUpdateDto memberProfileUpdateDto) {
-        Member memberId = findMemberId(request);
+    public void updateMember(Long memberId, MemberProfileUpdateDto memberProfileUpdateDto) {
+        Member member = findMemberByMemberId(memberId);
 
-        memberId.getMemberInfo().updateMemberInfo(memberProfileUpdateDto);
-        memberId.getMember1365Info().updateMember1365Info(memberProfileUpdateDto);
+        member.getMemberInfo().updateMemberInfo(memberProfileUpdateDto);
+        member.getMember1365Info().updateMember1365Info(memberProfileUpdateDto);
     }
 
     @Override
     @Transactional
-    public void updateMemberPwd(HttpServletRequest request, MemberPwdUpdateDto memberPwdUpdateDto) {
-        Member memberId = findMemberId(request);
+    public void updateMemberPwd(Long memberId, MemberPwdUpdateDto memberPwdUpdateDto) {
+        Member member = findMemberByMemberId(memberId);
 
         String originPwd = memberPwdUpdateDto.getOriginPwd();
 
-        if (passwordEncoder.matches(originPwd, memberId.getPassword())) {
+        if (passwordEncoder.matches(originPwd, member.getPassword())) {
             String newPwd = passwordEncoder.encode(memberPwdUpdateDto.getNewPwd());
-            memberRepository.updateMemberPwd(newPwd, memberId.getUsername());
+            memberRepository.updateMemberPwd(newPwd, member.getUsername());
         } else {
             throw new IllegalStateException("try again");
         }
@@ -173,30 +149,30 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 사용자 비밀번호 인증
-     * @param request
+     * @param memberId
      * @param certificationDto
      * @return
      */
     @Override
-    public String memberCertification(HttpServletRequest request, CertificationDto certificationDto) {
-        Member memberId = findMemberId(request);
+    public String memberCertification(Long memberId, CertificationDto certificationDto) {
+        Member member = findMemberByMemberId(memberId);
 
-        if (!passwordEncoder.matches(certificationDto.getPassword(), memberId.getPassword())) {
+        if (!passwordEncoder.matches(certificationDto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
         }
 
-        return memberId.getUsername();
+        return member.getUsername();
     }
 
     /**
      * 사용자 회원 탙퇴
-     * @param request
+     * @param memberId
      * @param withdrawalForm
      */
     @Override
     @Transactional
-    public void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm) {
-        Member member = findMemberId(request);
+    public void memberWithdrawal(Long memberId, WithdrawalForm withdrawalForm) {
+        Member member = findMemberByMemberId(memberId);
 
         // MembershipStatus REGISTERED -> WITHDRAWAL 으로 update
         member.updateMembership();
@@ -213,6 +189,23 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public String findUsername(MemberInfo memberInfo) {
         return memberRepository.findUserName(memberInfo);
+    }
+
+
+    private Member findMemberByMemberId(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+        );
+    }
+
+    private boolean memberValidation(String userName) {
+        Optional<Member> member = memberRepository.findByUserName(userName);
+
+        if (member.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

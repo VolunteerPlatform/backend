@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.timetable.controller;
 
+import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenService;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.service.MemberServiceImpl;
 import com.volunteer_platform.volunteer_platform.domain.timetable.converter.Converter;
@@ -21,14 +22,15 @@ public class TimeTableController {
 
     private final MemberServiceImpl memberService;
     private final TimeTableService timeTableService;
+    private final JwtTokenService jwtTokenService;
 
     // 시간표 등록
     @PostMapping("/member/timetable")
     public void createTimeTable(@RequestBody Form form, HttpServletRequest request) {
 
-        Member member = memberService.findMemberId(request);
+        Long memberId = jwtTokenService.tokenToUserId(request);
 
-        timeTableService.createTimeTable(form, member);
+        timeTableService.createTimeTable(form, memberId);
     }
 
     // 시간표 GET
@@ -36,9 +38,9 @@ public class TimeTableController {
     @GetMapping("/member/timetable")
     public Converter.TimeTable getMemberTimeTable(HttpServletRequest request) {
 
-        Member member = memberService.findMemberId(request);
+        Long memberId = jwtTokenService.tokenToUserId(request);
 
-        List<TimeTable> timeTable = timeTableService.findMemberTimeTable(member.getId());
+        List<TimeTable> timeTable = timeTableService.findMemberTimeTable(memberId);
 
         List<TimeTableDto> collect = timeTable.stream()
                 .map(t -> new TimeTableDto(t.getDayOfWeek(), t.getStartTime(), t.getEndTime()))
