@@ -9,9 +9,12 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
 
 public interface MemberService {
 
@@ -19,7 +22,7 @@ public interface MemberService {
 
     Long centerSignUp(CenterForm centerForm);
 
-    String memberLogin(LoginForm loginForm, HttpServletResponse response);
+    DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response);
 
     boolean memberValidation(String userName);
 

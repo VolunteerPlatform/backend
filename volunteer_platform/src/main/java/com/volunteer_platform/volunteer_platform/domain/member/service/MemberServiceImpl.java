@@ -18,7 +18,9 @@ import com.volunteer_platform.volunteer_platform.domain.member.service.memberint
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberInfoService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MembershipService;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,8 +58,7 @@ public class MemberServiceImpl implements MemberService {
                     .userName(memberForm.getUserName())
                     .password(passwordEncoder.encode(memberForm.getPassword()))
                     .roles(Collections.singletonList("ROLE_USER")) // 일반 유저
-                    .googleId(null)
-                    .kakaoId(null)
+                    .kakaoId("")
                     .membershipStatus(MembershipStatus.REGISTERED)
                     .build()).getId();
 
@@ -84,7 +87,6 @@ public class MemberServiceImpl implements MemberService {
                     .userName(centerForm.getUserName())
                     .password(passwordEncoder.encode(centerForm.getPassword()))
                     .roles(Collections.singletonList("ROLE_ADMIN")) // 일반 유저
-                    .googleId("center")
                     .kakaoId("center")
                     .membershipStatus(MembershipStatus.ADMIN)
                     .build()).getId();
@@ -96,7 +98,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public String memberLogin(LoginForm loginForm, HttpServletResponse response) {
+    public DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response) {
         Member member = memberRepository.findByUserName(loginForm.getUserName())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
@@ -111,7 +113,9 @@ public class MemberServiceImpl implements MemberService {
 
         tokenRepository.save(new RefreshToken(refreshToken));
 
-        return member.getUsername();
+        String message = "로그인에 성공했습니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, member.getId());
     }
 
     @Override
