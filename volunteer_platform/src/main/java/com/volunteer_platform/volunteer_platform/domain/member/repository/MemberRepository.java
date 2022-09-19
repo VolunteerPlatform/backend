@@ -1,7 +1,9 @@
 package com.volunteer_platform.volunteer_platform.domain.member.repository;
 
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberDto;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
+import com.volunteer_platform.volunteer_platform.domain.member.repository.custom.MemberRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +26,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     @Query("select m.userName from Member m where m.memberInfo= :memberInfoId")
     String findUserName(@Param("memberInfoId") MemberInfo memberInfo);
+
+
 }

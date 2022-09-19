@@ -3,6 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.member.service;
 import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenProvider;
 import com.volunteer_platform.volunteer_platform.domain.member.auth.RefreshToken;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.CertificationDto;
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
@@ -116,6 +117,15 @@ public class MemberServiceImpl implements MemberService {
         String message = "로그인에 성공했습니다.";
 
         return new DTOResponse(HttpStatus.OK.value(), message, member.getId());
+    }
+
+    @Override
+    public DTOResponse getMemberProfile(Long memberId) {
+        MemberDto memberProfile = memberRepository.getMemberProfile(memberId);
+
+        String message = "회원 정보를 성공적으로 불러왔습니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, memberProfile);
     }
 
     /**

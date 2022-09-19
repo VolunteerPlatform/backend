@@ -33,4 +33,6 @@ public interface MemberService {
     void memberWithdrawal(Long memberId, WithdrawalForm withdrawalForm);
 
     String findUsername(MemberInfo memberInfo);
+
+    DTOResponse getMemberProfile(Long memberId);
 }
