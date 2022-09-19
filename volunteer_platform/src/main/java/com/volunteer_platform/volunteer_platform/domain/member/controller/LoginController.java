@@ -44,9 +44,7 @@ public class LoginController {
     // 회원 자체 로그인
     @PostMapping("/members/login")
     public DTOResponse login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
-
         return memberService.memberLogin(loginForm, response);
-
     }
 
 }

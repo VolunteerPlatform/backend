@@ -46,6 +46,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 사용자 회원 가입
+     *
      * @param memberForm
      * @return
      */
@@ -75,6 +76,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 센터 회원 가입
+     *
      * @param centerForm
      * @return
      */
@@ -100,11 +102,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response) {
-        Member member = memberRepository.findByUserName(loginForm.getUserName())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+        Member member = memberRepository.getMembersByMemberId(loginForm.getUserName());
 
-        if (!passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
+        if (member == null || !(passwordEncoder.matches(loginForm.getPassword(), member.getPassword()))) {
+
+            String message = "로그인에 실패했습니다.";
+
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), message, message);
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername(), member.getRoles());
@@ -130,6 +134,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * Member Profile 수정
+     *
      * @param memberId
      * @param memberProfileUpdateDto
      */
@@ -159,6 +164,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 사용자 비밀번호 인증
+     *
      * @param memberId
      * @param certificationDto
      * @return
@@ -176,6 +182,7 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 사용자 회원 탙퇴
+     *
      * @param memberId
      * @param withdrawalForm
      */
@@ -183,16 +190,14 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void memberWithdrawal(Long memberId, WithdrawalForm withdrawalForm) {
         Member member = findMemberByMemberId(memberId);
-
-        // MembershipStatus REGISTERED -> WITHDRAWAL 으로 update
         member.updateMembership();
 
-        // comment 저장
         membershipService.createMembership(withdrawalForm, member);
     }
 
     /**
      * member user name 반환
+     *
      * @param memberInfo
      * @return
      */
@@ -218,4 +223,3 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 }
-
