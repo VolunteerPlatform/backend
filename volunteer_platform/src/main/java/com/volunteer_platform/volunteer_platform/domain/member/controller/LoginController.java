@@ -7,7 +7,6 @@ import com.volunteer_platform.volunteer_platform.domain.member.service.memberint
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +21,7 @@ public class LoginController {
 
     // 센터측 회원가입
     @PostMapping("/center/signup")
-    public Long centerSignup(@RequestBody CenterForm centerForm) {
+    public DTOResponse centerSignup(@RequestBody CenterForm centerForm) {
         return memberService.centerSignUp(centerForm);
     }
 
@@ -36,7 +35,7 @@ public class LoginController {
 
     // 회원 자체 회원가입
     @PostMapping("/members/signup")
-    public Long signup(@RequestBody MemberForm memberForm) {
+    public DTOResponse signup(@RequestBody MemberForm memberForm) {
         return memberService.memberSignUp(memberForm);
     }
 

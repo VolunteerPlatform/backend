@@ -12,21 +12,18 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
-import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.Member1365InfoService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberInfoService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MembershipService;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
@@ -52,25 +49,28 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     @Transactional
-    public Long memberSignUp(MemberForm memberForm) {
+    public DTOResponse memberSignUp(MemberForm memberForm) {
         boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
 
-        if (pass) {
-            Long memberId = memberRepository.save(Member.builder()
-                    .userName(memberForm.getUserName())
-                    .password(passwordEncoder.encode(memberForm.getPassword()))
-                    .roles(Collections.singletonList("ROLE_USER")) // 일반 유저
-                    .kakaoId("")
-                    .membershipStatus(MembershipStatus.REGISTERED)
-                    .build()).getId();
+        if (!pass) {
+            String errorMessage = "아이디가 중복되었습니다.";
 
-            Optional<Member> findMemberIdForMember = memberRepository.findMemberId(memberId);
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+        }
 
-            memberInfoService.createMemberInfo(memberForm, findMemberIdForMember);
-            member1365InfoService.createMember1365Info(memberForm, findMemberIdForMember);
+        memberForm.encoding(passwordEncoder);
 
-            return memberId;
-        } else throw new IllegalStateException("아이디가 중복되었습니다.");
+        Member member = memberForm.toEntity();
+        memberRepository.save(member);
+
+        Optional<Member> optionalMember = memberRepository.findMemberId(member.getId());
+
+        memberInfoService.createMemberInfo(memberForm, optionalMember.orElseThrow());
+        member1365InfoService.createMember1365Info(memberForm, optionalMember.orElseThrow());
+
+        String message = "정상적으로 회원가입이 되었습니다.";
+
+        return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
     }
 
 
@@ -82,21 +82,20 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     @Transactional
-    public Long centerSignUp(CenterForm centerForm) {
+    public DTOResponse centerSignUp(CenterForm centerForm) {
         boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
 
-        if (pass) {
-            Long memberId = memberRepository.save(Member.builder()
-                    .userName(centerForm.getUserName())
-                    .password(passwordEncoder.encode(centerForm.getPassword()))
-                    .roles(Collections.singletonList("ROLE_ADMIN")) // 일반 유저
-                    .kakaoId("center")
-                    .membershipStatus(MembershipStatus.ADMIN)
-                    .build()).getId();
+        if (!pass) {
+            String errorMessage = "아이디가 중복되었습니다.";
 
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+        }
 
-            return memberId;
-        } else throw new IllegalStateException("아이디가 중복되었습니다.");
+        Member member = centerForm.toEntity();
+
+        String message = "정상적으로 회원가입이 되었습니다.";
+
+        return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
     }
 
     @Override
