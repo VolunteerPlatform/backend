@@ -19,15 +19,9 @@ public class Member1365InfoServiceImpl implements Member1365InfoService {
 
     @Override
     @Transactional
-    public void createMember1365Info(MemberForm memberForm, Optional<Member> member) {
-
-        Member1365Info member1365Info = Member1365Info.builder()
-                .centerName(memberForm.getCenterName())
-                .idOf1365(memberForm.getIdOf1365())
-                .member(member.get())
-                .build();
+    public void createMember1365Info(MemberForm memberForm, Member member) {
+        Member1365Info member1365Info = memberForm.toMember1365InfoEntity(member);
 
         member1365InfoRepository.save(member1365Info);
-
     }
 }

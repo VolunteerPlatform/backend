@@ -2,7 +2,6 @@ package com.volunteer_platform.volunteer_platform.domain.member.models;
 
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Review;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,9 +37,6 @@ public class Member implements UserDetails {
     private List<TimeTable> timeTables = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
     private List<AppHistory> appHistories = new ArrayList<>();
 
     @OneToOne(mappedBy = "member", fetch = LAZY)
@@ -49,7 +45,6 @@ public class Member implements UserDetails {
     private String userName;
     private String password;
     private String kakaoId;
-    private String googleId;
 
     @ElementCollection(fetch = EAGER)
     @Builder.Default

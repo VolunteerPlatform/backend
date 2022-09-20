@@ -3,6 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.member.service;
 import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenProvider;
 import com.volunteer_platform.volunteer_platform.domain.member.auth.RefreshToken;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.CertificationDto;
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
@@ -11,7 +12,6 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
-import com.volunteer_platform.volunteer_platform.domain.member.models.MembershipStatus;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.Member1365InfoService;
@@ -19,13 +19,15 @@ import com.volunteer_platform.volunteer_platform.domain.member.service.memberint
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MembershipService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
+
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
 
 @Service
 @RequiredArgsConstructor
@@ -41,67 +43,67 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 사용자 회원 가입
+     *
      * @param memberForm
      * @return
      */
     @Override
     @Transactional
-    public Long memberSignUp(MemberForm memberForm) {
-        boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
+    public DTOResponse memberSignUp(MemberForm memberForm) {
+        if (!memberValidation(memberForm.getUserName())) {
+            String errorMessage = "아이디가 중복되었습니다.";
 
-        if (pass) {
-            Long memberId = memberRepository.save(Member.builder()
-                    .userName(memberForm.getUserName())
-                    .password(passwordEncoder.encode(memberForm.getPassword()))
-                    .roles(Collections.singletonList("ROLE_USER")) // 일반 유저
-                    .googleId(null)
-                    .kakaoId(null)
-                    .membershipStatus(MembershipStatus.REGISTERED)
-                    .build()).getId();
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+        }
 
-            Optional<Member> findMemberIdForMember = memberRepository.findMemberId(memberId);
+        memberForm.encoding(passwordEncoder);
 
-            memberInfoService.createMemberInfo(memberForm, findMemberIdForMember);
-            member1365InfoService.createMember1365Info(memberForm, findMemberIdForMember);
+        Member member = memberForm.toEntity();
+        memberRepository.save(member);
 
-            return memberId;
-        } else throw new IllegalStateException("아이디가 중복되었습니다.");
+        Optional<Member> optionalMember = memberRepository.findMemberId(member.getId());
+
+        memberInfoService.createMemberInfo(memberForm, optionalMember.orElseThrow());
+        member1365InfoService.createMember1365Info(memberForm, optionalMember.orElseThrow());
+
+        String message = "정상적으로 회원가입이 되었습니다.";
+
+        return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
     }
 
 
     /**
      * 센터 회원 가입
+     *
      * @param centerForm
      * @return
      */
     @Override
     @Transactional
-    public Long centerSignUp(CenterForm centerForm) {
-        boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
+    public DTOResponse centerSignUp(CenterForm centerForm) {
+        if (!memberValidation(centerForm.getUserName())) {
+            String errorMessage = "아이디가 중복되었습니다.";
 
-        if (pass) {
-            Long memberId = memberRepository.save(Member.builder()
-                    .userName(centerForm.getUserName())
-                    .password(passwordEncoder.encode(centerForm.getPassword()))
-                    .roles(Collections.singletonList("ROLE_ADMIN")) // 일반 유저
-                    .googleId("center")
-                    .kakaoId("center")
-                    .membershipStatus(MembershipStatus.ADMIN)
-                    .build()).getId();
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+        }
 
+        Member member = centerForm.toEntity();
 
-            return memberId;
-        } else throw new IllegalStateException("아이디가 중복되었습니다.");
+        String message = "정상적으로 회원가입이 되었습니다.";
+
+        return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
     }
 
     @Override
     @Transactional
-    public String memberLogin(LoginForm loginForm, HttpServletResponse response) {
-        Member member = memberRepository.findByUserName(loginForm.getUserName())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
+    public DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response) {
+        Member member = memberRepository.getMembersByMemberId(loginForm.getUserName());
 
-        if (!passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
+        if (member == null || !(passwordEncoder.matches(loginForm.getPassword(), member.getPassword()))) {
+
+            String message = "로그인에 실패했습니다.";
+
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), message, message);
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername(), member.getRoles());
@@ -111,57 +113,58 @@ public class MemberServiceImpl implements MemberService {
 
         tokenRepository.save(new RefreshToken(refreshToken));
 
-        return member.getUsername();
+        String message = "로그인에 성공했습니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, member.getId());
     }
 
     @Override
-    public boolean memberValidation(String userName) {
-        Optional<Member> member = memberRepository.findByUserName(userName);
+    public DTOResponse getMemberProfile(Long memberId) {
+        MemberDto memberProfile = memberRepository.getMemberProfile(memberId);
 
-        if (member.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        String message = "회원 정보를 성공적으로 불러왔습니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, memberProfile);
     }
 
     @Override
-    public Member findMemberId(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveAccessToken(request);
-        String userName = jwtTokenProvider.getUserName(token);
-        Optional<Member> userId = memberRepository.findByUserName(userName);
+    public DTOResponse loginIdValidation(LoginForm loginForm) {
+        if (!memberValidation(loginForm.getUserName())) {
+            String errorMessage = "아이디가 중복되었습니다.";
 
-        if (userId.isPresent()) {
-            return userId.get();
-        } else {
-           throw new NoSuchElementException();
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
         }
+
+        String message = "회원가입 가능합니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, message);
     }
 
     /**
      * Member Profile 수정
-     * @param request
+     *
+     * @param memberId
      * @param memberProfileUpdateDto
      */
     @Override
     @Transactional
-    public void updateMember(HttpServletRequest request, MemberProfileUpdateDto memberProfileUpdateDto) {
-        Member memberId = findMemberId(request);
+    public void updateMember(Long memberId, MemberProfileUpdateDto memberProfileUpdateDto) {
+        Member member = findMemberByMemberId(memberId);
 
-        memberId.getMemberInfo().updateMemberInfo(memberProfileUpdateDto);
-        memberId.getMember1365Info().updateMember1365Info(memberProfileUpdateDto);
+        member.getMemberInfo().updateMemberInfo(memberProfileUpdateDto);
+        member.getMember1365Info().updateMember1365Info(memberProfileUpdateDto);
     }
 
     @Override
     @Transactional
-    public void updateMemberPwd(HttpServletRequest request, MemberPwdUpdateDto memberPwdUpdateDto) {
-        Member memberId = findMemberId(request);
+    public void updateMemberPwd(Long memberId, MemberPwdUpdateDto memberPwdUpdateDto) {
+        Member member = findMemberByMemberId(memberId);
 
         String originPwd = memberPwdUpdateDto.getOriginPwd();
 
-        if (passwordEncoder.matches(originPwd, memberId.getPassword())) {
+        if (passwordEncoder.matches(originPwd, member.getPassword())) {
             String newPwd = passwordEncoder.encode(memberPwdUpdateDto.getNewPwd());
-            memberRepository.updateMemberPwd(newPwd, memberId.getUsername());
+            memberRepository.updateMemberPwd(newPwd, member.getUsername());
         } else {
             throw new IllegalStateException("try again");
         }
@@ -169,40 +172,40 @@ public class MemberServiceImpl implements MemberService {
 
     /**
      * 사용자 비밀번호 인증
-     * @param request
+     *
+     * @param memberId
      * @param certificationDto
      * @return
      */
     @Override
-    public String memberCertification(HttpServletRequest request, CertificationDto certificationDto) {
-        Member memberId = findMemberId(request);
+    public String memberCertification(Long memberId, CertificationDto certificationDto) {
+        Member member = findMemberByMemberId(memberId);
 
-        if (!passwordEncoder.matches(certificationDto.getPassword(), memberId.getPassword())) {
+        if (!passwordEncoder.matches(certificationDto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
         }
 
-        return memberId.getUsername();
+        return member.getUsername();
     }
 
     /**
      * 사용자 회원 탙퇴
-     * @param request
+     *
+     * @param memberId
      * @param withdrawalForm
      */
     @Override
     @Transactional
-    public void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm) {
-        Member member = findMemberId(request);
-
-        // MembershipStatus REGISTERED -> WITHDRAWAL 으로 update
+    public void memberWithdrawal(Long memberId, WithdrawalForm withdrawalForm) {
+        Member member = findMemberByMemberId(memberId);
         member.updateMembership();
 
-        // comment 저장
         membershipService.createMembership(withdrawalForm, member);
     }
 
     /**
      * member user name 반환
+     *
      * @param memberInfo
      * @return
      */
@@ -210,5 +213,20 @@ public class MemberServiceImpl implements MemberService {
     public String findUsername(MemberInfo memberInfo) {
         return memberRepository.findUserName(memberInfo);
     }
-}
 
+
+    private Member findMemberByMemberId(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+        );
+    }
+
+    private boolean memberValidation(String userName) {
+        Optional<Member> member = memberRepository.findByUserName(userName);
+
+
+        System.out.println("member = " + member);
+
+        return member.isEmpty();
+    }
+}
