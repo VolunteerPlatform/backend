@@ -24,45 +24,34 @@ public class MemberProfileController {
     // 회원 프로플 가져오기
     @GetMapping("profile")
     public DTOResponse getProfileTest(HttpServletRequest request) {
-
-        Long memberId = jwtTokenService.tokenToUserId(request);
-
-        return memberService.getMemberProfile(memberId);
+        return memberService.getMemberProfile(getMemberId(request));
     }
 
     // 회원 프로필 - 비밀번호 인증
     @PostMapping("password-certification")
     public String certification(HttpServletRequest request, @RequestBody CertificationDto certificationDto) {
-
-        Long memberId = jwtTokenService.tokenToUserId(request);
-
-        return memberService.memberCertification(memberId, certificationDto);
+        return memberService.memberCertification(getMemberId(request), certificationDto);
     }
 
     // 회원 개인정보 수정
     @PutMapping("profile")
     public void editMemberProfile(HttpServletRequest request, @RequestBody MemberProfileUpdateDto memberProfileUpdateDto) {
-
-        Long memberId = jwtTokenService.tokenToUserId(request);
-
-        memberService.updateMember(memberId, memberProfileUpdateDto);
+        memberService.updateMember(getMemberId(request), memberProfileUpdateDto);
     }
 
     // 회원 비밀번호 수정
     @PutMapping("password")
     public void updateMemberPwd(HttpServletRequest request, @RequestBody MemberPwdUpdateDto memberPwdUpdateDto) {
-
-        Long memberId = jwtTokenService.tokenToUserId(request);
-
-        memberService.updateMemberPwd(memberId, memberPwdUpdateDto);
+        memberService.updateMemberPwd(getMemberId(request), memberPwdUpdateDto);
     }
 
     //회원 탈퇴
     @DeleteMapping("")
     public void withdrawal(HttpServletRequest request, @RequestBody WithdrawalForm withdrawalForm) {
+        memberService.memberWithdrawal(getMemberId(request), withdrawalForm);
+    }
 
-        Long memberId = jwtTokenService.tokenToUserId(request);
-
-        memberService.memberWithdrawal(memberId, withdrawalForm);
+    private Long getMemberId(HttpServletRequest request) {
+        return jwtTokenService.tokenToUserId(request);
     }
 }
