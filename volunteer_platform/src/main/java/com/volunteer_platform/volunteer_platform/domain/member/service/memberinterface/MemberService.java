@@ -32,4 +32,6 @@ public interface MemberService {
     String findUsername(MemberInfo memberInfo);
 
     DTOResponse getMemberProfile(Long memberId);
+
+    DTOResponse loginIdValidation(LoginForm loginForm);
 }

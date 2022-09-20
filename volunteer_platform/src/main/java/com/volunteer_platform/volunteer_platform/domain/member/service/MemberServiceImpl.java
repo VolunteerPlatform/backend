@@ -50,9 +50,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public DTOResponse memberSignUp(MemberForm memberForm) {
-        boolean pass = memberValidation(memberForm.getUserName()); // 아이디 중복 검사
-
-        if (!pass) {
+        if (!memberValidation(memberForm.getUserName())) {
             String errorMessage = "아이디가 중복되었습니다.";
 
             return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
@@ -83,9 +81,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public DTOResponse centerSignUp(CenterForm centerForm) {
-        boolean pass = memberValidation(centerForm.getUserName()); // 아이디 중복 검사
-
-        if (!pass) {
+        if (!memberValidation(centerForm.getUserName())) {
             String errorMessage = "아이디가 중복되었습니다.";
 
             return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
@@ -129,6 +125,19 @@ public class MemberServiceImpl implements MemberService {
         String message = "회원 정보를 성공적으로 불러왔습니다.";
 
         return new DTOResponse(HttpStatus.OK.value(), message, memberProfile);
+    }
+
+    @Override
+    public DTOResponse loginIdValidation(LoginForm loginForm) {
+        if (!memberValidation(loginForm.getUserName())) {
+            String errorMessage = "아이디가 중복되었습니다.";
+
+            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+        }
+
+        String message = "회원가입 가능합니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, message);
     }
 
     /**

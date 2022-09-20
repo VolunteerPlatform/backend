@@ -5,6 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,4 +47,9 @@ public class LoginController {
         return memberService.memberLogin(loginForm, response);
     }
 
+    // 아이디 중복검사
+    @PostMapping("/members/validation/loginId")
+    public DTOResponse loginIdValidation(@RequestBody LoginForm loginForm) {
+        return memberService.loginIdValidation(loginForm);
+    }
 }
