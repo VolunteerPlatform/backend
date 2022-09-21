@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface MemberInfoService {
 
-    void createMemberInfo(MemberForm memberForm, Optional<Member> member);
+    void createMemberInfo(MemberForm memberForm, Member member);
 
     Optional<MemberInfo> validMemberInfo(FindForm findForm);
 }

@@ -1,6 +1,7 @@
 package com.volunteer_platform.volunteer_platform.domain.timetable.service;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
+import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.timetable.form.Form;
 import com.volunteer_platform.volunteer_platform.domain.timetable.form.TableForm;
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
@@ -18,10 +19,13 @@ import java.util.List;
 public class TimeTableServiceImpl implements TimeTableService {
 
     private final TimeTableRepository timeTableRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
-    public void createTimeTable(Form form, Member memberId) {
+    public void createTimeTable(Form form, Long memberId) {
+
+        Member member = findMemberByMemberId(memberId);
 
         ArrayList<TimeTable> timeTableList = new ArrayList<>();
 
@@ -30,7 +34,7 @@ public class TimeTableServiceImpl implements TimeTableService {
                     .endTime(tableForm.getEndTime())
                     .startTime(tableForm.getStartTime())
                     .dayOfWeek(tableForm.getDayOfWeek())
-                    .member(memberId)
+                    .member(member)
                     .build();
 
             timeTableList.add(timeTable);
@@ -48,5 +52,11 @@ public class TimeTableServiceImpl implements TimeTableService {
     @Override
     public List<TimeTable> findMemberTimeTable(Long memberId) {
         return timeTableRepository.findTimetableByMemberId(memberId);
+    }
+
+    private Member findMemberByMemberId(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 회원입니다.")
+        );
     }
 }

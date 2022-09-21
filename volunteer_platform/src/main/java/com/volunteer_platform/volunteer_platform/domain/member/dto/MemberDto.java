@@ -7,9 +7,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class MemberDto {
 
+    private Long memberId;
     private String userName;
     private String kakaoId;
-    private String googleId;
     private String userRealName;
     private String birthday;
     private String gender;

@@ -2,6 +2,8 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
@@ -9,6 +11,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtyp
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.PrivacyApproval;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.CustomVolAppRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolAppRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolAppService;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +32,11 @@ public class VolAppServiceImpl implements VolAppService {
     private final VolAppRepository volAppRepository;
     private final MemberRepository memberRepository;
     private final VolActivitySessionRepository volActivitySessionRepository;
-
+    private final CustomVolAppRepository customVolAppRepository;
     private static final int CANCELABLE_BEFORE_DAYS = 3;
 
     @Override
-    public AppHistory volApply(Long sessionId, ApplicationForm applicationForm) {
+    public AppHistoryDto volApply(Long sessionId, ApplicationForm applicationForm) {
         Member applicant = findMemberById(applicationForm.getMemberId());
         VolActivitySession activitySession = findActivitySessionById(sessionId);
 
@@ -62,21 +66,24 @@ public class VolAppServiceImpl implements VolAppService {
                 .build();
 
         volAppRepository.save(appHistory);
-        return appHistory;
+        return AppHistoryDto.of(appHistory);
     }
 
     // 지원자 승인/거절/대기 상태 변경
     @Override
-    public AppHistory authorizeApplicant(Long applicationId, IsAuthorized status) {
+    public AppHistoryDto authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
+        if (application.getIsAuthorized() == IsAuthorized.DISAPPROVAL) {
+            throw new IllegalArgumentException("미승인된 지원자의 상태는 변경할 수 없습니다.");
+        }
+
         application.setIsAuthorized(status);
 
-        // 거절 상태로 변경 시 신청자수 감소
         if (status == IsAuthorized.DISAPPROVAL) {
             volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
         }
 
-        return application;
+        return AppHistoryDto.of(application);
     }
 
     @Override
@@ -84,53 +91,58 @@ public class VolAppServiceImpl implements VolAppService {
         AppHistory application = findApplication(applicationId);
 
         if (application.getIsAuthorized() == IsAuthorized.COMPLETE) {
-            throw new IllegalStateException("활동이 완료된 활동은 취소가 불가능합니다.");
+            throw new IllegalArgumentException("활동이 완료된 활동은 취소가 불가능합니다.");
         }
 
-        // 활동일 기준 CANCELABLE_BEFORE_DAYS 일 이전이어야 취소 가능
-        LocalDate activityDate = application.getVolActivitySession().getActivityDate();
-        if (!isBeforeCancelableDays(activityDate)) {
-            throw new IllegalStateException("봉사활동은 활동 시작일 기준 " + CANCELABLE_BEFORE_DAYS + "일전이어야 취소가 가능합니다.");
-        }
-
-        AuthorizationType authorizationType = application.getVolActivitySession().getVolActivity().getAuthorizationType();
-        boolean isImmediateApprovalActivity = authorizationType == AuthorizationType.UNNECESSARY;
-
-        if (!isCancelableAuthorizationStatus(application.getIsAuthorized(), isImmediateApprovalActivity)) {
-            throw new IllegalStateException("신청 취소가 가능한 승인 상태가 아닙니다.");
+        if (application.getIsAuthorized() == IsAuthorized.APPROVAL) {
+            LocalDate activityDate = application.getVolActivitySession().getActivityDate();
+            if (!isBeforeCancelableDays(activityDate)) {
+                throw new IllegalArgumentException("봉사활동은 활동 시작일 기준 " + CANCELABLE_BEFORE_DAYS + "일전이어야 취소가 가능합니다.");
+            }
         }
 
         volAppRepository.deleteById(applicationId);
         volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppHistoryDto> fetchApplications(Long memberId) {
+        return volAppRepository
+                .findByMemberId(memberId)
+                .stream()
+                .map(AppHistoryDto::of)
+                .sorted((o1, o2) -> {
+                    if (o1.getActivityDate().isEqual(o2.getActivityDate())) {
+                        return Integer.compare(o1.getStartTime(), o2.getStartTime());
+                    }
+
+                    return o1.getActivityDate().compareTo(o2.getActivityDate());
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ApplicantDto> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
+        return customVolAppRepository
+                .findApplicantsByCondition(activityTimeId, status, pageable)
+                .stream()
+                .map(ApplicantDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private boolean isMemberAlreadyApplied(Long memberId, Long sessionId) {
+        return volAppRepository.existsByMemberIdAndVolActivitySessionId(memberId, sessionId);
+    }
+
+    private boolean isApplicableSession(VolActivitySession session) {
+        return session.getSessionStatus() == SessionStatus.RECRUITING && session.getNumOfApplicant() < session.getNumOfRecruit();
+    }
+
     private boolean isBeforeCancelableDays(LocalDate activityDate) {
         LocalDate today = LocalDate.now();
         return today.plusDays(CANCELABLE_BEFORE_DAYS).compareTo(activityDate) < 0;
-    }
-
-    private boolean isCancelableAuthorizationStatus(IsAuthorized isAuthorized, boolean isImmediateApprovalActivity) {
-        if (isAuthorized == IsAuthorized.DISAPPROVAL || isAuthorized == IsAuthorized.WAITING) {
-            return true;
-        }
-
-        if (isImmediateApprovalActivity) {
-            return isAuthorized == IsAuthorized.APPROVAL;
-        }
-
-        return false;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<AppHistory> fetchApplications(Long memberId) {
-        return volAppRepository.findByMemberId(memberId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<AppHistory> fetchApplicationsByCondition(Long activityTimeId, IsAuthorized status, Pageable pageable) {
-        return volAppRepository.findApplicantsByCondition(activityTimeId, status, pageable);
     }
 
     private AppHistory findApplication(Long applicationId) {
@@ -146,21 +158,5 @@ public class VolAppServiceImpl implements VolAppService {
     private VolActivitySession findActivitySessionById(Long sessionId) {
         return volActivitySessionRepository.findById(sessionId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 봉사활동 타임 정보가 존재하지 않습니다."));
-    }
-
-    private boolean isMemberAlreadyApplied(Long memberId, Long sessionId) {
-        return volAppRepository.existsByMemberIdAndVolActivitySessionId(memberId, sessionId);
-    }
-
-    private boolean isApplicableSession(VolActivitySession volActivitySession) {
-        if (volActivitySession.getSessionStatus() != SessionStatus.RECRUITING) {
-            return false;
-        }
-
-        if (volActivitySession.getNumOfApplicant() >= volActivitySession.getNumOfRecruit()) {
-            return false;
-        }
-
-        return true;
     }
 }

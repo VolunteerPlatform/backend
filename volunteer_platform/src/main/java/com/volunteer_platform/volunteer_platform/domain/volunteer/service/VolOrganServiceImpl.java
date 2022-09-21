@@ -1,5 +1,7 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
@@ -14,12 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class VolOrganServiceImpl implements VolOrganService {
     private final VolOrganRepository volOrganRepository;
 
-    public void saveVolOrgan(VolOrgan volOrgan) {
-        volOrganRepository.save(volOrgan);
-    }
-
     @Override
-    public VolOrgan createVolOrgan(OrganizationForm organizationForm) {
+    public VolOrganIdDto createVolOrgan(OrganizationForm organizationForm) {
         VolOrgan volOrgan = VolOrgan.builder()
                 .name(organizationForm.getName())
                 .manager(organizationForm.getManager())
@@ -27,13 +25,14 @@ public class VolOrganServiceImpl implements VolOrganService {
                 .address(organizationForm.getAddress())
                 .build();
 
-        saveVolOrgan(volOrgan);
-        return volOrgan;
+        volOrganRepository.save(volOrgan);
+        return new VolOrganIdDto(volOrgan.getId());
     }
 
     @Override
     public void deleteOrgan(Long organId) {
-        VolOrgan volOrgan = findOrgan(organId);
+        VolOrgan volOrgan = volOrganRepository.findById(organId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
 
         if (!volOrgan.getVolActivities().isEmpty()) {
             throw new IllegalArgumentException("담당중인 활동이 있으면 기관 삭제가 불가능합니다.");
@@ -43,8 +42,9 @@ public class VolOrganServiceImpl implements VolOrganService {
     }
 
     @Override
-    public VolOrgan findOrgan(Long organId) {
-        return volOrganRepository.findById(organId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+    @Transactional(readOnly = true)
+    public VolOrganDto findOrgan(Long organId) {
+        return VolOrganDto.of(volOrganRepository.findById(organId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다.")));
     }
 }

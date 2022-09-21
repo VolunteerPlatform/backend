@@ -20,14 +20,8 @@ public class MemberInfoServiceImpl implements MemberInfoService {
 
     @Override
     @Transactional
-    public void createMemberInfo(MemberForm memberForm, Optional<Member> member) {
-        MemberInfo memberInfo = MemberInfo.builder()
-                .birthday(memberForm.getBirthday())
-                .gender(memberForm.getGender())
-                .phoneNumber(memberForm.getPhoneNumber())
-                .userRealName(memberForm.getUserRealName())
-                .member(member.get())
-                .build();
+    public void createMemberInfo(MemberForm memberForm, Member member) {
+        MemberInfo memberInfo = memberForm.toMemberInfoEntity(member);
 
         memberInfoRepository.save(memberInfo);
     }

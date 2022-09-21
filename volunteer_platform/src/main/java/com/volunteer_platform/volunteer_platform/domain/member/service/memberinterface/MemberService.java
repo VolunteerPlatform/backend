@@ -7,31 +7,31 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
-import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
 
 public interface MemberService {
 
-    Long memberSignUp(MemberForm memberForm);
+    DTOResponse memberSignUp(MemberForm memberForm);
 
-    Long centerSignUp(CenterForm centerForm);
+    DTOResponse centerSignUp(CenterForm centerForm);
 
-    String memberLogin(LoginForm loginForm, HttpServletResponse response);
+    DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response);
 
-    boolean memberValidation(String userName);
+    void updateMember(Long memberId, MemberProfileUpdateDto memberProfileUpdateDto);
 
-    Member findMemberId(HttpServletRequest request);
+    void updateMemberPwd(Long memberId, MemberPwdUpdateDto memberPwdUpdateDto);
 
-    void updateMember(HttpServletRequest request, MemberProfileUpdateDto memberProfileUpdateDto);
+    String memberCertification(Long memberId, CertificationDto certificationDto);
 
-    void updateMemberPwd(HttpServletRequest request, MemberPwdUpdateDto memberPwdUpdateDto);
-
-    String memberCertification(HttpServletRequest request, CertificationDto certificationDto);
-
-    void memberWithdrawal(HttpServletRequest request, WithdrawalForm withdrawalForm);
+    void memberWithdrawal(Long memberId, WithdrawalForm withdrawalForm);
 
     String findUsername(MemberInfo memberInfo);
+
+    DTOResponse getMemberProfile(Long memberId);
+
+    DTOResponse loginIdValidation(LoginForm loginForm);
 }
