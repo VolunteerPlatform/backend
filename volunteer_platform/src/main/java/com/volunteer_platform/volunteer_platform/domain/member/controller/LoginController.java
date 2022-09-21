@@ -5,6 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +38,9 @@ public class LoginController {
     // 회원 자체 회원가입
     @PostMapping("/members/signup")
     public DTOResponse signup(@RequestBody MemberForm memberForm) {
-        return memberService.memberSignUp(memberForm);
+        Long memberId = memberService.memberSignUp(memberForm);
+
+        return new DTOResponse(memberId);
     }
 
 
