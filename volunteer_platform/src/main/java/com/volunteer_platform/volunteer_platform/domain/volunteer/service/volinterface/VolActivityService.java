@@ -4,6 +4,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.Sea
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySessionDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface VolActivityService {
     VolActivityDto findActivityById(Long activityId);
 
     List<SearchResultDto> searchActivity(SearchCondition searchCondition);
+
+    void deleteActivity(Long activityId);
+
+    List<VolActivitySessionDto> findSessionsOfActivity(Long activityId);
 }
