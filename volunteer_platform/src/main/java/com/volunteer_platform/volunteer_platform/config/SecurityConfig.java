@@ -42,9 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 토큰 인증을 위해 상위 설정 해제
                 .and()
                 .authorizeRequests()
+//                .antMatchers("/center/login").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/user/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
