@@ -18,14 +18,15 @@ public class WishListController {
 
     private final WishListService wishListService;
     private final JwtTokenService jwtTokenService;
+    private final HttpServletRequest request;
 
     @PutMapping()
-    public DTOResponse addWishList(HttpServletRequest request, @RequestBody WishListForm wishListForm) {
-        return wishListService.addWishList(getMemberId(request), wishListForm.getSessionId());
+    public DTOResponse addWishList(@RequestBody WishListForm wishListForm) {
+        return wishListService.addWishList(getMemberId(), wishListForm.getSessionId());
     }
 
 
-    private Long getMemberId(HttpServletRequest request) {
+    private Long getMemberId() {
         return jwtTokenService.tokenToUserId(request);
     }
 }
