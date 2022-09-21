@@ -112,6 +112,13 @@ public class VolAppServiceImpl implements VolAppService {
                 .findByMemberId(memberId)
                 .stream()
                 .map(AppHistoryDto::of)
+                .sorted((o1, o2) -> {
+                    if (o1.getActivityDate().isEqual(o2.getActivityDate())) {
+                        return Integer.compare(o1.getStartTime(), o2.getStartTime());
+                    }
+
+                    return o1.getActivityDate().compareTo(o2.getActivityDate());
+                })
                 .collect(Collectors.toList());
     }
 
