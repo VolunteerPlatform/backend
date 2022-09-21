@@ -19,6 +19,8 @@ public class ActivityTimeForm {
     private int endTime;
     private DayOfWeek activityWeek;
 
+    private int numOfRecruit;
+
     public VolActivityDayOfWeek toEntity(VolActivity volActivity) {
         return VolActivityDayOfWeek.builder()
                 .startTime(this.startTime)
