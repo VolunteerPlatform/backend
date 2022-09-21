@@ -15,7 +15,7 @@ import static com.volunteer_platform.volunteer_platform.domain.volunteer.convert
 
 public interface MemberService {
 
-    DTOResponse memberSignUp(MemberForm memberForm);
+    Long memberSignUp(MemberForm memberForm);
 
     DTOResponse centerSignUp(CenterForm centerForm);
 

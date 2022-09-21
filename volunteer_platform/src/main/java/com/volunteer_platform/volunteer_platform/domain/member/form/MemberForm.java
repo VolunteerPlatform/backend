@@ -7,6 +7,9 @@ import com.volunteer_platform.volunteer_platform.domain.member.models.Membership
 import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collection;
+import java.util.Collections;
+
 @Data
 public class MemberForm {
 
@@ -25,6 +28,7 @@ public class MemberForm {
                 .userName(this.userName)
                 .password(this.getPassword())
                 .kakaoId("")
+                .roles(Collections.singletonList("ROLE_USER"))
                 .membershipStatus(MembershipStatus.REGISTERED)
                 .build();
     }

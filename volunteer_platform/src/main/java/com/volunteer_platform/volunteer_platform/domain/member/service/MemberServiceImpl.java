@@ -49,11 +49,9 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     @Transactional
-    public DTOResponse memberSignUp(MemberForm memberForm) {
+    public Long memberSignUp(MemberForm memberForm) {
         if (!memberValidation(memberForm.getUserName())) {
-            String errorMessage = "아이디가 중복되었습니다.";
-
-            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+            throw new IllegalArgumentException("아이디가 중복되었습니다.");
         }
 
         memberForm.encoding(passwordEncoder);
@@ -66,9 +64,7 @@ public class MemberServiceImpl implements MemberService {
         memberInfoService.createMemberInfo(memberForm, optionalMember.orElseThrow());
         member1365InfoService.createMember1365Info(memberForm, optionalMember.orElseThrow());
 
-        String message = "정상적으로 회원가입이 되었습니다.";
-
-        return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
+        return member.getId();
     }
 
 
@@ -87,10 +83,12 @@ public class MemberServiceImpl implements MemberService {
             return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
         }
 
+        centerForm.encoding(passwordEncoder);
+
         Member member = centerForm.toEntity();
+        memberRepository.save(member);
 
         String message = "정상적으로 회원가입이 되었습니다.";
-
         return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
     }
 
