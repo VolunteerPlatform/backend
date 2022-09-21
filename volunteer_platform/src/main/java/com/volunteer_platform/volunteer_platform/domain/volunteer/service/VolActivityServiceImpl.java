@@ -28,7 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,10 +92,12 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .filter(session -> session.getSessionStatus() != SessionStatus.COMPLETE)
                 .forEach(session -> {
                     session.changeStatus(SessionStatus.DELETED);
-
                     if (session.getNumOfApplicant() > 0) {
                         session.getAppHistories()
-                                .forEach(application -> application.setIsAuthorized(IsAuthorized.DISAPPROVAL));
+                                .forEach(application -> {
+                                    application.setIsAuthorized(IsAuthorized.DISAPPROVAL);
+                                    volActivitySessionRepository.decreaseNumOfApplicant(session.getId());
+                                });
                     }
                 });
     }
@@ -128,7 +133,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     // 봉사활동 세션 만들기
     private void createSessions(List<ActivityTimeForm> activityTimeForms, VolActivity volActivity) {
-        EnumMap<DayOfWeek, List<ActivityTimeForm>> mapOfActivityTimes = getMapOfActivityTimes(activityTimeForms);
+        Map<DayOfWeek, List<ActivityTimeForm>> mapOfActivityTimes = getMapOfActivityTimes(activityTimeForms);
 
         List<VolActivitySession> activitySessions = new ArrayList<>();
         LocalDate startDate = volActivity.getActivityPeriod().getBegin();
@@ -136,6 +141,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
         startDate.datesUntil(oneDayAfterEndDate).forEach(
                 date -> {
+                    if (mapOfActivityTimes.get(date.getDayOfWeek()) != null) {
                         for (ActivityTimeForm timeForm : mapOfActivityTimes.get(date.getDayOfWeek())) {
                             VolActivitySession activitySession = VolActivitySession.builder()
                                     .volActivity(volActivity)
@@ -143,36 +149,23 @@ public class VolActivityServiceImpl implements VolActivityService {
                                     .startTime(timeForm.getStartTime())
                                     .endTime(timeForm.getEndTime())
                                     .activityDate(date)
-                                    .numOfRecruit(volActivity.getNumOfRecruit())
+                                    .numOfRecruit(timeForm.getNumOfRecruit())
                                     .numOfApplicant(0)
                                     .sessionStatus(SessionStatus.RECRUITING)
                                     .build();
 
                             activitySessions.add(activitySession);
                         }
+                    }
                 });
 
         volActivitySessionRepository.saveAll(activitySessions);
     }
 
     // 세션 제작을 위한 각 요일별 활동 시간들을 Map 형태로 변환
-    private EnumMap<DayOfWeek, List<ActivityTimeForm>> getMapOfActivityTimes(List<ActivityTimeForm> activityTimeForms) {
-        EnumMap<DayOfWeek, List<ActivityTimeForm>> dayOfWeekMap = new EnumMap<>(DayOfWeek.class);
-        for (DayOfWeek value : DayOfWeek.values()) {
-            dayOfWeekMap.put(value, new ArrayList<>());
-        }
-
-        for (ActivityTimeForm timeForm : activityTimeForms) {
-            dayOfWeekMap.get(timeForm.getActivityWeek())
-                    .add(ActivityTimeForm
-                            .builder()
-                            .activityWeek(timeForm.getActivityWeek())
-                            .startTime(timeForm.getStartTime())
-                            .endTime(timeForm.getEndTime())
-                            .build());
-        }
-
-        return dayOfWeekMap;
+    private Map<DayOfWeek, List<ActivityTimeForm>> getMapOfActivityTimes(List<ActivityTimeForm> activityTimeForms) {
+        return activityTimeForms.stream()
+                .collect(Collectors.groupingBy(ActivityTimeForm::getActivityWeek));
     }
 
     private List<SearchResultDto> filterByTimeTable(List<SearchResultDto> searchResultList) {
