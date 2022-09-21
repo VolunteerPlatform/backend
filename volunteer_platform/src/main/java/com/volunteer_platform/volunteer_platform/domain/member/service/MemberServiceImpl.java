@@ -224,9 +224,6 @@ public class MemberServiceImpl implements MemberService {
     private boolean memberValidation(String userName) {
         Optional<Member> member = memberRepository.findByUserName(userName);
 
-
-        System.out.println("member = " + member);
-
         return member.isEmpty();
     }
 }
