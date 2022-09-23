@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -17,12 +20,13 @@ public class VolOrganServiceImpl implements VolOrganService {
     private final VolOrganRepository volOrganRepository;
 
     @Override
-    public VolOrganIdDto createVolOrgan(OrganizationForm organizationForm) {
+    public VolOrganIdDto createVolOrgan(OrganizationForm organizationForm, Long memberId) {
         VolOrgan volOrgan = VolOrgan.builder()
                 .name(organizationForm.getName())
                 .manager(organizationForm.getManager())
                 .contact(organizationForm.getContact())
                 .address(organizationForm.getAddress())
+                .memberId(memberId)
                 .build();
 
         volOrganRepository.save(volOrgan);
@@ -46,5 +50,13 @@ public class VolOrganServiceImpl implements VolOrganService {
     public VolOrganDto findOrgan(Long organId) {
         return VolOrganDto.of(volOrganRepository.findById(organId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다.")));
+    }
+
+    @Override
+    public List<VolOrganDto> findOrganByMember(Long memberId) {
+        return volOrganRepository.findVolOrganByMemberId(memberId)
+                .stream()
+                .map(VolOrganDto::of)
+                .collect(Collectors.toList());
     }
 }

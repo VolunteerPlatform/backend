@@ -5,6 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySessionDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
@@ -48,5 +49,11 @@ public class VolActController {
     @GetMapping("/{activityId}/sessions")
     public DTOResponse<List<VolActivitySessionDto>> findSessionsOfActivity(@PathVariable Long activityId) {
         return new DTOResponse<>(volActivityService.findSessionsOfActivity(activityId));
+    }
+
+    @PutMapping("/{activityId}")
+    public MessageResponse editActivity(@PathVariable Long activityId, @RequestBody ActivityModifyForm activityModifyForm) {
+        volActivityService.editActivity(activityId, activityModifyForm);
+        return MessageResponse.defaultOkayResponse();
     }
 }

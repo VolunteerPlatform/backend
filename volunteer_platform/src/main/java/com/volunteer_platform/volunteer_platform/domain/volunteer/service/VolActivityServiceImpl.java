@@ -9,6 +9,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySessionDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityDayOfWeek;
@@ -76,6 +77,15 @@ public class VolActivityServiceImpl implements VolActivityService {
 
 //        return filterByTimeTable(customSearchRepository.searchActivity(searchCondition));
         return customSearchRepository.searchActivity(searchCondition);
+    }
+
+    @Override
+    @Transactional
+    public void editActivity(Long activityId, ActivityModifyForm activityModifyForm) {
+        VolActivity volActivity = volActivityRepository.findById(activityId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
+
+        volActivity.modify(activityModifyForm);
     }
 
     @Override

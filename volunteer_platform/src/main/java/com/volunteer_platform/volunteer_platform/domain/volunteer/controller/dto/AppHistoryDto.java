@@ -27,6 +27,8 @@ public class AppHistoryDto {
 
     private String organization;
 
+    private Long memberId;
+
     public static AppHistoryDto of(AppHistory appHistory) {
         return AppHistoryDto.builder()
                 .applicationId(appHistory.getId())
@@ -38,6 +40,7 @@ public class AppHistoryDto {
                 .activityName(appHistory.getVolActivitySession().getVolActivity().getActivityName())
                 .activitySummary(appHistory.getVolActivitySession().getVolActivity().getActivitySummary())
                 .organization(appHistory.getVolActivitySession().getVolActivity().getVolOrgan().getName())
+                .memberId(appHistory.getMember().getId())
                 .build();
     }
 }

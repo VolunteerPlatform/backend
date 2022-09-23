@@ -6,6 +6,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivitySessionDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityModifyForm;
 
 import java.util.List;
 
@@ -21,4 +22,6 @@ public interface VolActivityService {
     void deleteActivity(Long activityId);
 
     List<VolActivitySessionDto> findSessionsOfActivity(Long activityId);
+
+    void editActivity(Long activityId, ActivityModifyForm activityModifyForm);
 }

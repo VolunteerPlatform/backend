@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.models;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
@@ -70,5 +71,11 @@ public class VolActivity extends BaseEntity {
 
     public void delete() {
         isDeleted = true;
+    }
+
+    public void modify(ActivityModifyForm modifyForm) {
+        this.activityName = modifyForm.getActivityName();
+        this.activityContent = modifyForm.getActivityContent();
+        this.activitySummary = modifyForm.getActivitySummary();
     }
 }
