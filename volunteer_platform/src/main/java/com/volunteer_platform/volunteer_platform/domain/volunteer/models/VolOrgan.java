@@ -25,8 +25,11 @@ public class VolOrgan extends BaseEntity {
     private List<VolActivity> volActivities = new ArrayList<>();
 
     private String manager;
+
     private String contact;
 
     @Embedded
     private Address address;
+
+    private Long memberId;
 }
