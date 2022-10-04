@@ -36,11 +36,11 @@ public class VolAppServiceImpl implements VolAppService {
     private static final int CANCELABLE_BEFORE_DAYS = 3;
 
     @Override
-    public AppHistoryDto volApply(Long sessionId, ApplicationForm applicationForm) {
-        Member applicant = findMemberById(applicationForm.getMemberId());
+    public AppHistoryDto volApply(Long memberId, Long sessionId, ApplicationForm applicationForm) {
+        Member applicant = findMemberById(memberId);
         VolActivitySession activitySession = findActivitySessionById(sessionId);
 
-        if (isMemberAlreadyApplied(applicationForm.getMemberId(), sessionId)) {
+        if (isMemberAlreadyApplied(memberId, sessionId)) {
             throw new IllegalStateException("이미 해당 세션에 지원하였습니다.");
         }
 

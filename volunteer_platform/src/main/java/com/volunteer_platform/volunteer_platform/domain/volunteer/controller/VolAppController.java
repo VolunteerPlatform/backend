@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
+import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenService;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.AppHistoryDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.ApplicantDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ApplicationForm;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -20,12 +22,13 @@ import java.util.List;
 public class VolAppController {
 
     private final VolAppService volAppService;
+    private final JwtTokenService jwtTokenService;
+    private final HttpServletRequest request;
 
     // 봉사 신청 POST API
     @PostMapping("/vol/sessions/{activitySessionId}")
     public DTOResponse<AppHistoryDto> volApply(@PathVariable Long activitySessionId, @RequestBody ApplicationForm applicationForm) {
-
-        return new DTOResponse<>(volAppService.volApply(activitySessionId, applicationForm));
+        return new DTOResponse<>(volAppService.volApply(getMemberId(), activitySessionId, applicationForm));
     }
 
     // 신청 봉사자 정보 GET API -> 쿼리 파라미터로 상태(PEND/ACCEPTED/DENY/FINISH 인지)
@@ -38,9 +41,9 @@ public class VolAppController {
     }
 
     // 유저별 봉사 신청 내역 조회
-    @GetMapping(value = "/members/application", params = "id")
-    public DTOResponse<List<AppHistoryDto>> applicationsByMember(@RequestParam("id") Long memberId) {
-        List<AppHistoryDto> appHistoryDtoList = volAppService.fetchApplications(memberId);
+    @GetMapping(value = "/members/application")
+    public DTOResponse<List<AppHistoryDto>> applicationsByMember() {
+        List<AppHistoryDto> appHistoryDtoList = volAppService.fetchApplications(getMemberId());
 
         return new DTOResponse<>(appHistoryDtoList);
     }
@@ -61,6 +64,7 @@ public class VolAppController {
     }
 
     //    봉사자 정보 출력 API(PDF)
-
-
+    private Long getMemberId() {
+        return jwtTokenService.tokenToUserId(request);
+    }
 }
