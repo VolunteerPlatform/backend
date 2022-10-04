@@ -3,7 +3,6 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dt
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Category;
 import lombok.AllArgsConstructor;
@@ -21,8 +20,6 @@ import java.util.stream.Collectors;
 public class VolActivityDto {
 
     private Long id;
-
-    private ActivityType activityType;
 
     private ActivityMethod activityMethod;
 
@@ -51,7 +48,6 @@ public class VolActivityDto {
     public static VolActivityDto of(VolActivity volActivity) {
         return VolActivityDto.builder()
                 .id(volActivity.getId())
-                .activityType(volActivity.getActivityType())
                 .activityMethod(volActivity.getActivityMethod())
                 .authorizationType(volActivity.getAuthorizationType())
                 .activityName(volActivity.getActivityName())

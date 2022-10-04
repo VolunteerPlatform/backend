@@ -2,7 +2,6 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.models;
 
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Category;
 import com.volunteer_platform.volunteer_platform.global.entity.BaseEntity;
@@ -33,9 +32,6 @@ public class VolActivity extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "volActivity", cascade = CascadeType.ALL)
     private List<VolActivityDayOfWeek> dayOfWeeks = new ArrayList<>();
-
-    @Enumerated(EnumType.STRING)
-    private ActivityType activityType;
 
     @Enumerated(EnumType.STRING)
     private ActivityMethod activityMethod;

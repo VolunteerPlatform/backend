@@ -4,7 +4,6 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Category;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ public class ActivityForm {
     private String activitySummary;
     private String activityContent;
     private ActivityMethod activityMethod;
-    private ActivityType activityType;
     private AuthorizationType authorizationType;
     private String activityBegin;
     private String activityEnd;
@@ -39,7 +37,6 @@ public class ActivityForm {
                 .activityName(this.getActivityName())
                 .activitySummary(this.getActivitySummary())
                 .activityContent(this.getActivityContent())
-                .activityType(this.getActivityType())
                 .activityMethod(this.getActivityMethod())
                 .authorizationType(this.getAuthorizationType())
                 .category(this.getCategory())
