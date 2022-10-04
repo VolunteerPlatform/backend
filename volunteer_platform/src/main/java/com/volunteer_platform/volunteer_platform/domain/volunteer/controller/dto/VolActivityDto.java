@@ -30,7 +30,9 @@ public class VolActivityDto {
 
     private String activityName;
 
-    private String organName;
+    private Long organizationId;
+
+    private String organization;
 
     private List<VolActivityDayOfWeekDto> activityDayofWeeks;
 
@@ -53,7 +55,8 @@ public class VolActivityDto {
                 .activityMethod(volActivity.getActivityMethod())
                 .authorizationType(volActivity.getAuthorizationType())
                 .activityName(volActivity.getActivityName())
-                .organName(volActivity.getVolOrgan().getName())
+                .organization(volActivity.getVolOrgan().getName())
+                .organizationId(volActivity.getVolOrgan().getId())
                 .activityDayofWeeks(volActivity.getDayOfWeeks().stream().map(VolActivityDayOfWeekDto::of).collect(Collectors.toList()))
                 .activitySummary(volActivity.getActivitySummary())
                 .activityContent(volActivity.getActivityContent())

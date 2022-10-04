@@ -19,7 +19,7 @@ public class VolOrganDto {
 
     private String manager;
 
-    private String organPhoneNumber;
+    private String contact;
 
     private Address address;
 
@@ -28,7 +28,7 @@ public class VolOrganDto {
                 .id(volOrgan.getId())
                 .name(volOrgan.getName())
                 .manager(volOrgan.getManager())
-                .organPhoneNumber(volOrgan.getContact())
+                .contact(volOrgan.getContact())
                 .address(volOrgan.getAddress())
                 .build();
     }
