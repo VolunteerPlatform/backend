@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.member.models;
 
+import com.volunteer_platform.volunteer_platform.domain.member.form.EditPasswordForm;
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.AppHistory;
 import lombok.*;
@@ -91,5 +92,9 @@ public class Member implements UserDetails {
      */
     public void updateMembership() {
         this.membershipStatus = MembershipStatus.WITHDRAWAL;
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
     }
 }

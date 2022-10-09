@@ -22,6 +22,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     @Query("select m from Member m where m.userName = :userName")
     Member getMembersByMemberId(@Param("userName") String userName);
 
+    @Query("select m.userName from Member m where m.userName = :userName")
+    Optional<String > getMemberId(@Param("userName") String userName);
+
     @Modifying
     @Transactional
     @Query("update Member as m set m.password = :pwd where m.userName = :userName")
