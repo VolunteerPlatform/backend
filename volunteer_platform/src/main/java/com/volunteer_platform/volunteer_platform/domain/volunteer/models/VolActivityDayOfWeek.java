@@ -24,6 +24,8 @@ public class VolActivityDayOfWeek {
 
     private Integer endTime;
 
+    private Integer numOfRecruit;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vol_activity_id")
     private VolActivity volActivity;

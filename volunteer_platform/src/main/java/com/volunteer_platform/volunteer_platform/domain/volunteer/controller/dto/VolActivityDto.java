@@ -41,8 +41,6 @@ public class VolActivityDto {
 
     private Period activityRecruitPeriod;
 
-    private Integer numOfRecruit;
-
     private Category category;
 
     public static VolActivityDto of(VolActivity volActivity) {
@@ -58,7 +56,6 @@ public class VolActivityDto {
                 .activityContent(volActivity.getActivityContent())
                 .activityPeriod(volActivity.getActivityPeriod())
                 .activityRecruitPeriod(volActivity.getActivityRecruitPeriod())
-                .numOfRecruit(volActivity.getNumOfRecruit())
                 .category(volActivity.getCategory())
                 .build();
     }

@@ -27,7 +27,6 @@ public class ActivityForm {
     private String activityEnd;
     private String recruitBegin;
     private String recruitEnd;
-    private Integer numOfRecruit;
     private Category category;
     private Long organizationId;
     private List<ActivityTimeForm> timeList;
@@ -43,7 +42,6 @@ public class ActivityForm {
                 .activityPeriod(new Period(this.getActivityBegin(), this.getActivityEnd()))
                 .activityRecruitPeriod(new Period(this.getRecruitBegin(), this.getRecruitEnd()))
                 .volOrgan(volOrgan)
-                .numOfRecruit(this.getNumOfRecruit())
                 .build();
     }
 }
