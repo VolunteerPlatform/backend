@@ -135,4 +135,15 @@ public class JwtTokenProvider {
     public List<String> getRoles(String userName) {
         return memberRepository.findByUserName(userName).get().getRoles();
     }
+
+    // Refresh Token 으로 AccessToken 재발급
+    public String refreshAccessToken(String refreshToken) {
+        if (!validateToken(refreshToken) || !existsRefreshToken(refreshToken)) {
+            throw new IllegalArgumentException("올바르지 않은 Refresh Token 입니다.");
+        }
+
+        String userName = getUserName(refreshToken);
+        List<String> roles = getRoles(userName);
+        return createAccessToken(userName, roles);
+    }
 }

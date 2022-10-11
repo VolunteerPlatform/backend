@@ -11,7 +11,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo
 
 import javax.servlet.http.HttpServletResponse;
 
-import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 
 public interface MemberService {
 
@@ -34,4 +34,8 @@ public interface MemberService {
     DTOResponse getMemberProfile(Long memberId);
 
     DTOResponse loginIdValidation(LoginForm loginForm);
+
+    void refreshAccessToken();
+
+    void centerLogout();
 }
