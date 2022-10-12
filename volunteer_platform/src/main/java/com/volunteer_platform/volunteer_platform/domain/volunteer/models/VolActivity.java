@@ -71,5 +71,8 @@ public class VolActivity extends BaseEntity {
         this.activityName = modifyForm.getActivityName();
         this.activityContent = modifyForm.getActivityContent();
         this.activitySummary = modifyForm.getActivitySummary();
+        this.activityMethod = modifyForm.getActivityMethod();
+        this.authorizationType = modifyForm.getAuthorizationType();
+        this.category = modifyForm.getCategory();
     }
 }
