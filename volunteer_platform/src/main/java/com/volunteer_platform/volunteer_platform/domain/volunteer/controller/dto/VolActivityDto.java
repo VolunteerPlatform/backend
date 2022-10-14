@@ -1,9 +1,9 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.AuthorizationType;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.Category;
 import lombok.AllArgsConstructor;
@@ -22,15 +22,15 @@ public class VolActivityDto {
 
     private Long id;
 
-    private ActivityType activityType;
-
     private ActivityMethod activityMethod;
 
     private AuthorizationType authorizationType;
 
     private String activityName;
 
-    private String organName;
+    private Long organizationId;
+
+    private String organization;
 
     private List<VolActivityDayOfWeekDto> activityDayofWeeks;
 
@@ -42,25 +42,27 @@ public class VolActivityDto {
 
     private Period activityRecruitPeriod;
 
-    private Integer numOfRecruit;
-
     private Category category;
+
+    @Getter
+    @JsonProperty(value = "isDeleted")
+    private boolean deleted;
 
     public static VolActivityDto of(VolActivity volActivity) {
         return VolActivityDto.builder()
                 .id(volActivity.getId())
-                .activityType(volActivity.getActivityType())
                 .activityMethod(volActivity.getActivityMethod())
                 .authorizationType(volActivity.getAuthorizationType())
                 .activityName(volActivity.getActivityName())
-                .organName(volActivity.getVolOrgan().getName())
+                .organization(volActivity.getVolOrgan().getName())
+                .organizationId(volActivity.getVolOrgan().getId())
                 .activityDayofWeeks(volActivity.getDayOfWeeks().stream().map(VolActivityDayOfWeekDto::of).collect(Collectors.toList()))
                 .activitySummary(volActivity.getActivitySummary())
                 .activityContent(volActivity.getActivityContent())
                 .activityPeriod(volActivity.getActivityPeriod())
                 .activityRecruitPeriod(volActivity.getActivityRecruitPeriod())
-                .numOfRecruit(volActivity.getNumOfRecruit())
                 .category(volActivity.getCategory())
+                .deleted(volActivity.isDeleted())
                 .build();
     }
 }

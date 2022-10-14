@@ -8,8 +8,6 @@ import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo
 
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Optional;
-
 import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
 
 public interface MemberService {
@@ -34,6 +32,10 @@ public interface MemberService {
 
     DTOResponse loginIdValidation(LoginForm loginForm);
 
+    void refreshAccessToken();
+
+    void centerLogout();
+    
     DTOResponse editPassword(FindPasswordForm passwordForm);
 
     DTOResponse updatePassword(EditPasswordForm passwordForm);

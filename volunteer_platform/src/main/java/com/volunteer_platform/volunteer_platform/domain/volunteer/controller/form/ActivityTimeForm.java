@@ -26,6 +26,7 @@ public class ActivityTimeForm {
                 .startTime(this.startTime)
                 .endTime(this.endTime)
                 .activityWeek(this.activityWeek)
+                .numOfRecruit(this.getNumOfRecruit())
                 .volActivity(volActivity)
                 .build();
     }

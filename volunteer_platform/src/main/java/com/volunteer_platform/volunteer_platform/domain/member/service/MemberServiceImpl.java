@@ -21,10 +21,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.Optional;
 
-import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,9 @@ public class MemberServiceImpl implements MemberService {
     private final MemberInfoService memberInfoService;
     private final Member1365InfoService member1365InfoService;
     private final MembershipService membershipService;
+
+    private final HttpServletResponse response;
+    private final HttpServletRequest request;
 
     /**
      * 사용자 회원 가입
@@ -248,5 +252,23 @@ public class MemberServiceImpl implements MemberService {
         Optional<Member> member = memberRepository.findByUserName(userName);
 
         return member.isEmpty();
+    }
+
+    /**
+     * RefreshToken 으로 AccessToken 재발급
+     */
+    @Override
+    public void refreshAccessToken() {
+        String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
+        String accessToken = jwtTokenProvider.refreshAccessToken(refreshToken);
+
+        jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
+        jwtTokenProvider.setHeaderAccessToken(response, accessToken);
+    }
+
+    @Override
+    public void centerLogout() {
+        String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
+        tokenRepository.deleteById(refreshToken);
     }
 }

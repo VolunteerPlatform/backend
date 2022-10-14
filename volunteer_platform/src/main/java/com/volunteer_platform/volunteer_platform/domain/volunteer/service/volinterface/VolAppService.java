@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface VolAppService {
 
-    AppHistoryDto volApply(Long sessionId, ApplicationForm applicationForm);
+    AppHistoryDto volApply(Long memberId, Long sessionId, ApplicationForm applicationForm);
 
     AppHistoryDto authorizeApplicant(Long applicationId, IsAuthorized status);
 

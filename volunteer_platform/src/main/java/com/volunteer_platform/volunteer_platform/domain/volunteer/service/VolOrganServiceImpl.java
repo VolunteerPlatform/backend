@@ -3,6 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolOrganService;
@@ -43,6 +44,15 @@ public class VolOrganServiceImpl implements VolOrganService {
         }
 
         volOrganRepository.deleteById(organId);
+    }
+
+    @Override
+    @Transactional
+    public void modifyOrgan(Long organId, OrganizationModifyForm organizationModifyForm) {
+        VolOrgan volOrgan = volOrganRepository.findById(organId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 기관 ID 입니다."));
+
+        volOrgan.modify(organizationModifyForm);
     }
 
     @Override

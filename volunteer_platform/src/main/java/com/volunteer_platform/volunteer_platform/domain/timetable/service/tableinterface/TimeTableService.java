@@ -1,13 +1,13 @@
 package com.volunteer_platform.volunteer_platform.domain.timetable.service.tableinterface;
 
-import com.volunteer_platform.volunteer_platform.domain.timetable.form.Form;
-import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
+import com.volunteer_platform.volunteer_platform.domain.timetable.dto.TimeTableElementDto;
+import com.volunteer_platform.volunteer_platform.domain.timetable.form.TimeTableForm;
 
 import java.util.List;
 
 public interface TimeTableService {
 
-    void createTimeTable(Form form, Long memberId);
+    void createTimeTable(TimeTableForm form, Long memberId);
 
-    List<TimeTable> findMemberTimeTable(Long id);
+    List<TimeTableElementDto> findMemberTimeTable(Long id);
 }

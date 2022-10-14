@@ -5,6 +5,7 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
@@ -55,6 +56,13 @@ public class VolOrganController {
     @GetMapping("/members/organizations")
     public DTOResponse<List<VolOrganDto>> findOrganByMember() {
         return new DTOResponse<>(volOrganService.findOrganByMember(getMemberId()));
+    }
+
+    @PutMapping("/vol/organizations/{id}")
+    public MessageResponse modifyOrgan(@PathVariable("id") Long organId, @RequestBody OrganizationModifyForm modifyForm) {
+        volOrganService.modifyOrgan(organId, modifyForm);
+
+        return MessageResponse.defaultOkayResponse();
     }
 
     private Long getMemberId() {

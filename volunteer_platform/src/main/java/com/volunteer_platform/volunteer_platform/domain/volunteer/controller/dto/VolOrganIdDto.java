@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class VolOrganIdDto {
 
-    private Long organId;
+    private Long organizationId;
 
     public VolOrganIdDto(Long organId) {
-        this.organId = organId;
+        this.organizationId = organId;
     }
 }

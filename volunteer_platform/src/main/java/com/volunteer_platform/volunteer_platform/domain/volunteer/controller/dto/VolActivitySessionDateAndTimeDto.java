@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Builder
 public class VolActivitySessionDateAndTimeDto {
 
-    private LocalDate date;
+    private LocalDate activityDate;
 
     private Integer startTime;
 
@@ -18,7 +18,7 @@ public class VolActivitySessionDateAndTimeDto {
 
     public static VolActivitySessionDateAndTimeDto of(VolActivitySession volActivitySession) {
         return VolActivitySessionDateAndTimeDto.builder()
-                .date(volActivitySession.getActivityDate())
+                .activityDate(volActivitySession.getActivityDate())
                 .startTime(volActivitySession.getStartTime())
                 .endTime(volActivitySession.getEndTime())
                 .build();

@@ -7,5 +7,5 @@ import java.util.List;
 @Getter
 public class TimeTableForm {
 
-    private List<TableForm> tableForm;
+    private List<TimeTableElementForm> elements;
 }

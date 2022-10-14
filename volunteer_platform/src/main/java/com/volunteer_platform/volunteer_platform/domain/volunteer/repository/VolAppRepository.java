@@ -16,5 +16,5 @@ public interface VolAppRepository extends JpaRepository<AppHistory, Long> {
             "where m.member.id = :memberId")
     List<AppHistory> findByMemberId(@Param("memberId") Long memberId);
 
-    boolean existsByMemberIdAndVolActivitySessionId(Long memberId, Long sessionId);
+    List<AppHistory> findAllByMemberIdAndVolActivitySessionId(Long memberId, Long sessionId);
 }

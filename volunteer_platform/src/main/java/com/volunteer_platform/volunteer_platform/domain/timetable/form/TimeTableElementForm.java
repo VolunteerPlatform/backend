@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.DayOfWeek;
 
 @Getter
-public class TableForm {
+public class TimeTableElementForm {
 
     private DayOfWeek dayOfWeek;
     private int startTime;
