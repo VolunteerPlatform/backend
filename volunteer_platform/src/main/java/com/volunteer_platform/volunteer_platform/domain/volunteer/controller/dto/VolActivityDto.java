@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.Period;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.ActivityMethod;
@@ -43,6 +44,10 @@ public class VolActivityDto {
 
     private Category category;
 
+    @Getter
+    @JsonProperty(value = "isDeleted")
+    private boolean deleted;
+
     public static VolActivityDto of(VolActivity volActivity) {
         return VolActivityDto.builder()
                 .id(volActivity.getId())
@@ -57,6 +62,7 @@ public class VolActivityDto {
                 .activityPeriod(volActivity.getActivityPeriod())
                 .activityRecruitPeriod(volActivity.getActivityRecruitPeriod())
                 .category(volActivity.getCategory())
+                .deleted(volActivity.isDeleted())
                 .build();
     }
 }
