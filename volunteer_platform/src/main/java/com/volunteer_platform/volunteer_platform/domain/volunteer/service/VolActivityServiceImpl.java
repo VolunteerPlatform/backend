@@ -1,6 +1,5 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service;
 
-import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
 import com.volunteer_platform.volunteer_platform.domain.timetable.repository.TimeTableRepository;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.SearchCondition;
@@ -11,19 +10,12 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityModifyForm;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.ActivityTimeForm;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivity;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivityDayOfWeek;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolActivitySession;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.models.VolOrgan;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.models.*;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.IsAuthorized;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.models.enumtype.SessionStatus;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.CustomSearchRepository;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivityRepository;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolActivitySessionRepository;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.VolOrganRepository;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.repository.*;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,12 +34,11 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     private final VolActivityRepository volActivityRepository;
     private final VolActivitySessionRepository volActivitySessionRepository;
-
     private final CustomSearchRepository customSearchRepository;
-
+    private final CustomActivitySessionRepository customActivitySessionRepository;
     private final TimeTableRepository timeTableRepository;
-
     private final VolOrganRepository volOrganRepository;
+    private final WishListRepository wishListRepository;
 
     @Override
     @Transactional
@@ -72,11 +63,12 @@ public class VolActivityServiceImpl implements VolActivityService {
     }
 
     @Override
-    public List<SearchResultDto> searchActivity(SearchCondition searchCondition) {
+    public List<SearchResultDto> searchActivity(Long memberId, SearchCondition searchCondition) {
         isCoordinatePresent(searchCondition);
+        List<SearchResultDto> searchResult = customSearchRepository.searchActivity(searchCondition);
+        checkWishList(searchResult, memberId);
 
-//        return filterByTimeTable(customSearchRepository.searchActivity(searchCondition));
-        return customSearchRepository.searchActivity(searchCondition);
+        return filterByTimeTable(searchResult, memberId);
     }
 
     @Override
@@ -93,6 +85,10 @@ public class VolActivityServiceImpl implements VolActivityService {
     public void deleteActivity(Long activityId) {
         VolActivity volActivity = volActivityRepository.findById(activityId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 활동 ID 입니다."));
+
+        if (volActivity.isDeleted()) {
+            throw new IllegalArgumentException("이미 삭제처리 된 봉사활동입니다.");
+        }
 
         volActivity.delete();
 
@@ -121,8 +117,8 @@ public class VolActivityServiceImpl implements VolActivityService {
     }
 
     @Override
-    public List<VolActivitySessionDto> findSessionsOfActivity(Long activityId) {
-        return volActivitySessionRepository.findAllByVolActivityId(activityId)
+    public List<VolActivitySessionDto> findSessionsOfActivity(Long activityId, LocalDate activityDate) {
+        return customActivitySessionRepository.findActivitySession(activityId, activityDate)
                 .stream()
                 .map(VolActivitySessionDto::of)
                 .collect(Collectors.toList());
@@ -178,20 +174,31 @@ public class VolActivityServiceImpl implements VolActivityService {
                 .collect(Collectors.groupingBy(ActivityTimeForm::getActivityWeek));
     }
 
-    private List<SearchResultDto> filterByTimeTable(List<SearchResultDto> searchResultList) {
-        Map<DayOfWeek, List<TimeTable>> timeTableOfMember = getTimeTableOfMember();
+    private void checkWishList(List<SearchResultDto> searchResult, Long memberId) {
+        List<Long> wishedSessionIds = wishListRepository.findByMemberId(memberId)
+                .stream()
+                .map(WishList::getSessionId)
+                .collect(Collectors.toList());
+
+        searchResult
+                .stream()
+                .filter(o -> wishedSessionIds.contains(o.getSessionId()))
+                .forEach(o -> o.setWished(true));
+    }
+
+    private List<SearchResultDto> filterByTimeTable(List<SearchResultDto> searchResultList, Long memberId) {
+        Map<DayOfWeek, List<TimeTable>> timeTableOfMember = getTimeTableOfMember(memberId);
+        if (timeTableOfMember.isEmpty()) {
+            return searchResultList;
+        }
+
         return searchResultList.stream()
                 .filter(session -> isAttendable(timeTableOfMember, session))
                 .collect(Collectors.toList());
     }
 
-    private Map<DayOfWeek, List<TimeTable>> getTimeTableOfMember() {
-        Member currentMember = ((Member) SecurityContextHolder.getContext().getAuthentication().getDetails());
-        if (currentMember == null) {
-            throw new IllegalStateException("로그인 정보가 없는 사용자입니다.");
-        }
-
-        List<TimeTable> timeTables = timeTableRepository.findTimetableByMemberId(currentMember.getId());
+    private Map<DayOfWeek, List<TimeTable>> getTimeTableOfMember(Long memberId) {
+        List<TimeTable> timeTables = timeTableRepository.findTimetableByMemberId(memberId);
 
         return timeTables.stream()
                 .collect(Collectors.groupingBy(TimeTable::getDayOfWeek, Collectors.toList()));
@@ -199,7 +206,7 @@ public class VolActivityServiceImpl implements VolActivityService {
 
     private boolean isAttendable(Map<DayOfWeek, List<TimeTable>> timeTables, SearchResultDto searchResultDto) {
         DayOfWeek dayOfWeek = searchResultDto.getActivityDate().getDayOfWeek();
-        List<TimeTable> attendableTimeList = timeTables.get(dayOfWeek);
+        List<TimeTable> attendableTimeList = timeTables.getOrDefault(dayOfWeek, new ArrayList<>());
 
         for (TimeTable timeTable : attendableTimeList) {
             if (timeTable.getStartTime() <= searchResultDto.getStartTime()

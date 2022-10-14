@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.controller;
 
+import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenService;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolActivityIdDto;
@@ -10,14 +11,20 @@ import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.Cust
 import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface.VolActivityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/vol/activities")
 @RequiredArgsConstructor
 public class VolActController {
+
+    private final JwtTokenService jwtTokenService;
+    private final HttpServletRequest request;
 
     private final VolActivityService volActivityService;
 
@@ -36,7 +43,7 @@ public class VolActController {
     @GetMapping
     public DTOResponse<List<SearchResultDto>> searchActivity(@ModelAttribute SearchCondition searchCondition) {
 
-        return new DTOResponse<>(volActivityService.searchActivity(searchCondition));
+        return new DTOResponse<>(volActivityService.searchActivity(getMemberId(), searchCondition));
     }
 
     @DeleteMapping("/{activityId}")
@@ -46,14 +53,21 @@ public class VolActController {
         return MessageResponse.defaultOkayResponse();
     }
 
-    @GetMapping("/{activityId}/sessions")
-    public DTOResponse<List<VolActivitySessionDto>> findSessionsOfActivity(@PathVariable Long activityId) {
-        return new DTOResponse<>(volActivityService.findSessionsOfActivity(activityId));
+    @GetMapping(value = "/{activityId}/sessions")
+    public DTOResponse<List<VolActivitySessionDto>> findSessionsOfActivity(@PathVariable Long activityId,
+                                                                           @RequestParam(name = "date", required = false)
+                                                                           @DateTimeFormat(pattern = "yyyy-MM-dd")
+                                                                           LocalDate activityDate) {
+        return new DTOResponse<>(volActivityService.findSessionsOfActivity(activityId, activityDate));
     }
 
     @PutMapping("/{activityId}")
     public MessageResponse editActivity(@PathVariable Long activityId, @RequestBody ActivityModifyForm activityModifyForm) {
         volActivityService.editActivity(activityId, activityModifyForm);
         return MessageResponse.defaultOkayResponse();
+    }
+
+    private Long getMemberId() {
+        return jwtTokenService.tokenToUserId(request);
     }
 }
