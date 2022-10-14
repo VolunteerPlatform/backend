@@ -6,10 +6,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.dto.Certification
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberProfileUpdateDto;
 import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpdateDto;
-import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
-import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
-import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
-import com.volunteer_platform.volunteer_platform.domain.member.form.WithdrawalForm;
+import com.volunteer_platform.volunteer_platform.domain.member.form.*;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
@@ -142,6 +139,31 @@ public class MemberServiceImpl implements MemberService {
         return new DTOResponse(HttpStatus.OK.value(), message, message);
     }
 
+    @Override
+    public DTOResponse editPassword(FindPasswordForm passwordForm) {
+        Optional<String> memberId = memberRepository.getMemberId(passwordForm.getUserName());
+
+        return memberId.map(s -> new DTOResponse(HttpStatus.OK.value(), "success", "success")).orElseGet(
+                () -> new DTOResponse(HttpStatus.BAD_REQUEST.value(), "fail", "fail"));
+
+    }
+
+    @Override
+    @Transactional
+    public DTOResponse updatePassword(EditPasswordForm passwordForm) {
+        Optional<Member> member = memberRepository.findByUserName(passwordForm.getUserName());
+
+        System.out.println(member.get().getUsername());
+
+        if (member.isPresent()) {
+            String newPwd = passwordEncoder.encode(passwordForm.getPassword());
+            member.get().updatePassword(newPwd);
+            return new DTOResponse(HttpStatus.OK.value(), "success", "success");
+        }
+
+        return new DTOResponse(HttpStatus.BAD_REQUEST.value(), "fail", "fail");
+    }
+
     /**
      * Member Profile 수정
      *
@@ -212,8 +234,11 @@ public class MemberServiceImpl implements MemberService {
      * @return
      */
     @Override
-    public String findUsername(MemberInfo memberInfo) {
-        return memberRepository.findUserName(memberInfo);
+    public DTOResponse findUsername(MemberInfo memberInfo) {
+        String userName = memberRepository.findUserName(memberInfo);
+        String message = "성공적으로 userName을 불러왔습니다.";
+
+        return new DTOResponse(HttpStatus.OK.value(), message, userName);
     }
 
 
