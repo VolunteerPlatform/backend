@@ -118,7 +118,6 @@ public class JwtTokenProvider {
     //RefreshToken response
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
-        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/"); //쿠키의 유효범위 추후 서비스 발전시 쿠키의 범위 설정 필요
         cookie.setMaxAge(24 * 7 * 60 * 60 * 1000);
