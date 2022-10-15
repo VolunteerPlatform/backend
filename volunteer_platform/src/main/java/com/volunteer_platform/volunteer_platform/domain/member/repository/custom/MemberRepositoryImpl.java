@@ -34,8 +34,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                 ))
                 .from(member)
                 .join(memberInfo).on(member.id.eq(memberInfo.member.id)).fetchJoin()
-                .join(member1365Info).on(member.id.eq(memberInfo.member.id)).fetchJoin()
+                .join(member1365Info).on(member.id.eq(member1365Info.member.id)).fetchJoin()
                 .where(member.id.eq(memberId))
-                .fetchFirst();
+                .fetchOne();
     }
 }

@@ -26,7 +26,7 @@ public class MemberProfileController {
 
     // 회원 프로플 가져오기
     @GetMapping("profile")
-    public DTOResponse getProfileTest() {
+    public DTOResponse getMemberProfile() {
         MemberDto memberProfile = memberService.getMemberProfile(getMemberId());
 
         return new DTOResponse(memberProfile);
