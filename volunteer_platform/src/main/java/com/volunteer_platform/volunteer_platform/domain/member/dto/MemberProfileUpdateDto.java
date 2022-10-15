@@ -7,7 +7,6 @@ public class MemberProfileUpdateDto {
 
     private String userRealName;
     private String birthday;
-    private String gender;
     private String phoneNumber;
     private String idOf1365;
     private String centerName;
