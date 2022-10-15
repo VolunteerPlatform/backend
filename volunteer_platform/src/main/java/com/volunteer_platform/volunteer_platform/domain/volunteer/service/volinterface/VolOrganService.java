@@ -3,6 +3,7 @@ package com.volunteer_platform.volunteer_platform.domain.volunteer.service.volin
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.VolOrganIdDto;
 import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationForm;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationModifyForm;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface VolOrganService {
     VolOrganDto findOrgan(Long organId);
 
     List<VolOrganDto> findOrganByMember(Long memberId);
+
+    void modifyOrgan(Long organId, OrganizationModifyForm organizationModifyForm);
 }

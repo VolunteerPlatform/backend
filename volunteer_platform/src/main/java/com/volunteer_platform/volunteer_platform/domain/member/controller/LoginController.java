@@ -1,16 +1,21 @@
 package com.volunteer_platform.volunteer_platform.domain.member.controller;
 
+import com.volunteer_platform.volunteer_platform.config.jwt.JwtTokenService;
+import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberIdDto;
 import com.volunteer_platform.volunteer_platform.domain.member.form.CenterForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.LoginForm;
 import com.volunteer_platform.volunteer_platform.domain.member.form.MemberForm;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
 
 @RestController
@@ -18,6 +23,7 @@ import static com.volunteer_platform.volunteer_platform.domain.volunteer.convert
 public class LoginController {
 
     private final MemberService memberService;
+    private final JwtTokenService jwtTokenService;
 
     // 센터측 회원가입
     @PostMapping("/center/signup")
@@ -60,5 +66,26 @@ public class LoginController {
         memberService.loginIdValidation(loginForm);
 
         return MessageResponse.defaultOkayResponse();
+    }
+
+    @GetMapping("/center/auth")
+    public MessageResponse refreshAccessToken() {
+        memberService.refreshAccessToken();
+
+        return MessageResponse.defaultOkayResponse();
+    }
+
+    @PostMapping("/center/logout")
+    public MessageResponse centerLogout() {
+        memberService.centerLogout();
+
+        return MessageResponse.defaultOkayResponse();
+    }
+
+    @GetMapping("/center/auth-check")
+    public DTOResponse<MemberIdDto> validAccessToken(HttpServletRequest request) {
+        Long userId = jwtTokenService.tokenToUserId(request);
+
+        return new DTOResponse<>(new MemberIdDto(userId));
     }
 }

@@ -1,7 +1,11 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.service.volinterface;
 
-import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.dto.SearchResultDto;
+
+import java.util.List;
 
 public interface WishListService {
-    CustomResponse.DTOResponse addWishList(Long memberId, Long sessionId);
+    void addWishList(Long memberId, Long sessionId);
+
+    List<SearchResultDto> getWishList(Long memberId);
 }

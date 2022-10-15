@@ -118,7 +118,6 @@ public class JwtTokenProvider {
     //RefreshToken response
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
-        cookie.setSecure(true);
         cookie.setHttpOnly(true);
         cookie.setPath("/"); //쿠키의 유효범위 추후 서비스 발전시 쿠키의 범위 설정 필요
         cookie.setMaxAge(24 * 7 * 60 * 60 * 1000);
@@ -134,5 +133,16 @@ public class JwtTokenProvider {
     //권한 정보 가져오기
     public List<String> getRoles(String userName) {
         return memberRepository.findByUserName(userName).get().getRoles();
+    }
+
+    // Refresh Token 으로 AccessToken 재발급
+    public String refreshAccessToken(String refreshToken) {
+        if (!validateToken(refreshToken) || !existsRefreshToken(refreshToken)) {
+            throw new IllegalArgumentException("올바르지 않은 Refresh Token 입니다.");
+        }
+
+        String userName = getUserName(refreshToken);
+        List<String> roles = getRoles(userName);
+        return createAccessToken(userName, roles);
     }
 }

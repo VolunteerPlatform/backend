@@ -6,8 +6,6 @@ import lombok.Getter;
 @Getter
 public class ApplicationForm {
 
-    private Long memberId;
-
     private String comment;
 
     private PrivacyApproval privacyApproval;

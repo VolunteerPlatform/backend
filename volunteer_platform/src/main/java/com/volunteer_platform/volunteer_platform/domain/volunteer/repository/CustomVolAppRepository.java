@@ -22,7 +22,9 @@ public class CustomVolAppRepository {
     public List<AppHistory> findApplicantsByCondition(Long activityTimeId, IsAuthorized isAuthorized, Pageable pageable) {
         return queryFactory.selectFrom(appHistory)
                 .join(appHistory.volActivitySession, volActivitySession).fetchJoin()
-                .where(isAuthorizedEq(isAuthorized), appHistory.volActivitySession.id.eq(activityTimeId))
+                .where(isAuthorizedEq(isAuthorized),
+                        appHistory.volActivitySession.id.eq(activityTimeId),
+                        appHistory.isAuthorized.ne(IsAuthorized.CANCELED))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

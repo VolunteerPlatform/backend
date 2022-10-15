@@ -1,9 +1,8 @@
 package com.volunteer_platform.volunteer_platform.domain.timetable.service;
 
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
-import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
-import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
+import com.volunteer_platform.volunteer_platform.domain.timetable.dto.TimeTableElementDto;
 import com.volunteer_platform.volunteer_platform.domain.timetable.models.TimeTable;
 import com.volunteer_platform.volunteer_platform.domain.timetable.repository.TimeTableRepository;
 import com.volunteer_platform.volunteer_platform.domain.timetable.service.tableinterface.TimeTableService;
@@ -13,13 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.sql.Time;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
@@ -89,7 +86,7 @@ class TimeTableServiceImplTest {
         timeTableRepository.saveAll(timeTables);
 
         //when
-        List<TimeTable> timeTable = timeTableService.findMemberTimeTable(member.getId());
+        List<TimeTableElementDto> timeTable = timeTableService.findMemberTimeTable(member.getId());
 
         //then
 

@@ -1,5 +1,6 @@
 package com.volunteer_platform.volunteer_platform.domain.volunteer.models;
 
+import com.volunteer_platform.volunteer_platform.domain.volunteer.controller.form.OrganizationModifyForm;
 import com.volunteer_platform.volunteer_platform.global.entity.BaseEntity;
 import lombok.*;
 
@@ -32,4 +33,11 @@ public class VolOrgan extends BaseEntity {
     private Address address;
 
     private Long memberId;
+
+    public void modify(OrganizationModifyForm organizationModifyForm) {
+        this.name = organizationModifyForm.getName();
+        this.manager = organizationModifyForm.getManager();
+        this.contact = organizationModifyForm.getContact();
+        this.address = organizationModifyForm.getAddress();
+    }
 }

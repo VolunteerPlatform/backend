@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -45,6 +46,12 @@ class VolAppServiceImplTest {
     private VolAppServiceImpl volAppService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    private ApplicationForm getApplicationForm() throws JsonProcessingException {
+        String volAppFormString = "{\"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
+        ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
+        return applicationForm;
+    }
 
     @Nested
     @DisplayName("사용자 신청 승인/거절/승인거절 철회")
@@ -211,7 +218,7 @@ class VolAppServiceImplTest {
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> {
                         volAppService.authorizeApplicant(1L, IsAuthorized.WAITING);
-                    }).withMessage("미승인된 지원자의 상태는 변경할 수 없습니다.");
+                    }).withMessage("변경 불가능한 승인 상태입니다.");
 
         }
     }
@@ -262,7 +269,7 @@ class VolAppServiceImplTest {
                     .thenAnswer(AdditionalAnswers.returnsFirstArg());
 
             // when
-            AppHistoryDto appHistoryDto = volAppService.volApply(101L, applicationForm);
+            AppHistoryDto appHistoryDto = volAppService.volApply(101L, 101L, applicationForm);
 
             // then
             assertThat(appHistoryDto.getMemberId()).isEqualTo(member.getId());
@@ -283,7 +290,7 @@ class VolAppServiceImplTest {
             // then
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> {
-                        volAppService.volApply(1L, applicationForm);
+                        volAppService.volApply(1L, 101L, applicationForm);
                     }).withMessage("존재하지 않는 사용자 ID 입니다.");
         }
 
@@ -307,7 +314,7 @@ class VolAppServiceImplTest {
             // then
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> {
-                        volAppService.volApply(1L, applicationForm);
+                        volAppService.volApply(1L, 101L, applicationForm);
                     }).withMessage("해당 봉사활동 타임 정보가 존재하지 않습니다.");
         }
 
@@ -341,7 +348,7 @@ class VolAppServiceImplTest {
             // then
             assertThatIllegalStateException()
                     .isThrownBy(() -> {
-                        volAppService.volApply(101L, applicationForm);
+                        volAppService.volApply(101L, 101L, applicationForm);
                     }).withMessage("해당 세션은 신청 가능한 상태가 아닙니다.");
         }
 
@@ -372,13 +379,16 @@ class VolAppServiceImplTest {
             when(volActivitySessionRepository.findById(any()))
                     .thenReturn(Optional.of(volActivitySession));
 
-            when(volAppRepository.existsByMemberIdAndVolActivitySessionId(any(), any()))
-                    .thenReturn(Boolean.TRUE);
+            when(volAppRepository.findAllByMemberIdAndVolActivitySessionId(any(), any()))
+                    .thenReturn(List.of(AppHistory.builder()
+                            .isAuthorized(IsAuthorized.APPROVAL)
+                            .id(101L)
+                            .build()));
 
             // then
             assertThatIllegalStateException()
                     .isThrownBy(() -> {
-                        volAppService.volApply(101L, applicationForm);
+                        volAppService.volApply(101L, 101L, applicationForm);
                     }).withMessage("이미 해당 세션에 지원하였습니다.");
         }
 
@@ -386,7 +396,7 @@ class VolAppServiceImplTest {
         @Test
         void 개인정보_미동의시_신청불가() throws Exception {
             // given
-            String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"DISAGREE\" }";
+            String volAppFormString = "{\"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"DISAGREE\" }";
             ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
 
             Member member = Member.builder()
@@ -420,7 +430,7 @@ class VolAppServiceImplTest {
             // then
             assertThatIllegalArgumentException()
                     .isThrownBy(() -> {
-                        volAppService.volApply(101L, applicationForm);
+                        volAppService.volApply(101L, 101L, applicationForm);
                     })
                     .withMessage("개인정보 제공 미동의시 봉사활동을 신청할 수 없습니다.");
         }
@@ -465,13 +475,12 @@ class VolAppServiceImplTest {
                     .thenReturn(Optional.of(volActivitySession));
 
             // when
-            AppHistoryDto appHistoryDto = volAppService.volApply(101L, applicationForm);
+            AppHistoryDto appHistoryDto = volAppService.volApply(101L, 101L, applicationForm);
 
             // then
             assertThat(appHistoryDto.getIsAuthorized()).isEqualTo(IsAuthorized.APPROVAL);
         }
     }
-
 
     @Nested
     @DisplayName("봉사 신청 취소")
@@ -507,7 +516,8 @@ class VolAppServiceImplTest {
             volAppService.cancelApplication(101L);
 
             // then
-            verify(volAppRepository).deleteById(any());
+            assertThat(appHistory.getIsAuthorized())
+                    .isEqualTo(IsAuthorized.CANCELED);
         }
 
         @Test
@@ -586,14 +596,9 @@ class VolAppServiceImplTest {
             volAppService.cancelApplication(100L);
 
             // then
-            verify(volAppRepository).deleteById(any());
+            assertThat(appHistory.getIsAuthorized())
+                    .isEqualTo(IsAuthorized.CANCELED);
 
         }
-    }
-
-    private ApplicationForm getApplicationForm() throws JsonProcessingException {
-        String volAppFormString = "{ \"memberId\" : 100, \"comment\" : \"열심히 하겠습니다!\", \"privacyApproval\" : \"AGREE\" }";
-        ApplicationForm applicationForm = objectMapper.readValue(volAppFormString, ApplicationForm.class);
-        return applicationForm;
     }
 }

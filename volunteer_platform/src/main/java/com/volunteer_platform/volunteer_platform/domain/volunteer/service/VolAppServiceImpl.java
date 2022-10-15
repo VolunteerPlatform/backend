@@ -36,11 +36,11 @@ public class VolAppServiceImpl implements VolAppService {
     private static final int CANCELABLE_BEFORE_DAYS = 3;
 
     @Override
-    public AppHistoryDto volApply(Long sessionId, ApplicationForm applicationForm) {
-        Member applicant = findMemberById(applicationForm.getMemberId());
+    public AppHistoryDto volApply(Long memberId, Long sessionId, ApplicationForm applicationForm) {
+        Member applicant = findMemberById(memberId);
         VolActivitySession activitySession = findActivitySessionById(sessionId);
 
-        if (isMemberAlreadyApplied(applicationForm.getMemberId(), sessionId)) {
+        if (isMemberAlreadyApplied(memberId, sessionId)) {
             throw new IllegalStateException("이미 해당 세션에 지원하였습니다.");
         }
 
@@ -73,8 +73,8 @@ public class VolAppServiceImpl implements VolAppService {
     @Override
     public AppHistoryDto authorizeApplicant(Long applicationId, IsAuthorized status) {
         AppHistory application = findApplication(applicationId);
-        if (application.getIsAuthorized() == IsAuthorized.DISAPPROVAL) {
-            throw new IllegalArgumentException("미승인된 지원자의 상태는 변경할 수 없습니다.");
+        if (application.getIsAuthorized() == IsAuthorized.DISAPPROVAL || application.getIsAuthorized() == IsAuthorized.CANCELED) {
+            throw new IllegalArgumentException("변경 불가능한 승인 상태입니다.");
         }
 
         application.setIsAuthorized(status);
@@ -90,6 +90,10 @@ public class VolAppServiceImpl implements VolAppService {
     public void cancelApplication(Long applicationId) {
         AppHistory application = findApplication(applicationId);
 
+        if (application.getIsAuthorized() == IsAuthorized.CANCELED) {
+            throw new IllegalArgumentException("이미 취소가 완료된 활동입니다.");
+        }
+
         if (application.getIsAuthorized() == IsAuthorized.COMPLETE) {
             throw new IllegalArgumentException("활동이 완료된 활동은 취소가 불가능합니다.");
         }
@@ -101,7 +105,7 @@ public class VolAppServiceImpl implements VolAppService {
             }
         }
 
-        volAppRepository.deleteById(applicationId);
+        application.setIsAuthorized(IsAuthorized.CANCELED);
         volActivitySessionRepository.decreaseNumOfApplicant(application.getVolActivitySession().getId());
     }
 
@@ -133,7 +137,14 @@ public class VolAppServiceImpl implements VolAppService {
     }
 
     private boolean isMemberAlreadyApplied(Long memberId, Long sessionId) {
-        return volAppRepository.existsByMemberIdAndVolActivitySessionId(memberId, sessionId);
+        List<AppHistory> historyList = volAppRepository.findAllByMemberIdAndVolActivitySessionId(memberId, sessionId);
+        for (AppHistory history : historyList) {
+            if (history.getIsAuthorized() == IsAuthorized.APPROVAL) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean isApplicableSession(VolActivitySession session) {
