@@ -33,19 +33,25 @@ public class MemberController {
         Optional<MemberInfo> memberInfo = memberInfoService.validMemberInfo(findForm);
 
         if (memberInfo.isPresent()) {
-            return memberService.findUsername(memberInfo.get());
-        }
+            String username = memberService.findUsername(memberInfo.get());
 
-        return new DTOResponse(HttpStatus.BAD_REQUEST.value(), "fail", "fail");
+            return new DTOResponse(username);
+        } else {
+            throw new IllegalStateException("존재 하지 않는 회원입니다.");
+        }
     }
 
     @PostMapping("password-inquiry")
-    public DTOResponse findMemberPassword(@RequestBody FindPasswordForm passwordForm) {
-        return memberService.editPassword(passwordForm);
+    public MessageResponse findMemberPassword(@RequestBody FindPasswordForm passwordForm) {
+        memberService.editPassword(passwordForm);
+
+        return MessageResponse.defaultOkayResponse();
     }
 
     @PostMapping("/password")
-    public DTOResponse editPassword(@RequestBody EditPasswordForm passwordForm) {
-        return memberService.updatePassword(passwordForm);
+    public MessageResponse editPassword(@RequestBody EditPasswordForm passwordForm) {
+        memberService.updatePassword(passwordForm);
+
+        return MessageResponse.defaultOkayResponse();
     }
 }

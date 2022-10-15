@@ -27,37 +27,45 @@ public class LoginController {
 
     // 센터측 회원가입
     @PostMapping("/center/signup")
-    public DTOResponse centerSignup(@RequestBody CenterForm centerForm) {
-        return memberService.centerSignUp(centerForm);
+    public MessageResponse centerSignup(@RequestBody CenterForm centerForm) {
+        memberService.centerSignUp(centerForm);
+
+        return MessageResponse.defaultOkayResponse();
     }
 
 
     // 센터측 로그인
     @PostMapping("/center/login")
-    public DTOResponse centerLogin(@RequestBody LoginForm loginForm, HttpServletResponse response) {
-        return memberService.memberLogin(loginForm, response);
+    public MessageResponse centerLogin(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+        memberService.memberLogin(loginForm, response);
+
+        return MessageResponse.defaultOkayResponse();
     }
 
 
     // 회원 자체 회원가입
     @PostMapping("/members/signup")
-    public DTOResponse signup(@RequestBody MemberForm memberForm) {
+    public MessageResponse signup(@RequestBody MemberForm memberForm) {
         Long memberId = memberService.memberSignUp(memberForm);
 
-        return new DTOResponse(memberId);
+        return MessageResponse.defaultOkayResponse();
     }
 
 
     // 회원 자체 로그인
     @PostMapping("/members/login")
-    public DTOResponse login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
-        return memberService.memberLogin(loginForm, response);
+    public MessageResponse login(@RequestBody LoginForm loginForm, HttpServletResponse response) {
+        memberService.memberLogin(loginForm, response);
+
+        return MessageResponse.defaultOkayResponse();
     }
 
     // 아이디 중복검사
     @PostMapping("/members/validation/loginId")
-    public DTOResponse loginIdValidation(@RequestBody LoginForm loginForm) {
-        return memberService.loginIdValidation(loginForm);
+    public MessageResponse loginIdValidation(@RequestBody LoginForm loginForm) {
+        memberService.loginIdValidation(loginForm);
+
+        return MessageResponse.defaultOkayResponse();
     }
 
     @GetMapping("/center/auth")
