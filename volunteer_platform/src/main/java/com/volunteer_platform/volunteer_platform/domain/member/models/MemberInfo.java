@@ -39,7 +39,6 @@ public class MemberInfo {
     public void updateMemberInfo(MemberProfileUpdateDto memberProfileUpdateDto) {
         this.userRealName = memberProfileUpdateDto.getUserRealName();
         this.birthday = memberProfileUpdateDto.getBirthday();
-        this.gender = memberProfileUpdateDto.getGender();
         this.phoneNumber = memberProfileUpdateDto.getPhoneNumber();
     }
 }
