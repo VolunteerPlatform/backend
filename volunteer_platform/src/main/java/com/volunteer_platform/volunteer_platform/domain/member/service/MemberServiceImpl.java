@@ -16,15 +16,12 @@ import com.volunteer_platform.volunteer_platform.domain.member.service.memberint
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MembershipService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
-import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,7 +47,6 @@ public class MemberServiceImpl implements MemberService {
         if (!memberValidation(memberForm.getUserName())) {
             throw new IllegalArgumentException("아이디가 중복되었습니다.");
         }
-
         memberForm.encoding(passwordEncoder);
 
         Member member = memberForm.toEntity();
@@ -73,32 +69,24 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     @Transactional
-    public DTOResponse centerSignUp(CenterForm centerForm) {
+    public void centerSignUp(CenterForm centerForm) {
         if (!memberValidation(centerForm.getUserName())) {
-            String errorMessage = "아이디가 중복되었습니다.";
-
-            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+            throw new IllegalArgumentException("아이디가 중복되었습니다.");
         }
 
         centerForm.encoding(passwordEncoder);
 
         Member member = centerForm.toEntity();
         memberRepository.save(member);
-
-        String message = "정상적으로 회원가입이 되었습니다.";
-        return new DTOResponse(HttpStatus.CREATED.value(), message, member.getId());
     }
 
     @Override
     @Transactional
-    public DTOResponse memberLogin(LoginForm loginForm, HttpServletResponse response) {
+    public void memberLogin(LoginForm loginForm, HttpServletResponse response) {
         Member member = memberRepository.getMembersByMemberId(loginForm.getUserName());
 
         if (member == null || !(passwordEncoder.matches(loginForm.getPassword(), member.getPassword()))) {
-
-            String message = "로그인에 실패했습니다.";
-
-            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), message, message);
+            throw new IllegalArgumentException("로그인에 실패했습니다.");
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUsername(), member.getRoles());
@@ -107,57 +95,41 @@ public class MemberServiceImpl implements MemberService {
         jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
 
         tokenRepository.save(new RefreshToken(refreshToken));
-
-        String message = "로그인에 성공했습니다.";
-
-        return new DTOResponse(HttpStatus.OK.value(), message, member.getId());
     }
 
     @Override
-    public DTOResponse getMemberProfile(Long memberId) {
+    public MemberDto getMemberProfile(Long memberId) {
         MemberDto memberProfile = memberRepository.getMemberProfile(memberId);
 
-        String message = "회원 정보를 성공적으로 불러왔습니다.";
-
-        return new DTOResponse(HttpStatus.OK.value(), message, memberProfile);
+        return memberProfile;
     }
 
     @Override
-    public DTOResponse loginIdValidation(LoginForm loginForm) {
+    public void loginIdValidation(LoginForm loginForm) {
         if (!memberValidation(loginForm.getUserName())) {
-            String errorMessage = "아이디가 중복되었습니다.";
-
-            return new DTOResponse(HttpStatus.BAD_REQUEST.value(), errorMessage, errorMessage);
+            throw new IllegalArgumentException("아이디가 중복되었습니다.");
         }
-
-        String message = "회원가입 가능합니다.";
-
-        return new DTOResponse(HttpStatus.OK.value(), message, message);
     }
 
     @Override
-    public DTOResponse editPassword(FindPasswordForm passwordForm) {
+    public void editPassword(FindPasswordForm passwordForm) {
         Optional<String> memberId = memberRepository.getMemberId(passwordForm.getUserName());
-
-        return memberId.map(s -> new DTOResponse(HttpStatus.OK.value(), "success", "success")).orElseGet(
-                () -> new DTOResponse(HttpStatus.BAD_REQUEST.value(), "fail", "fail"));
-
+        if (memberId.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+        }
     }
 
     @Override
     @Transactional
-    public DTOResponse updatePassword(EditPasswordForm passwordForm) {
+    public void updatePassword(EditPasswordForm passwordForm) {
         Optional<Member> member = memberRepository.findByUserName(passwordForm.getUserName());
-
-        System.out.println(member.get().getUsername());
 
         if (member.isPresent()) {
             String newPwd = passwordEncoder.encode(passwordForm.getPassword());
             member.get().updatePassword(newPwd);
-            return new DTOResponse(HttpStatus.OK.value(), "success", "success");
+        } else {
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
         }
-
-        return new DTOResponse(HttpStatus.BAD_REQUEST.value(), "fail", "fail");
     }
 
     /**
@@ -186,7 +158,7 @@ public class MemberServiceImpl implements MemberService {
             String newPwd = passwordEncoder.encode(memberPwdUpdateDto.getNewPwd());
             memberRepository.updateMemberPwd(newPwd, member.getUsername());
         } else {
-            throw new IllegalStateException("try again");
+            throw new IllegalArgumentException("업데이트 실패했습니다.");
         }
     }
 
@@ -198,15 +170,14 @@ public class MemberServiceImpl implements MemberService {
      * @return
      */
     @Override
-    public String memberCertification(Long memberId, CertificationDto certificationDto) {
+    public void memberCertification(Long memberId, CertificationDto certificationDto) {
         Member member = findMemberByMemberId(memberId);
 
         if (!passwordEncoder.matches(certificationDto.getPassword(), member.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호 입니다.");
         }
-
-        return member.getUsername();
     }
+
 
     /**
      * 사용자 회원 탙퇴
@@ -230,11 +201,8 @@ public class MemberServiceImpl implements MemberService {
      * @return
      */
     @Override
-    public DTOResponse findUsername(MemberInfo memberInfo) {
-        String userName = memberRepository.findUserName(memberInfo);
-        String message = "성공적으로 userName을 불러왔습니다.";
-
-        return new DTOResponse(HttpStatus.OK.value(), message, userName);
+    public String findUsername(MemberInfo memberInfo) {
+        return memberRepository.findUserName(memberInfo);
     }
 
 
