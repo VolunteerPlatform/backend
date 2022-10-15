@@ -41,7 +41,7 @@ public class MemberProfileController {
     }
 
     // 회원 개인정보 수정
-    @PutMapping("profile")
+    @PostMapping("profile")
     public MessageResponse editMemberProfile(@RequestBody MemberProfileUpdateDto memberProfileUpdateDto) {
         memberService.updateMember(getMemberId(), memberProfileUpdateDto);
 
