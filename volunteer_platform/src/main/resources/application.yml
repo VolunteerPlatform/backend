@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/volunteer-platform;
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/vate
+    username: vate
+    password: hknuvate12!@
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
