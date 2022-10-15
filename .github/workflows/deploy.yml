@@ -16,6 +16,10 @@ env:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: ./volunteer_platform
+
 jobs:
   deploy:
     name: Deploy
@@ -39,10 +43,10 @@ jobs:
       uses: gradle/gradle-build-action@v2
       
     - name: Run chmod to make gradlew executable
-      run: chmod +x ./volunteer_platform/gradlew
+      run: chmod +x ./gradlew
     
     - name: Execute Gradle build
-      run: ./volunteer_platform/gradlew build
+      run: ./gradlew build
 
     # (4) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
     - name: Configure AWS credentials
