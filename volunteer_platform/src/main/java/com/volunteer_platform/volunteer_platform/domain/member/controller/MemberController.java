@@ -6,9 +6,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.form.FindPassword
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberInfoService;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.MemberService;
-import com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.*;
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
+import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.MessageResponse;
 
 @RestController
 @RequiredArgsConstructor

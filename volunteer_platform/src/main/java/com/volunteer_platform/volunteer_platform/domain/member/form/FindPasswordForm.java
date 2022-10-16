@@ -6,4 +6,6 @@ import lombok.Data;
 public class FindPasswordForm {
 
     private String userName;
+    private String userRealName;
+    private String phoneNumber;
 }

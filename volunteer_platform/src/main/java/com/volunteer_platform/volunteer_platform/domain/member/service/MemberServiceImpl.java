@@ -9,6 +9,7 @@ import com.volunteer_platform.volunteer_platform.domain.member.dto.MemberPwdUpda
 import com.volunteer_platform.volunteer_platform.domain.member.form.*;
 import com.volunteer_platform.volunteer_platform.domain.member.models.Member;
 import com.volunteer_platform.volunteer_platform.domain.member.models.MemberInfo;
+import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberInfoRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.MemberRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.repository.TokenRepository;
 import com.volunteer_platform.volunteer_platform.domain.member.service.memberinterface.Member1365InfoService;
@@ -23,13 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
-import static com.volunteer_platform.volunteer_platform.domain.volunteer.converter.CustomResponse.DTOResponse;
 
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final MemberInfoRepository memberInfoRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenRepository tokenRepository;
@@ -118,8 +119,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void editPassword(FindPasswordForm passwordForm) {
-        Optional<String> memberId = memberRepository.getMemberId(passwordForm.getUserName());
-        if (memberId.isEmpty()) {
+        Optional<Member> member = memberRepository.getMemberId(passwordForm.getUserName());
+
+        Optional<Long> memberId = memberInfoRepository.getMemberId(passwordForm.getUserRealName(), passwordForm.getPhoneNumber());
+
+        if (member.isEmpty() || memberId.isEmpty() || !member.get().getId().equals(memberId.get())) {
             throw new IllegalArgumentException("존재하지 않는 회원입니다.");
         }
     }

@@ -11,4 +11,7 @@ public interface MemberInfoRepository extends JpaRepository<MemberInfo, Long> {
 
     @Query("select mi from MemberInfo mi where mi.phoneNumber = :phoneNumber and mi.userRealName = :userRealName")
     Optional<MemberInfo> validInfo(@Param("phoneNumber") String phoneNumber, @Param("userRealName") String userRealName);
+
+    @Query("select mi.id from MemberInfo mi where mi.phoneNumber = :phoneNumber and mi.userRealName = :userRealName")
+    Optional<Long> getMemberId(@Param("phoneNumber") String phoneNumber, @Param("userRealName") String userRealName);
 }
