@@ -23,7 +23,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     Member getMembersByMemberId(@Param("userName") String userName);
 
     @Query("select m from Member m where m.userName = :userName")
-    Optional<Member > getMemberId(@Param("userName") String userName);
+    Optional<Member> getMemberId(@Param("userName") String userName);
 
     @Modifying
     @Transactional

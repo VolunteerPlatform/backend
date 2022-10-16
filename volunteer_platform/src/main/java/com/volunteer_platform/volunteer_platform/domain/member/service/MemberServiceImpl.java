@@ -120,8 +120,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void editPassword(FindPasswordForm passwordForm) {
         Optional<Member> member = memberRepository.getMemberId(passwordForm.getUserName());
-
-        Optional<Long> memberId = memberInfoRepository.getMemberId(passwordForm.getUserRealName(), passwordForm.getPhoneNumber());
+        Optional<Long> memberId = memberInfoRepository.getMemberId(passwordForm.getPhoneNumber(), passwordForm.getUserRealName());
 
         if (member.isEmpty() || memberId.isEmpty() || !member.get().getId().equals(memberId.get())) {
             throw new IllegalArgumentException("존재하지 않는 회원입니다.");
